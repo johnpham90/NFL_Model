@@ -46,7 +46,7 @@ npm install -g @modelcontextprotocol/server-brave-search
 Navigate to your MCP Configuration Path. 
 - It is typically here: `%AppData%\Claude Desktop\claude_desktop_config.json`
 - But you will want to verify
--To verify tour path:
+- To verify tour path:
   - Navigate to Claude Desktop
   - On the top Left go to Files > Settings (CTRL + Comma)
   - Click on `Developer` Tab > `Edit Config`
