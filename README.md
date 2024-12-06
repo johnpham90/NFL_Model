@@ -121,30 +121,10 @@ Get API key: https://brave.com/search/api/
 GitHub Tokenn:
 https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
 
-## 4. Setting Up Environment Variables for Claude, GitHub, and Brave Search in Git Bash
-### Open Git Bash and run
-
-'''' command
-  nano ~/.bashrc
-''''
-
-### Add the Claude Enviroment Variable
-locate your file by running:
-
-''''
-cat ~/.bashrc
-
-''''
-Use a text editor or IDE to update your bashrc file with this:
-
-export CLAUDE_CONFIG_PATH=/c/Users/YourUserName/AppData/Roaming/Claude/claude_desktop_config
-
-
-
 
 ## Verification
 
-```powershell
+```Git Bash
 # List packages
 npm list -g --depth=0
 
