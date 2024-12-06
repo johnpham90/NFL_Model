@@ -44,13 +44,14 @@ npm install -g @modelcontextprotocol/server-brave-search
 ### 3. Claude Desktop Configuration
 
 Navigate your MCP Configuration Path. 
-It is typically here: `%AppData%\Claude Desktop\claude_desktop_config.json` but you will want to verify
+- It is typically here: `%AppData%\Claude Desktop\claude_desktop_config.json`
+- but you will want to verify
 To verify tour path:
-  - Navigate to Claude Desktopp
+  - Navigate to Claude Desktop
   - On the top Left go to Files > Settings (CTRL + Comma)
-  - Click on Developer Tab > Edit Config
-  - the json file name should be claude_desktop_cofig
-  - Use a text editor or IDE to update the config file 
+  - Click on `Developer` Tab > `Edit Config`
+  - the json file name should be `claude_desktop_cofig`
+  - Use a text editor or IDE to update the config file ie Notepad ++, VS Code
 
 ```json
 {
