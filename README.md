@@ -81,10 +81,6 @@ Path: `%AppData%\Claude Desktop\claude_desktop_config.json`
 
 ## Server Setup
 
-### SQLite Server
-- Basic setup only
-- Customize `--db-path` as needed
-
 ### Memory Server
 - No additional setup
 - Debug logging enabled
