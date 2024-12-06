@@ -17,12 +17,13 @@ npm --version
 - Download from: https://www.python.org/downloads/
 - Check "Add Python to PATH"
 - If already installed, ensure that Python Path is add to Enviroment Variables
-- https://phoenixnap.com/kb/windows-set-environment-variable#:~:text=want%20to%20check.-,Set%20Environment%20Variable%20in%20Windows%20via%20GUI,Variable%20prompt%20and%20click%20OK. 
-## Installation
+- https://phoenixnap.com/kb/windows-set-environment-variable#:~:text=want%20to%20check.-,Set%20Environment%20Variable%20in%20Windows%20via%20GUI,Variable%20prompt%20and%20click%20OK.
 
 ### 4. Dowload Claude Desktop
 - https://claude.ai/download
 - Cloud Desktop will require a Pro Plan Subscription $20/month
+  
+## Installation
 
 
 ### 1. Package Managers
