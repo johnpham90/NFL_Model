@@ -114,21 +114,21 @@ To verify tour path:
 - Use double backslashes in Windows paths
 - Point to `dist/index.js` in npm modules directory
 
-** API Keys:
-Brave Search Server
-1. Get API key: https://brave.com/search/api/
+**API Keys:
+Brave Search Server:
+Get API key: https://brave.com/search/api/
 
-GitHub Tokenn
+GitHub Tokenn:
 https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
 
-### 4. Setting Up Environment Variables for Claude, GitHub, and Brave Search in Git Bash
-## Open Git Bash and run
+## 4. Setting Up Environment Variables for Claude, GitHub, and Brave Search in Git Bash
+### Open Git Bash and run
 
 '''' command
   nano ~/.bashrc
 ''''
 
-## Add the Claude Enviroment Variable
+### Add the Claude Enviroment Variable
 locate your file by running:
 
 ''''
