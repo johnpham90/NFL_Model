@@ -2,24 +2,28 @@
 
 ## Prerequisites
 
-### 1. Node.js v18+
+### Download Git
+https://git-scm.com/downloads/win
+
+### 1. Download Node.js v18+
 - Download from: https://nodejs.org/
-- Verify in PowerShell:
-```powershell
+- Verify in Git Bash:
+```Git Bash
 node --version
 npm --version
 ```
 
-### 2. Python 3.10+
+### 2. Download Python 3.10+
 - Download from: https://www.python.org/downloads/
 - Check "Add Python to PATH"
 
 ## Installation
 
 ### 1. Package Managers
-```powershell
-# Open PowerShell as admin
+```Git Bash
+# Open Git Bash and run
 npm install -g uv
+
 ```
 
 ### 2. MCP Servers
