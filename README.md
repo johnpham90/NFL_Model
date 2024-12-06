@@ -2,10 +2,10 @@
 
 ## Prerequisites
 
-### Download Git
-https://git-scm.com/downloads/win
+### 1. Download Git
+- https://git-scm.com/downloads/win
 
-### 1. Download Node.js v18+
+### 2. Download Node.js v18+
 - Download from: https://nodejs.org/
 - Verify in Git Bash:
 ```Git Bash
@@ -13,11 +13,17 @@ node --version
 npm --version
 ```
 
-### 2. Download Python 3.10+
+### 3. Download Python 3.10+
 - Download from: https://www.python.org/downloads/
 - Check "Add Python to PATH"
-- If already installed, ensure that Python Path is add to Enviroment Variables https://phoenixnap.com/kb/windows-set-environment-variable#:~:text=want%20to%20check.-,Set%20Environment%20Variable%20in%20Windows%20via%20GUI,Variable%20prompt%20and%20click%20OK. 
+- If already installed, ensure that Python Path is add to Enviroment Variables
+- https://phoenixnap.com/kb/windows-set-environment-variable#:~:text=want%20to%20check.-,Set%20Environment%20Variable%20in%20Windows%20via%20GUI,Variable%20prompt%20and%20click%20OK. 
 ## Installation
+
+### 4. Dowload Claude Desktop
+- https://claude.ai/download
+- Cloud Desktop will require a Pro Plan Subscription $20/month
+
 
 ### 1. Package Managers
 ```Git Bash
@@ -27,7 +33,7 @@ npm install -g uv
 ```
 
 ### 2. MCP Servers
-Install Node.js servers:
+Install Node.js servers using Git Bash:
 ```Git Bash
 npm install -g @modelcontextprotocol/server-memory
 npm install -g @modelcontextprotocol/server-everything
@@ -36,13 +42,14 @@ npm install -g @modelcontextprotocol/server-brave-search
 
 ### 3. Claude Desktop Configuration
 
-Navigate your MCP Configuration Path it is typically here: `%AppData%\Claude Desktop\claude_desktop_config.json`
+Navigate your MCP Configuration Path. 
+It is typically here: `%AppData%\Claude Desktop\claude_desktop_config.json` but you will want to verify
 To verify tour path:
-- Navigate to Claude Desktopp
-- On the top Left go to Files > Settings (CTRL + Comma)
-- Click on Developer Tab > Edit Config
-- the json file name should be claude_desktop_cofig
-- Use a text editor or IDE to update the config file 
+  - Navigate to Claude Desktopp
+  - On the top Left go to Files > Settings (CTRL + Comma)
+  - Click on Developer Tab > Edit Config
+  - the json file name should be claude_desktop_cofig
+  - Use a text editor or IDE to update the config file 
 
 ```json
 {
@@ -116,19 +123,23 @@ To verify tour path:
 
 **API Keys:
 Brave Search Server:
-Get API key: https://brave.com/search/api/
+- Get API key: https://brave.com/search/api/
+- This Subscription is free
 
 GitHub Tokenn:
-https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
+- https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
+- Repo Admin will have to generate a Token, and assign security privleges for that token
 
 
 ## Verification
 
-```Git Bash
+```# Use Git Bash to get a list servers that were installed
 # List packages
 npm list -g --depth=0
 
-# Test servers
+```
+
+```# Use git bash to test servers that were installed
 npx @modelcontextprotocol/server-memory
 npx @modelcontextprotocol/server-brave-search
 npx @modelcontextprotocol/server-github
