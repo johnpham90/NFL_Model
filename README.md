@@ -43,14 +43,14 @@ npm install -g @modelcontextprotocol/server-brave-search
 
 ### 3. Claude Desktop Configuration
 
-Navigate your MCP Configuration Path. 
+Navigate to your MCP Configuration Path. 
 - It is typically here: `%AppData%\Claude Desktop\claude_desktop_config.json`
-- but you will want to verify
-To verify tour path:
+- But you will want to verify
+-To verify tour path:
   - Navigate to Claude Desktop
   - On the top Left go to Files > Settings (CTRL + Comma)
   - Click on `Developer` Tab > `Edit Config`
-  - the json file name should be `claude_desktop_cofig`
+  - the json config file name should be named `claude_desktop_cofig`
   - Use a text editor or IDE to update the config file ie Notepad ++, VS Code
 
 ```json
@@ -124,13 +124,13 @@ To verify tour path:
 - Point to `dist/index.js` in npm modules directory
 
 **API Keys:
-Brave Search Server:
-- Get API key: https://brave.com/search/api/
-- This Subscription is free
+-Brave Search Server:
+  - Get API key: https://brave.com/search/api/
+  - This Subscription is free
 
-GitHub Tokenn:
-- https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
-- Repo Admin will have to generate a Token, and assign security privleges for that token
+-GitHub Tokenn:
+  - https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
+  - Repo Admin will have to generate a Token, and assign security privleges for that token
 
 
 ## Verification
