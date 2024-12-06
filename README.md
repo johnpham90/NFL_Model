@@ -38,11 +38,11 @@ npm install -g @modelcontextprotocol/server-brave-search
 
 Navigate your MCP Configuration Path it is typically here: `%AppData%\Claude Desktop\claude_desktop_config.json`
 To verify tour path:
--Navigate to Claude Desktopp
--On the top Left go to Files > Settings (CTRL + Comma)
--Click on Developer Tab > Edit Config
+- Navigate to Claude Desktopp
+- On the top Left go to Files > Settings (CTRL + Comma)
+- Click on Developer Tab > Edit Config
 - the json file name should be claude_desktop_cofig
--  Use a text editor or IDE to update the config file 
+- Use a text editor or IDE to update the config file 
 
 ```json
 {
@@ -81,7 +81,7 @@ To verify tour path:
         "C:\\Users\\YourUserName\\AppData\\Roaming\\npm\\node_modules\\@modelcontextprotocol\\server-github\\dist\\index.js"
       ],
       "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "GIT_HUB_ACCES_TOEKN,
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "GIT_HUB_ACCES_TOEKN",
         "DEBUG": "*"
       }
     },
@@ -110,20 +110,11 @@ To verify tour path:
 **Configuration Notes:**
 - Replace `YourUsername` with your Windows username
 - Replace `YOUR_BRAVE_TOKEN` with actual API keys
-- Replace  'GIT_HUB_ACCES_TOEKN' with your git hub token
+- Replace  `GIT_HUB_ACCES_TOEKN` with your git hub token
 - Use double backslashes in Windows paths
 - Point to `dist/index.js` in npm modules directory
 
-## Server Setup
-
-### Memory Server
-- No additional setup
-- Debug logging enabled
-
-### Everything Server
-- No additional setup
-- Debug logging enabled
-
+## API Keys:
 ### Brave Search Server
 1. Get API key: https://brave.com/search/api/
 2. Add to config's env section
@@ -140,6 +131,8 @@ npm list -g --depth=0
 # Test servers
 npx @modelcontextprotocol/server-memory
 npx @modelcontextprotocol/server-brave-search
+npx @modelcontextprotocol/server-github
+@modelcontextprotocol/server-filesystem
 
 ```
 
