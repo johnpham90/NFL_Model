@@ -1,108 +1,128 @@
-# Claude Desktop & MCP Setup Guide
+# Setting Up MCP Servers on Windows
 
 ## Prerequisites
-- Git Bash
-- Node.js v16+
-- Python & uv
-- Anthropic API key
-- GitHub token
 
-## 1. Install Claude Desktop
-```bash
-# Clone and install
-git clone https://github.com/anthropics/claude-desktop.git
-cd claude-desktop
-npm install
-npm start
+### 1. Node.js v18+
+- Download from: https://nodejs.org/
+- Verify in PowerShell:
+```powershell
+node --version
+npm --version
 ```
 
-## 2. Configure API Keys
-```bash
-# Edit bash profile
-nano ~/.bashrc
+### 2. Python 3.10+
+- Download from: https://www.python.org/downloads/
+- Check "Add Python to PATH"
 
-# Add keys
-export ANTHROPIC_API_KEY='your-key'
-export GITHUB_TOKEN='your-token'
+## Installation
 
-# Reload
-source ~/.bashrc
+### 1. Package Managers
+```powershell
+# Open PowerShell as admin
+npm install -g uv
 ```
 
-## 3. Install Python uv
-```bash
-# Install
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Verify
-uv --version
+### 2. MCP Servers
+Node.js servers:
+```powershell
+npm install -g @modelcontextprotocol/server-memory
+npm install -g @modelcontextprotocol/server-everything
+npm install -g @modelcontextprotocol/server-brave-search
 ```
 
-## 4. Install MCP Servers
-```bash
-# Core server
-npm install -g @anthropic-ai/mcp-server
-
-# Specific servers
-npx @anthropic-ai/mcp-shell  # For shell commands
-npx @anthropic-ai/mcp-nfl-model  # For NFL data
+Python servers:
+```powershell
+uvx mcp-server-sqlite
 ```
 
-## 5. Configure Claude Desktop
-1. Open Settings
-2. Go to Connections
-3. Add MCP connections:
-   ```
-   Name: shell
-   URL: http://localhost:3000
-   
-   Name: nfl
-   URL: http://localhost:3001
-   ```
+### 3. Claude Desktop Configuration
 
-## 6. Verify Setup
-Test in Claude Desktop:
-```
-User: Test MCP connection
-Claude: Connection active
-```
+Path: `%AppData%\Claude Desktop\claude_desktop_config.json`
 
-## Common Issues
-
-### API Key Problems
-```bash
-echo $ANTHROPIC_API_KEY  # Check key
-```
-
-### Port Conflicts
-```bash
-lsof -i :3000  # Check ports
-pkill -f mcp-server  # Kill existing
-```
-
-### Connection Failed
-1. Restart MCP servers
-2. Restart Claude Desktop
-3. Check server logs
-
-## Updates
-```bash
-# Update Claude
-cd claude-desktop
-git pull
-npm install
-
-# Update MCP
-npm update -g @anthropic-ai/mcp-server
+```json
+{
+  "globalShortcut": "Ctrl+Space",
+  "mcpServers": {
+    "sqlite": {
+      "command": "uvx",
+      "args": ["mcp-server-sqlite", "--db-path", "C:\\Users\\YourUsername\\test.db"]
+    },
+    "memory": {
+      "command": "node",
+      "args": ["C:\\Users\\YourUsername\\AppData\\Roaming\\npm\\node_modules\\@modelcontextprotocol\\server-memory\\dist\\index.js"],
+      "env": {
+        "DEBUG": "*"
+      }
+    },
+    "everything": {
+      "command": "node",
+      "args": ["C:\\Users\\YourUsername\\AppData\\Roaming\\npm\\node_modules\\@modelcontextprotocol\\server-everything\\dist\\index.js"],
+      "env": {
+        "DEBUG": "*"
+      }
+    },
+    "brave-search": {
+      "command": "node",
+      "args": ["C:\\Users\\YourUsername\\AppData\\Roaming\\npm\\node_modules\\@modelcontextprotocol\\server-brave-search\\dist\\index.js"],
+      "env": {
+        "BRAVE_API_KEY": "YOUR_API_KEY_HERE",
+        "DEBUG": "*"
+      }
+    }
+  }
+}
 ```
 
-## Security
-- Store API keys securely
-- Use HTTPS for connections
-- Keep dependencies updated
-- Monitor server logs
+**Configuration Notes:**
+- Replace `YourUsername` with your Windows username
+- Replace `YOUR_API_KEY_HERE` with actual API keys
+- Use double backslashes in Windows paths
+- Point to `dist/index.js` in npm modules directory
 
-## Documentation
-- [Claude API](https://docs.anthropic.com/claude/)
-- [MCP Server](https://docs.anthropic.com/mcp/)
-- [GitHub Integration](https://docs.github.com/en/rest)
+## Server Setup
+
+### SQLite Server
+- Basic setup only
+- Customize `--db-path` as needed
+
+### Memory Server
+- No additional setup
+- Debug logging enabled
+
+### Everything Server
+- No additional setup
+- Debug logging enabled
+
+### Brave Search Server
+1. Get API key: https://brave.com/search/api/
+2. Add to config's env section
+
+## Verification
+
+```powershell
+# List packages
+npm list -g --depth=0
+
+# Test servers
+npx @modelcontextprotocol/server-memory
+npx @modelcontextprotocol/server-brave-search
+uvx mcp-server-sqlite
+```
+
+## Troubleshooting
+
+### "Could not attach to MCP server"
+- Verify config paths
+- Check global package installation
+- Confirm dist/index.js exists
+
+### Server not visible
+- Restart Claude Desktop
+- Check JSON syntax
+- Verify file paths
+
+## Best Practices
+- Use global installations
+- Use full paths to dist/index.js
+- Keep DEBUG env variable
+- Restart after config changes
