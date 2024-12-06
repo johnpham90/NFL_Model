@@ -1,22 +1,26 @@
 # NFL Prediction Model
 
 ## Project Structure
+```
 NFL_Model/
-├── notebooks/          # Jupyter notebooks for analysis
+├── notebooks/           # Analysis notebooks
 │   ├── 01_data_exploration.ipynb
-│   ├── 02_feature_engineering.ipynb
+│   ├── 02_feature_engineering.ipynb 
 │   ├── 03_model_development.ipynb
 │   └── 04_model_evaluation.ipynb
-
-├── src/                # Source code
-│   ├── db_utils.py     # Database connection/queries
-│   ├── features.py     # Feature engineering
+│
+├── src/                # Python source code
+│   ├── db_utils.py     # Database connection
+│   ├── features.py     # Feature creation
 │   ├── model.py        # Model implementation
-│   └── evaluation.py   # Metrics and validation
-
-├── models/             # Saved model files
-├── config/             # Configuration files
-└── requirements.txt    # Dependencies
+│   └── evaluation.py   # Model evaluation
+│
+├── models/            # Saved model files
+├── config/           
+│   └── db_config.yaml  # Database credentials
+│
+└── requirements.txt    # Project dependencies
+```
 
 ## Setup
 ```bash
