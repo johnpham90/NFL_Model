@@ -1,7 +1,15 @@
-# Hello World Python Script
+# Hello World Python Scripts
 
 def hello_world():
     print('Hello, World!')
 
+def hello_world_enhanced():
+    print('Hello, World from Python!')
+    print('This is an enhanced greeting')
+    return 'Greeting complete!'
+
 if __name__ == '__main__':
     hello_world()
+    print('\nRunning enhanced version:')
+    result = hello_world_enhanced()
+    print(f'Result: {result}')
