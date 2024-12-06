@@ -1,0 +1,14 @@
+data:
+  raw_dir: data/raw
+  processed_dir: data/processed
+  external_dir: data/external
+
+model:
+  random_state: 42
+  test_size: 0.2
+  features:
+    - team_stats
+    - player_stats
+    - historical_matchups
+    - weather
+    - betting_odds
