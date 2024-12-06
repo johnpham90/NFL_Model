@@ -16,7 +16,7 @@ npm --version
 ### 2. Download Python 3.10+
 - Download from: https://www.python.org/downloads/
 - Check "Add Python to PATH"
-
+- If already installed, ensure that Python Path is add to Enviroment Variables https://phoenixnap.com/kb/windows-set-environment-variable#:~:text=want%20to%20check.-,Set%20Environment%20Variable%20in%20Windows%20via%20GUI,Variable%20prompt%20and%20click%20OK. 
 ## Installation
 
 ### 1. Package Managers
@@ -27,51 +27,81 @@ npm install -g uv
 ```
 
 ### 2. MCP Servers
-Node.js servers:
-```powershell
+Install Node.js servers:
+```Git Bash
 npm install -g @modelcontextprotocol/server-memory
 npm install -g @modelcontextprotocol/server-everything
 npm install -g @modelcontextprotocol/server-brave-search
 ```
 
-Python servers:
-```powershell
-uvx mcp-server-sqlite
-```
-
 ### 3. Claude Desktop Configuration
 
-Path: `%AppData%\Claude Desktop\claude_desktop_config.json`
+Navigate your MCP Configuration Path it is typically here: `%AppData%\Claude Desktop\claude_desktop_config.json`
+To verify tour path:
+-Navigate to Claude Desktopp
+-On the top Left go to Files > Settings (CTRL + Comma)
+-Click on Developer Tab > Edit Config
+- the json file name should be claude_desktop_cofig
+-  Use a text editor or IDE to update the config file 
 
 ```json
 {
-  "globalShortcut": "Ctrl+Space",
   "mcpServers": {
-    "sqlite": {
-      "command": "uvx",
-      "args": ["mcp-server-sqlite", "--db-path", "C:\\Users\\YourUsername\\test.db"]
-    },
     "memory": {
       "command": "node",
-      "args": ["C:\\Users\\YourUsername\\AppData\\Roaming\\npm\\node_modules\\@modelcontextprotocol\\server-memory\\dist\\index.js"],
+      "args": [
+        "C:\\Users\\YourUserName\\AppData\\Roaming\\npm\\node_modules\\@modelcontextprotocol\\server-memory\\dist\\index.js"
+      ],
       "env": {
         "DEBUG": "*"
       }
     },
     "everything": {
       "command": "node",
-      "args": ["C:\\Users\\YourUsername\\AppData\\Roaming\\npm\\node_modules\\@modelcontextprotocol\\server-everything\\dist\\index.js"],
+      "args": [
+        "C:\\Users\\YourUserName\\AppData\\Roaming\\npm\\node_modules\\@modelcontextprotocol\\server-everything\\dist\\index.js"
+      ],
       "env": {
         "DEBUG": "*"
       }
     },
     "brave-search": {
       "command": "node",
-      "args": ["C:\\Users\\YourUsername\\AppData\\Roaming\\npm\\node_modules\\@modelcontextprotocol\\server-brave-search\\dist\\index.js"],
+      "args": [
+        "C:\\Users\\YourUserName\\AppData\\Roaming\\npm\\node_modules\\@modelcontextprotocol\\server-brave-search\\dist\\index.js"
+      ],
       "env": {
-        "BRAVE_API_KEY": "YOUR_API_KEY_HERE",
+        "BRAVE_API_KEY": "YOUR_BRAVE_TOKEN",
         "DEBUG": "*"
       }
+    },
+    "github": {
+      "command": "node",
+      "args": [
+        "C:\\Users\\YourUserName\\AppData\\Roaming\\npm\\node_modules\\@modelcontextprotocol\\server-github\\dist\\index.js"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "GIT_HUB_ACCES_TOEKN,
+        "DEBUG": "*"
+      }
+    },
+    "mcp-installer": {
+      "command": "npx",
+      "args": [
+        "@anaisbetts/mcp-installer"
+      ]
+    },
+    "server-puppeteer": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/server-puppeteer"
+      ]
+    },
+    "mcp-shell": {
+      "command": "uvx",
+      "args": [
+        "@anthropic-ai/mcp-shell"
+      ]
     }
   }
 }
@@ -79,7 +109,8 @@ Path: `%AppData%\Claude Desktop\claude_desktop_config.json`
 
 **Configuration Notes:**
 - Replace `YourUsername` with your Windows username
-- Replace `YOUR_API_KEY_HERE` with actual API keys
+- Replace `YOUR_BRAVE_TOKEN` with actual API keys
+- Replace  'GIT_HUB_ACCES_TOEKN' with your git hub token
 - Use double backslashes in Windows paths
 - Point to `dist/index.js` in npm modules directory
 
@@ -97,6 +128,9 @@ Path: `%AppData%\Claude Desktop\claude_desktop_config.json`
 1. Get API key: https://brave.com/search/api/
 2. Add to config's env section
 
+### GitHub Toekn
+https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
+
 ## Verification
 
 ```powershell
@@ -106,7 +140,7 @@ npm list -g --depth=0
 # Test servers
 npx @modelcontextprotocol/server-memory
 npx @modelcontextprotocol/server-brave-search
-uvx mcp-server-sqlite
+
 ```
 
 ## Troubleshooting
