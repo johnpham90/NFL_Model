@@ -1,10 +1,10 @@
-##Updating VS Code Settings for PYTHONPATH
+## Updating VS Code Settings for PYTHONPATH
 
 To ensure your Python project runs smoothly in VS Code, follow these steps to configure the `PYTHONPATH` and make your development environment portable across different machines.
 
 ---
 
-###Step 1: Open Your Project in VS Code
+### Step 1: Open Your Project in VS Code
 1. Launch VS Code.
 
 
@@ -16,7 +16,7 @@ To ensure your Python project runs smoothly in VS Code, follow these steps to co
 
 ---
 
-###Step 3: Update the `settings.json` File
+### Step 3: Update the `settings.json` File
 1. In the `settings.json` file, add or update the following settings:
     ```json
     {
@@ -44,7 +44,7 @@ To ensure your Python project runs smoothly in VS Code, follow these steps to co
 
 ---
 
-###Step 6: Verify the Setup
+### Step 6: Verify the Setup
 1. Open a terminal in VS Code (`Ctrl + `` `).
 2. Run the following command to check if the `PYTHONPATH` is set correctly:
     ```bash
@@ -56,6 +56,6 @@ To ensure your Python project runs smoothly in VS Code, follow these steps to co
 
 ---
 
-##Important Notes for Collaboration
+## Important Notes for Collaboration
 - Make sure the `.env` file is added to `.gitignore` to avoid committing environment-specific settings.
 - Include these instructions in your project's README file so that collaborators can easily set up their environments.
