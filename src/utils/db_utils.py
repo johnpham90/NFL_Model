@@ -1,37 +1,35 @@
+import os
 import psycopg2
-from configparser import ConfigParser
+from sqlalchemy import create_engine
+import pandas as pd
+from dotenv import load_dotenv
 
-def config(filename='config/db_config.yaml', section='postgresql'):
-    parser = ConfigParser()
-    parser.read(filename)
-    db = {}
-    if parser.has_section(section):
-        params = parser.items(section)
-        for param in params:
-            db[param[0]] = param[1]
-    else:
-        raise Exception(f'Section {section} not found in {filename}')
-    return db
-
-def connect():
+def get_connection():
+    """Create a connection to the Supabase database using environment variables"""
     try:
-        params = config()
-        print('Connecting to PostgreSQL database...')
-        conn = psycopg2.connect(**params)
-        cur = conn.cursor()
-        print('PostgreSQL database version:')
-        cur.execute('SELECT version()')
-        db_version = cur.fetchone()
-        print(db_version)
-        return conn, cur
-    except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
-        return None, None
+        # Load environment variables
+        load_dotenv()
+        
+        # Get database URL and modify it for SQLAlchemy
+        DATABASE_URL = os.getenv('DATABASE_URL').replace('postgres://', 'postgresql://')
+        
+        # Create SQLAlchemy engine
+        engine = create_engine(DATABASE_URL)
+        print('Successfully connected to the database!')
+        return engine
+    except Exception as error:
+        print(f'Error connecting to the database: {error}')
+        return None
 
-def fetch_game_data(cur, season=None):
-    query = '''
-    SELECT * FROM nfl_games 
-    WHERE season = %s
-    '''
-    cur.execute(query, (season,))
-    return cur.fetchall()
+def execute_query(query, params=None):
+    """Execute a query and return results as a pandas DataFrame"""
+    try:
+        engine = get_connection()
+        if params:
+            df = pd.read_sql_query(query, engine, params=params)
+        else:
+            df = pd.read_sql_query(query, engine)
+        return df
+    except Exception as error:
+        print(f'Error executing query: {error}')
+        return None
