@@ -44,7 +44,7 @@ Passer rating
   - Pass deflections
   - Forced fumbles
 
-##3. Game Context Features
+## 3. Game Context Features
 ### Game-specific factors that can influence outcomes:
 
 - Weather:
