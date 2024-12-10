@@ -62,34 +62,34 @@ Passer rating
   - Over/under totals
   - Implied team totals
 ## 4. Situational Features
-###H ow teams perform in specific scenarios:
+### How teams perform in specific scenarios:
 
 - Red Zone Efficiency:
-Percentage of touchdowns in red zone attempts
+  - Percentage of touchdowns in red zone attempts
 - Third-Down Efficiency:
-Conversion rates on third downs
+  - Conversion rates on third downs
 - Clutch Moments:
-Performance in one-score games
-Fourth-quarter scoring
+  - Performance in one-score games
+  - Fourth-quarter scoring
 ## 5. Historical and Derived Features
 ### Using trends and aggregates to add context:
 
 - Head-to-Head Matchups:
-Past performance against the opponent
+  - Past performance against the opponent
 - Seasonal Averages:
-Weighted averages of performance metrics over the season
+  - Weighted averages of performance metrics over the season
 - Momentum:
-Points scored or allowed in the last few games
+  - Points scored or allowed in the last few games
 ##6. Advanced Analytics
-###Metrics from modern football analytics:
+### Metrics from modern football analytics:
 
 - Expected Points Added (EPA):
-Per play or aggregated
+    - Per play or aggregated
 - Success Rate:
-Percentage of plays that yield positive EPA
+  - Percentage of plays that yield positive EPA
 - Drive Stats:
-Points per drive
-Plays per drive
-Starting field position
+  - Points per drive
+  - Plays per drive
+  - Starting field position
 - Pressure Rate:
-Offensive line protection vs. defensive line disruption
+  - Offensive line protection vs. defensive line disruption
