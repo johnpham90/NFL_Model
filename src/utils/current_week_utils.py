@@ -1,11 +1,11 @@
 import requests
 import datetime as dt
-from typing import Dict
+from typing import Dict, List
 
 def get_current_nfl_week() -> Dict:
     """
     Fetch the current NFL week and its games from the SportsDataIO API.
-    Returns the current week number and games scheduled for that week.
+    Returns the current week number and lists of home teams, away teams, and game schedules.
     """
     # API URL
     api_url = "https://api.sportsdata.io/v3/nfl/scores/json/Schedules/2024?key=604a48fab9784f9fb2d6101874bec4bb"
@@ -21,7 +21,9 @@ def get_current_nfl_week() -> Dict:
         
         # Initialize variables
         current_week = None
-        current_week_games = []
+        home_teams: List[str] = []
+        away_teams: List[str] = []
+        game_schedule: List[Dict] = []
         
         for game in schedule_data:
             # Safely get the 'Date' field
@@ -38,28 +40,42 @@ def get_current_nfl_week() -> Dict:
                 continue
             
             # Identify the current week
-            week = game.get('Week')  # Safely get the 'Week' field
+            week = game.get('Week')
             if game_date <= today <= game_date + dt.timedelta(days=6):
                 current_week = week
                 # Filter games on Thursday (3), Saturday (5), Sunday (6), or Monday (0)
                 if game_date.weekday() in [3, 5, 6, 0]:
-                    current_week_games.append({
-                        'away_team': game.get('AwayTeam', 'Unknown'),
-                        'home_team': game.get('HomeTeam', 'Unknown'),
-                        'date': game_date_str,
-                        'week': week,
-                        'season': game.get('SeasonType', 'Unknown')
+                    home_team = game.get('HomeTeam', 'Unknown')
+                    away_team = game.get('AwayTeam', 'Unknown')
+                    
+                    # Add to lists
+                    home_teams.append(home_team)
+                    away_teams.append(away_team)
+                    game_schedule.append({
+                        'away_team': away_team,
+                        'home_team': home_team,
+                        'date': game_date_str
                     })
-        
-        # Return the current week and its games
+        print({
+            'current_week': current_week,
+            'home_teams': home_teams,
+            'away_teams': away_teams,
+            'game_schedule': game_schedule
+        })
+
+        # Return the current week, home teams, away teams, and schedule
         return {
             'current_week': current_week,
-            'games': current_week_games
+            'home_teams': home_teams,
+            'away_teams': away_teams,
+            'game_schedule': game_schedule
         }
+
+
     
     except requests.exceptions.RequestException as e:
         print(f"Error fetching data from API: {e}")
-        return {'current_week': None, 'games': []}
+        return {'current_week': None, 'home_teams': [], 'away_teams': [], 'game_schedule': []}
     except Exception as e:
         print(f"Unexpected error: {e}")
-        return {'current_week': None, 'games': []}
+        return {'current_week': None, 'home_teams': [], 'away_teams': [], 'game_schedule': []}
