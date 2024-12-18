@@ -6,6 +6,14 @@ def get_current_nfl_week() -> Dict:
     """
     Fetch the current NFL week and its games from the SportsDataIO API.
     Returns the current week number and lists of hometeamid, awayteamid, and game schedules.
+    To use this Utility:
+    Import Utility into file: from src.utils.current_week_utils import get_current_nfl_week
+    Set a variable for get_current_nfl_week ie nfl_week = get_current_nfl_week()
+    Pass in parameters in braket: awayteamid, hometeamid, game_schedule 
+    
+        nfl_week_data = get_current_nfl_week()
+        nfl_week_data['game_schedule']
+    
     """
     # API URL
     api_url = "https://api.sportsdata.io/v3/nfl/scores/json/Schedules/2024?key=604a48fab9784f9fb2d6101874bec4bb"
