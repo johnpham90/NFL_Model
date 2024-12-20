@@ -8,7 +8,7 @@ def team_features(df):
     # Add feature engineering logic here
     return features
 
-def generic_team_stats_per_game(season, stat):
+def generic_team_stats_per_game(season, stat, normalize=True):
     
     query=f"""SELECT *
     FROM stats.teamstats
@@ -32,5 +32,7 @@ def generic_team_stats_per_game(season, stat):
         for i_team in teams:
             current_week=weeks[i_week]
             average_ypg_df.loc[current_week,i_team]=np.mean(ypg_df.loc[:current_week, i_team].dropna())
-        
+    average_ypg_df=average_ypg_df.shift(1)
+
+    
     return ypg_df, average_ypg_df
