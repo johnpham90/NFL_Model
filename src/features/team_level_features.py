@@ -39,7 +39,7 @@ def offensive_mettrics(season, stat):
 def defensive_metrics(season, stat):
     """
     Calculate yards allowed per game (YPG) and the rolling average yards allowed throughout the season
-    based on the specified stat.
+    based on the specified stat, from the defensive team's perspective.
 
     Args:
     - season (int): The season to query.
@@ -49,7 +49,6 @@ def defensive_metrics(season, stat):
     - pd.DataFrame: Yards allowed for each game by week and team.
     - pd.DataFrame: Rolling average yards allowed per game for each team.
     """
-    # Query data
     query = f"""
     SELECT *
     FROM stats.teamstats
@@ -57,24 +56,39 @@ def defensive_metrics(season, stat):
     """
     query_results = execute_query(query)
 
-    # Ensure data is sorted for rolling average
+    # Ensure data is sorted by team and week for rolling averages
     query_results = query_results.sort_values(by=["teamid", "week"])
 
-    # Calculates stats allowed for each game based on the specified stat
-    query_results["stats_allowed"] = query_results.apply(
-        lambda row: row[stat]
-        if row["teamid"] == row["hometeamid"] or row["teamid"] == row["awayteamid"]
-        else 0,
-        axis=1,
+    # Add a column for the defensive team's metrics
+    def assign_defensive_stats(row):
+        if row["teamid"] == row["hometeamid"]:
+            # If the stat belongs to the home team, the defense is the away team
+            defensive_team = row["awayteamid"]
+        elif row["teamid"] == row["awayteamid"]:
+            # If the stat belongs to the away team, the defense is the home team
+            defensive_team = row["hometeamid"]
+        else:
+            raise ValueError("Invalid teamid comparison")
+        
+        # Return the stat as the defensive metric for the opposing team
+        return defensive_team, row[stat]
+
+    # Apply the logic to calculate defensive metrics
+    query_results[["defensive_team", "stats_allowed"]] = query_results.apply(
+        lambda row: assign_defensive_stats(row), axis=1, result_type="expand"
     )
 
-    # Calculate rolling average yards allowed
-    query_results["stats_allowed_pg"] = (
-        query_results.groupby("teamid")["stats_allowed"].expanding().mean().reset_index(level=0, drop=True)
+    # Aggregate stats by defensive team
+    defensive_stats_df = query_results.pivot(index="week", columns="defensive_team", values="stats_allowed")
+
+    # Calculate rolling average of stats allowed
+    query_results["stats_allowed_avg"] = (
+        query_results.groupby("defensive_team")["stats_allowed"]
+        .expanding()
+        .mean()
+        .reset_index(level=0, drop=True)
     )
 
-    # Pivot for easier analysis (optional)
-    stats_allowed_df = query_results.pivot(index="week", columns="teamid", values="stats_allowed")
-    average_pg_df = query_results.pivot(index="week", columns="teamid", values="stats_allowed_pg")
+    average_pg_df = query_results.pivot(index="week", columns="defensive_team", values="stats_allowed_avg")
 
-    return stats_allowed_df, average_pg_df
+    return defensive_stats_df, average_pg_df
