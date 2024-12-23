@@ -176,7 +176,7 @@ def red_zone_efficiency(season):
         "rolling_efficiency_avg": rolling_efficiency_avg_df
     }
 
-def passing_efficency(season, stat):
+def passing_efficiency(season, stat):
     """This function will caclulate parse the completion data to build completion efficency and passing efficency
     
     completion efficency=completions/attempts
