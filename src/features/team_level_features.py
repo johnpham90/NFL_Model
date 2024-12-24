@@ -36,59 +36,43 @@ def offensive_mettrics(season, stat):
     return stats_pg_df, average_stats_pg_df
 
 
-def defensive_metrics(season, stat):
+def defensive_metrics(query_results, stat):
     """
-    Calculate yards allowed per game (YPG) and the rolling average yards allowed throughout the season
-    based on the specified stat, from the defensive team's perspective.
+    Calculate defensive stats based on the opponent's offensive stats.
 
     Args:
-    - season (int): The season to query.
-    - stat (str): The stat to calculate (e.g., 'total_yards', 'passing_yards').
+        query_results (pd.DataFrame): DataFrame with team stats and defense IDs.
+        stat (str): The statistic to calculate (e.g., "yards").
 
     Returns:
-    - pd.DataFrame: Yards allowed for each game by week and team.
-    - pd.DataFrame: Rolling average yards allowed per game for each team.
+        Tuple[pd.DataFrame, pd.DataFrame]: Per-game defensive stats and rolling averages.
     """
-    query = f"""
-    SELECT *
-    FROM stats.teamstats
-    WHERE season = {season}
-    """
-    query_results = execute_query(query)
+    # Ensure the query_results DataFrame includes necessary columns
+    if 'defenseid' not in query_results.columns:
+        raise ValueError("The input DataFrame must include a 'defenseid' column.")
 
-    # Ensure data is sorted by team and week for rolling averages
-    query_results = query_results.sort_values(by=["teamid", "week"])
+    # Extract unique weeks and teams
+    weeks = query_results["week"].unique()
+    teams = query_results["teamid"].unique()
 
-    # Add a column for the defensive team's metrics
-    def assign_defensive_stats(row):
-        if row["teamid"] == row["hometeamid"]:
-            # If the stat belongs to the home team, the defense is the away team
-            defensive_team = row["awayteamid"]
-        elif row["teamid"] == row["awayteamid"]:
-            # If the stat belongs to the away team, the defense is the home team
-            defensive_team = row["hometeamid"]
-        else:
-            raise ValueError("Invalid teamid comparison")
-        
-        # Return the stat as the defensive metric for the opposing team
-        return defensive_team, row[stat]
+    # Initialize DataFrame for defensive stats
+    defensive_stats_pg_df = pd.DataFrame(index=weeks, columns=teams)
 
-    # Apply the logic to calculate defensive metrics
-    query_results[["defensive_team", "stats_allowed"]] = query_results.apply(
-        lambda row: assign_defensive_stats(row), axis=1, result_type="expand"
-    )
+    # Calculate per-game defensive stats
+    for week in weeks:
+        current_week_data = query_results[query_results["week"] == week]
+        for team in teams:
+            # Find rows where the `defenseid` matches the team
+            defense_rows = current_week_data[current_week_data["defenseid"] == team]
+            if not defense_rows.empty:
+                # Sum the `stat` column for the opposing team's offensive stats
+                defensive_stats_pg_df.loc[week, team] = defense_rows[stat].sum()
 
-    # Aggregate stats by defensive team
-    defensive_stats_df = query_results.pivot(index="week", columns="defensive_team", values="stats_allowed")
+    # Calculate rolling averages for defensive stats
+    avg_defensive_stats_pg_df = pd.DataFrame(index=weeks, columns=teams)
+    for week in weeks:
+        for team in teams:
+            avg_defensive_stats_pg_df.loc[week, team] = defensive_stats_pg_df.loc[:week, team].dropna().mean()
 
-    # Calculate rolling average of stats allowed
-    query_results["stats_allowed_avg"] = (
-        query_results.groupby("defensive_team")["stats_allowed"]
-        .expanding()
-        .mean()
-        .reset_index(level=0, drop=True)
-    )
+    return defensive_stats_pg_df, avg_defensive_stats_pg_df
 
-    average_pg_df = query_results.pivot(index="week", columns="defensive_team", values="stats_allowed_avg")
-
-    return defensive_stats_df, average_pg_df

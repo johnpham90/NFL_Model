@@ -14,7 +14,7 @@ def create_defense_team_id(df):
 
     return df
 
-def fetch_and_get_opponents(season, stat, table):
+def fetch_and_get_opponents(season, stat):
     """
     Fetch team stats and determine the opponent for each row based on the query results.
 
@@ -28,9 +28,7 @@ def fetch_and_get_opponents(season, stat, table):
     # Define your query
     query = f"""
     SELECT *
-    FROM stats.teamstats ts
-    JOIN stats.drivestats ds
-    ON ts.gamesummaryid = ds.gamesummaryid
+    FROM stats.teamstats 
     WHERE season = {season}
     """
     
