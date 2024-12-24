@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from src.utils.db_utils import get_connection, execute_query
+from src.utils.get_opponent_utils import create_defense_team_id, fetch_and_get_opponents
 
 def team_features(df):
     '''Create historical-level features'''
