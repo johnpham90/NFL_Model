@@ -2,19 +2,35 @@ import pandas as pd
 import numpy as np
 from src.utils.db_utils import get_connection, execute_query
 
-def create_defense_team_id(df):
-    team_id=[]
-
+def create_defense_teamstat_id(df):
+    """
+    Add a defense ID column for team stats.
+    """
+    team_id = []
     for i_game in df.index:
-        if df.loc[i_game, 'teamid']==df.loc[i_game, 'awayteamid']:
-            team_id.append(df.loc[i_game, 'hometeamid'])
+        if df.loc[i_game, 'ts_teamid'] == df.loc[i_game, 'ts_awayteamid']:
+            team_id.append(df.loc[i_game, 'ts_hometeamid'])
         else:
-            team_id.append(df.loc[i_game, 'awayteamid'])
-    df['defenseid']=team_id
-
+            team_id.append(df.loc[i_game, 'ts_awayteamid'])
+    df['ts_defenseid'] = team_id
     return df
 
-def fetch_and_get_opponents(season, stat):
+
+def create_defense_drivestat_id(df):
+    """
+    Add a defense ID column for drive stats.
+    """
+    team_id = []
+    for i_game in df.index:
+        if df.loc[i_game, 'ds_teamid'] == df.loc[i_game, 'ds_awayteamid']:
+            team_id.append(df.loc[i_game, 'ds_hometeamid'])
+        else:
+            team_id.append(df.loc[i_game, 'ds_awayteamid'])
+    df['ds_defenseid'] = team_id
+    return df
+
+
+def fetch_defenseid(season, team_stat, drive_stat):
     """
     Fetch team stats and determine the opponent for each row based on the query results.
 
@@ -27,14 +43,29 @@ def fetch_and_get_opponents(season, stat):
     """
     # Define your query
     query = f"""
-    SELECT *
-    FROM stats.teamstats 
-    WHERE season = {season}
+       SELECT 
+        ts.teamid AS ts_teamid,
+        ts.hometeamid AS ts_hometeamid,
+        ts.awayteamid AS ts_awayteamid,
+        ts.season AS ts_season,
+        ts.gamesummaryid AS ts_gamesummaryid,
+        ts.{team_stat} AS team_stat,
+        ds.teamid AS ds_teamid,
+        ds.hometeamid AS ds_hometeamid,
+        ds.awayteamid AS ds_awayteamid,
+        ds.driveid AS ds_driveid,
+        ds.{drive_stat} AS drive_stat
+    FROM stats.teamstats ts
+    JOIN stats.drivestats ds
+    ON ts.gamesummaryid = ds.gamesummaryid
+    WHERE ts.season = {season}
     """
     
-    # Execute the query (replace with your actual database function)
-    query_results = execute_query(query)  # Replace with actual DB execution function
-    query_results_process = create_defense_team_id(query_results)
+    # Execute the query 
+    query_results = execute_query(query)  
 
-    return query_results_process
+    query_results_teamstat = create_defense_teamstat_id(query_results)
+    query_results_drivestat = create_defense_drivestat_id(query_results)
+    
+    return query_results_teamstat, query_results_drivestat
     
