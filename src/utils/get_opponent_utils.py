@@ -43,7 +43,7 @@ def fetch_defenseid(season, team_stat, drive_stat):
     """
     # Define your query
     query = f"""
-       SELECT 
+    SELECT 
         ts.teamid AS ts_teamid,
         ts.hometeamid AS ts_hometeamid,
         ts.awayteamid AS ts_awayteamid,
