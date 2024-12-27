@@ -18,6 +18,9 @@ class TeamLevelFeatures:
         
         self.team_stats_dict={}
         
+        self.net_pass_yards_stat()
+        self.turnovers_stat()
+        self.total_yards_stat()
         
         
     def build_defense_id(self):
@@ -36,6 +39,7 @@ class TeamLevelFeatures:
         
         df_offense=pd.DataFrame(index=self.master_index, columns=self.teams)
         df_deffense=pd.DataFrame(index=self.master_index, columns=self.teams)
+        current_stat='net_pass_yards'
         
         for i_team in self.teams:
             for i_season in self.seasons:
@@ -43,7 +47,7 @@ class TeamLevelFeatures:
                 master_index_loc=self.data.loc[self.data.index[current_season_idx], 'season'].astype(str)+'_'+self.data.loc[self.data.index[current_season_idx],'week'].astype(str)
                 current_data=self.data.iloc[current_season_idx]
                 
-                mean_stat=current_data.loc[:, 'net_pass_yards'].expanding().mean()
+                mean_stat=current_data.loc[:, current_stat].expanding().mean()
                 
                 df_offense.loc[master_index_loc.values, i_team]=mean_stat.values
         for i_team in self.teams:
@@ -52,11 +56,60 @@ class TeamLevelFeatures:
                 master_index_loc=self.data.loc[self.data.index[current_season_idx], 'season'].astype(str)+'_'+self.data.loc[self.data.index[current_season_idx],'week'].astype(str)
                 current_data=self.data.iloc[current_season_idx]
                 
-                mean_stat=current_data.loc[:, 'net_pass_yards'].expanding().mean()
+                mean_stat=current_data.loc[:, current_stat].expanding().mean()
                 
                 df_deffense.loc[master_index_loc.values, i_team]=mean_stat.values
-        self.team_stats_dict['deffensive net_pass_yards']=df_deffense
-        self.team_stats_dict['offensive net_pass_yards']=df_offense
+        self.team_stats_dict[f'deffensive {current_stat}']=df_deffense.ffill().shift(1)
+        self.team_stats_dict[f'offensive {current_stat}']=df_offense.ffill().shift(1)
+        
+    def turnovers_stat(self):
+        df_offense=pd.DataFrame(index=self.master_index, columns=self.teams)
+        df_deffense=pd.DataFrame(index=self.master_index, columns=self.teams)
+        current_stat='turnovers'
+        for i_team in self.teams:
+            for i_season in self.seasons:
+                current_season_idx=np.where((self.data['teamid']==i_team) & (self.data['season']==i_season))[0]
+                master_index_loc=self.data.loc[self.data.index[current_season_idx], 'season'].astype(str)+'_'+self.data.loc[self.data.index[current_season_idx],'week'].astype(str)
+                current_data=self.data.iloc[current_season_idx]
+                
+                mean_stat=current_data.loc[:, current_stat].expanding().mean()
+                
+                df_offense.loc[master_index_loc.values, i_team]=mean_stat.values
+        for i_team in self.teams:
+            for i_season in self.seasons:
+                current_season_idx=np.where((self.data['defenseid']==i_team) & (self.data['season']==i_season))[0]
+                master_index_loc=self.data.loc[self.data.index[current_season_idx], 'season'].astype(str)+'_'+self.data.loc[self.data.index[current_season_idx],'week'].astype(str)
+                current_data=self.data.iloc[current_season_idx]
+                
+                mean_stat=current_data.loc[:, current_stat].expanding().mean()
+                
+                df_deffense.loc[master_index_loc.values, i_team]=mean_stat.values
+        self.team_stats_dict[f'deffensive {current_stat}']=df_deffense.ffill().shift(1)
+        self.team_stats_dict[f'offensive net_pass_yards {current_stat}']=df_offense.ffill().shift(1)
+    def total_yards_stat(self):
+        df_offense=pd.DataFrame(index=self.master_index, columns=self.teams)
+        df_deffense=pd.DataFrame(index=self.master_index, columns=self.teams)
+        current_stat='total_yards'
+        for i_team in self.teams:
+            for i_season in self.seasons:
+                current_season_idx=np.where((self.data['teamid']==i_team) & (self.data['season']==i_season))[0]
+                master_index_loc=self.data.loc[self.data.index[current_season_idx], 'season'].astype(str)+'_'+self.data.loc[self.data.index[current_season_idx],'week'].astype(str)
+                current_data=self.data.iloc[current_season_idx]
+                
+                mean_stat=current_data.loc[:, current_stat].expanding().mean()
+                
+                df_offense.loc[master_index_loc.values, i_team]=mean_stat.values
+        for i_team in self.teams:
+            for i_season in self.seasons:
+                current_season_idx=np.where((self.data['defenseid']==i_team) & (self.data['season']==i_season))[0]
+                master_index_loc=self.data.loc[self.data.index[current_season_idx], 'season'].astype(str)+'_'+self.data.loc[self.data.index[current_season_idx],'week'].astype(str)
+                current_data=self.data.iloc[current_season_idx]
+                
+                mean_stat=current_data.loc[:, current_stat].expanding().mean()
+                
+                df_deffense.loc[master_index_loc.values, i_team]=mean_stat.values
+        self.team_stats_dict[f'deffensive {current_stat}']=df_deffense.ffill().shift(1)
+        self.team_stats_dict[f'offensive net_pass_yards {current_stat}']=df_offense.ffill().shift(1)
         
         
 def offensive_mettrics(season, stat):
