@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from src.features import team_level_features_class
+from src import config
 
 class NFLPredictor:
     def __init__(self):
@@ -79,7 +80,7 @@ class NFLPredictor:
         x=df.iloc[:,:-1]
         y=df.iloc[:,-1]
         
-        self.x_train, self.x_test, self.y_train, self.y_test=train_test_split(x,y, test_size=.25, shuffle=False)
+        self.x_train, self.x_test, self.y_train, self.y_test=train_test_split(x,y, test_size=config.model_config.train_test_split, shuffle=False)
         
         rf_model=RandomForestRegressor(random_state=self.random_state)
         
@@ -89,7 +90,7 @@ class NFLPredictor:
     
     def model_prediction(self, model,plot_feature_importance=False, plot_scatter=False):
         
-        self.predictions=model.predict(self.y_test)
+        self.predictions=model.predict(self.x_test)
         
         if plot_feature_importance:
             feature_importance = pd.DataFrame({
