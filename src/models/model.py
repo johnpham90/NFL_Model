@@ -6,6 +6,8 @@ from src.utils.db_utils import get_connection, execute_query
 import pandas as pd
 import numpy as np
 import pickle
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 from src.features import team_level_features_class
 
@@ -23,6 +25,7 @@ class NFLPredictor:
         self.team_x_variables=self.team_feautres.team_stats_dict
         self.game_index=(self.game_data['season'].astype(str)+'_'+self.game_data['week'].astype(str)).values
         self.create_spread_dict()
+        self.random_state=42
         
         
         
@@ -63,12 +66,59 @@ class NFLPredictor:
                         df.loc[f"{i_game_week}_{i_game}", f"away team {i_feature}"]=current_feature_data.loc[i_game_week, self.spread_dict[i_game_week][1][i_game]]
                         df.loc[f"{i_game_week}_{i_game}", "spread"]=self.spread_dict[i_game_week][2][i_game]
                 else:
-                    print(i_game_week)
+
                     df.loc[f"{i_game_week}_{i_game}", f"home team {i_feature}"]=current_feature_data.loc[i_game_week, self.spread_dict[i_game_week][0]]
                     df.loc[f"{i_game_week}_{i_game}", f"away team {i_feature}"]=current_feature_data.loc[i_game_week, self.spread_dict[i_game_week][1]]
                     df.loc[f"{i_game_week}_{i_game}", "spread"]=self.spread_dict[i_game_week][2]                       
 
         self.x_y=df
+    
+    def build_random_forest_model(self, param_distirbution):
+        df=self.x_y.dropna()
+        
+        x=df.iloc[:,:-1]
+        y=df.iloc[:,-1]
+        
+        self.x_train, self.x_test, self.y_train, self.y_test=train_test_split(x,y, test_size=.25, shuffle=False)
+        
+        rf_model=RandomForestRegressor(random_state=self.random_state)
+        
+        model_parameters=RandomizedSearchCV(rf_model, param_distirbution,n_jobs=-1,cv=5).fit(self.x_train, self.y_train).best_params_
+        
+        self.rf_model=RandomForestRegressor(**model_parameters).fit(X=self.x_train, y=self.y_train)
+    
+    def model_prediction(self, model,plot_feature_importance=False, plot_scatter=False):
+        
+        self.predictions=model.predict(self.y_test)
+        
+        if plot_feature_importance:
+            feature_importance = pd.DataFrame({
+            'feature': self.x_y.iloc[:,:-1].columns,
+            'importance': model.feature_importances_
+            }).sort_values('importance', ascending=False)
+
+
+        # Create the plot
+            plt.figure(figsize=(10, 6))
+            sns.barplot(data=feature_importance, x='importance', y='feature', 
+                        palette='viridis')
+            plt.title('Model Feature Importance')
+            plt.xlabel('Importance Score')
+            plt.ylabel('Features')
+            plt.tight_layout()
+            plt.show()
+        if plot_scatter:
+            plt.figure(figsize=(8, 6))  # Set figure size
+            plt.scatter(self.predictions, self.y_test, color='blue', alpha=0.5)  # Create scatter plot
+
+            # Add labels and title
+            plt.xlabel('predicted home team wining margin')
+            plt.ylabel('actual wining margin')
+            plt.title('Predicted wining margin vs Actual wining margin')
+
+            # Display the plot
+            plt.grid(True)  # Add grid
+            plt.show()
             
         
 
