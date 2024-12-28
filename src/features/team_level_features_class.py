@@ -1,13 +1,14 @@
 import pandas as pd
 import numpy as np
 from src.utils.db_utils import get_connection, execute_query
-
+from src import config
 
 class TeamLevelFeatures:
     def __init__(self):
-        query = """
+        query = f"""
             SELECT *
             FROM stats.teamstats
+            WHERE season > {config.model_config.start_season}
             """
         self.data=execute_query(query)
         self.data=self.data.sort_values(['season', 'week'])
