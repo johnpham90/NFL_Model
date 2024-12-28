@@ -22,6 +22,13 @@ class TeamLevelFeatures:
         self.net_pass_yards_stat()
         self.turnovers_stat()
         self.total_yards_stat()
+        self.passing_efficency("completion efficiency")
+        self.passing_efficency("passing efficiency")
+        self.passing_efficency("receiving efficiency")
+        self.rushing_efficency("rushing efficiency")
+        self.rushing_efficency("rushing yards")
+        self.rushing_efficency("rushing tds")
+        
         
         
     def build_defense_id(self):
@@ -86,7 +93,7 @@ class TeamLevelFeatures:
                 
                 df_deffense.loc[master_index_loc.values, i_team]=mean_stat.values
         self.team_stats_dict[f'deffensive {current_stat}']=df_deffense.ffill().shift(1)
-        self.team_stats_dict[f'offensive net_pass_yards {current_stat}']=df_offense.ffill().shift(1)
+        self.team_stats_dict[f'offensive {current_stat}']=df_offense.ffill().shift(1)
     def total_yards_stat(self):
         df_offense=pd.DataFrame(index=self.master_index, columns=self.teams)
         df_deffense=pd.DataFrame(index=self.master_index, columns=self.teams)
@@ -110,8 +117,102 @@ class TeamLevelFeatures:
                 
                 df_deffense.loc[master_index_loc.values, i_team]=mean_stat.values
         self.team_stats_dict[f'deffensive {current_stat}']=df_deffense.ffill().shift(1)
-        self.team_stats_dict[f'offensive net_pass_yards {current_stat}']=df_offense.ffill().shift(1)
+        self.team_stats_dict[f'offensive {current_stat}']=df_offense.ffill().shift(1)
+    def passing_efficency(self, stat):
+        def parse_conversion_passing(conv_str):
+
+            completions, attempts, yards, tds, ints = map(int, conv_str.split('-'))
+            return completions, attempts, yards, tds, ints
+        data=self.data.loc[:, ['cmp_att_yd_td_int', 'week', 'teamid', 'defenseid']]
+        self.data[['completions','attempts', 'yards', 'tds', 'int' ]]=data['cmp_att_yd_td_int'].apply(
+        lambda x: pd.Series(parse_conversion_passing(x))
+        )
         
+        if stat=="completion efficiency":
+            self.data[f'{stat}'] = np.where(
+            self.data[f'attempts'] > 0, 
+            self.data['completions'] / self.data['attempts'], 
+            np.nan
+        )
+        if stat=="passing efficiency":
+            self.data[f'{stat}'] = np.where(
+                self.data[f'attempts'] > 0, 
+                self.data['yards'] / self.data['attempts'], 
+                np.nan
+            )
+        if stat=="receiving efficiency":
+            self.data[f'{stat}'] = np.where(
+                self.data[f'completions'] > 0, 
+                self.data['yards'] / self.data['completions'], 
+                np.nan
+            )
+        df_offense=pd.DataFrame(index=self.master_index, columns=self.teams)
+        df_deffense=pd.DataFrame(index=self.master_index, columns=self.teams)
+        current_stat=stat
+        for i_team in self.teams:
+            for i_season in self.seasons:
+                current_season_idx=np.where((self.data['teamid']==i_team) & (self.data['season']==i_season))[0]
+                master_index_loc=self.data.loc[self.data.index[current_season_idx], 'season'].astype(str)+'_'+self.data.loc[self.data.index[current_season_idx],'week'].astype(str)
+                current_data=self.data.iloc[current_season_idx]
+                
+                mean_stat=current_data.loc[:, current_stat].expanding().mean()
+                
+                df_offense.loc[master_index_loc.values, i_team]=mean_stat.values
+        for i_team in self.teams:
+            for i_season in self.seasons:
+                current_season_idx=np.where((self.data['defenseid']==i_team) & (self.data['season']==i_season))[0]
+                master_index_loc=self.data.loc[self.data.index[current_season_idx], 'season'].astype(str)+'_'+self.data.loc[self.data.index[current_season_idx],'week'].astype(str)
+                current_data=self.data.iloc[current_season_idx]
+                
+                mean_stat=current_data.loc[:, current_stat].expanding().mean()
+                
+                df_deffense.loc[master_index_loc.values, i_team]=mean_stat.values
+        self.team_stats_dict[f'deffensive {current_stat}']=df_deffense.ffill().shift(1)
+        self.team_stats_dict[f'offensive {current_stat}']=df_offense.ffill().shift(1)
+    def rushing_efficency(self,stat):
+
+        def parse_conversion_passing(conv_str):
+            try:
+                rush_attempts, rush_yards, rush_tds = map(int, conv_str.split('-'))
+            except: 
+                print(conv_str)
+                rush_attempts, rush_yards, rush_tds = 0,0,0
+            return rush_attempts, rush_yards, rush_tds
+        data=self.data.loc[:, ['rush_yds_tds', 'week', 'teamid', 'defenseid']]
+        self.data[['rush_attempts','rushing yards', 'rushing tds']]=data['rush_yds_tds'].apply(
+        lambda x: pd.Series(parse_conversion_passing(x))
+        )
+        
+        if stat=="rushing efficiency":
+            self.data[f'{stat}'] = np.where(
+            self.data[f'rush_attempts'] > 0, 
+            self.data['rushing yards'] / self.data['rush_attempts'], 
+            np.nan
+        )
+
+        df_offense=pd.DataFrame(index=self.master_index, columns=self.teams)
+        df_deffense=pd.DataFrame(index=self.master_index, columns=self.teams)
+        current_stat=stat
+        for i_team in self.teams:
+            for i_season in self.seasons:
+                current_season_idx=np.where((self.data['teamid']==i_team) & (self.data['season']==i_season))[0]
+                master_index_loc=self.data.loc[self.data.index[current_season_idx], 'season'].astype(str)+'_'+self.data.loc[self.data.index[current_season_idx],'week'].astype(str)
+                current_data=self.data.iloc[current_season_idx]
+                
+                mean_stat=current_data.loc[:, current_stat].expanding().mean()
+                
+                df_offense.loc[master_index_loc.values, i_team]=mean_stat.values
+        for i_team in self.teams:
+            for i_season in self.seasons:
+                current_season_idx=np.where((self.data['defenseid']==i_team) & (self.data['season']==i_season))[0]
+                master_index_loc=self.data.loc[self.data.index[current_season_idx], 'season'].astype(str)+'_'+self.data.loc[self.data.index[current_season_idx],'week'].astype(str)
+                current_data=self.data.iloc[current_season_idx]
+                
+                mean_stat=current_data.loc[:, current_stat].expanding().mean()
+                
+                df_deffense.loc[master_index_loc.values, i_team]=mean_stat.values
+        self.team_stats_dict[f'deffensive {current_stat}']=df_deffense.ffill().shift(1)
+        self.team_stats_dict[f'offensive  {current_stat}']=df_offense.ffill().shift(1)                    
         
 def offensive_mettrics(season, stat):
     
