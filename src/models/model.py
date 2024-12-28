@@ -18,6 +18,7 @@ class NFLPredictor:
         query = f"""
         SELECT *
         FROM stats.gamesummary
+        WHERE season > {config.model_config.start_season}
         """
         self.game_data = execute_query(query)
         self.game_data=self.game_data.sort_values(['season', 'week'])
