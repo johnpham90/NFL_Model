@@ -2,6 +2,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import RandomizedSearchCV
+from xgboost import XGBRegressor
 from src.utils.db_utils import get_connection, execute_query
 import pandas as pd
 import numpy as np
@@ -74,6 +75,7 @@ class NFLPredictor:
                     df.loc[f"{i_game_week}_{i_game}", "spread"]=self.spread_dict[i_game_week][2]                       
 
         self.x_y=df
+        
     
     def build_random_forest_model(self, param_distirbution):
         df=self.x_y.dropna()
@@ -88,10 +90,25 @@ class NFLPredictor:
         model_parameters=RandomizedSearchCV(rf_model, param_distirbution,n_jobs=-1,cv=5).fit(self.x_train, self.y_train).best_params_
         
         self.rf_model=RandomForestRegressor(**model_parameters).fit(X=self.x_train, y=self.y_train)
-    
-    def model_prediction(self, model,plot_feature_importance=False, plot_scatter=False):
+    def build_xg_boost_model(self, param_distirbution):
+        df=self.x_y.dropna()
         
-        self.predictions=model.predict(self.x_test)
+        x=df.iloc[:,:-1]
+        y=df.iloc[:,-1]
+        
+        self.x_train, self.x_test, self.y_train, self.y_test=train_test_split(x,y, test_size=config.model_config.train_test_split, shuffle=False)
+        
+        xg_model=XGBRegressor(random_state=self.random_state)
+        
+        model_parameters=RandomizedSearchCV(xg_model, param_distirbution,n_jobs=-1,cv=5).fit(self.x_train.to_numpy(), self.y_train.to_numpy()).best_params_
+        
+        self.xg_model=XGBRegressor(**model_parameters).fit(X=self.x_train.to_numpy(), y=self.y_train.to_numpy())
+    
+    def model_prediction(self, model,x=np.array([]),plot_feature_importance=False, plot_scatter=False):
+        if x.shape[0]==0:
+            self.predictions=model.predict(self.x_test)
+        else:
+            self.predictions=model.predict(x)
         
         if plot_feature_importance:
             feature_importance = pd.DataFrame({
