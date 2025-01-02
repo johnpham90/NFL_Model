@@ -5,6 +5,6 @@
 
 class model_config:
   train_test_split=.2
-  start_season=2015
+  start_season=2023
     
     
