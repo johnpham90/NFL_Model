@@ -41,9 +41,9 @@ class TeamLevelFeatures:
         """        
         home_team_id_idx=self.data.index[np.where(self.data['teamid']==self.data['hometeamid'])[0]]
         
-        self.data['defenseid']=self.data['awayteamid']
+        self.data['defenseid']=self.data['hometeamid']
         
-        self.data.loc[home_team_id_idx, 'defenseid']=self.data.loc[home_team_id_idx, 'hometeamid']
+        self.data.loc[home_team_id_idx, 'defenseid']=self.data.loc[home_team_id_idx, 'awayteamid']
     def build_master_index(self):
         """builds a master index to make locating data easier
         """        
@@ -57,26 +57,26 @@ class TeamLevelFeatures:
         Args:
             current_stat (str): stat thats being processed
         """        
-        df_offense=self.stat_template
-        df_defense=self.stat_template
+        df_offense=self.stat_template.copy()
+        df_defense=self.stat_template.copy()
         for i_team in self.teams:
             for i_season in self.seasons:
                 current_season_idx=np.where((self.data['teamid']==i_team) & (self.data['season']==i_season))[0]
+                current_season_def_idx=np.where((self.data['defenseid']==i_team) & (self.data['season']==i_season))[0]
+                
                 master_index_loc=self.data.loc[self.data.index[current_season_idx], 'season'].astype(str)+'_'+self.data.loc[self.data.index[current_season_idx],'week'].astype(str)
+                master_index_def_loc=self.data.loc[self.data.index[current_season_def_idx], 'season'].astype(str)+'_'+self.data.loc[self.data.index[current_season_def_idx],'week'].astype(str)
+                
                 current_data=self.data.iloc[current_season_idx]
+                current_data_def=self.data.iloc[current_season_def_idx]
                 
                 mean_stat=current_data.loc[:, current_stat].expanding().mean()
+                mean_stat_def=current_data_def.loc[:, current_stat].expanding().mean()
+                
                 
                 df_offense.loc[master_index_loc.values, i_team]=mean_stat.values
-        for i_team in self.teams:
-            for i_season in self.seasons:
-                current_season_idx=np.where((self.data['defenseid']==i_team) & (self.data['season']==i_season))[0]
-                master_index_loc=self.data.loc[self.data.index[current_season_idx], 'season'].astype(str)+'_'+self.data.loc[self.data.index[current_season_idx],'week'].astype(str)
-                current_data=self.data.iloc[current_season_idx]
-                
-                mean_stat=current_data.loc[:, current_stat].expanding().mean()
-                
-                df_defense.loc[master_index_loc.values, i_team]=mean_stat.values
+                df_defense.loc[master_index_def_loc.values, i_team]=mean_stat_def.values
+
         self.team_stats_dict[f'defensive {current_stat}']=df_defense.ffill().shift(1)
         self.team_stats_dict[f'offensive {current_stat}']=df_offense.ffill().shift(1)
     def parse_data(self, data_column, column_names):
