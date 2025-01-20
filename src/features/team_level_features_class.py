@@ -11,7 +11,8 @@ class TeamLevelFeatures:
         self._load_data()
         self._initialize_base_structures()
         self.parse_all_data()
-        self.create_all_efficiency_stats()        
+        self.create_all_efficiency_stats()
+        self.add_team_score()        
         self.team_stats_dict={}
         self.build_team_stats()
      
@@ -20,14 +21,19 @@ class TeamLevelFeatures:
         """this function loads the data that will be needed to generate teamlevel features
         """        
         query = f"""
-            SELECT *
-            FROM stats.teamstats
-            WHERE season > {config.model_config.start_season}
+            SELECT gs.gamesummaryid, gs.awayscore, gs.homescore, ts.*
+            FROM stats.gamesummary gs
+            join stats.teamstats ts on gs.gamesummaryid = ts.gamesummaryid
+            WHERE ts.season > {config.model_config.start_season}
+                and gs.season > {config.model_config.start_season}
             """
         self.data=execute_query(query)
         self.data=self.data.sort_values(['season', 'week'])
+        
         bad_data=np.where(self.data["rush_yds_tds"]=="8--1-0")[0]
-        self.data.iloc[bad_data, 13]="8-1-0"
+        rush_yds_tds_idx=self.data.columns.get_loc("rush_yds_tds")
+        self.data.iloc[bad_data, rush_yds_tds_idx]="8-1-0"
+        self.data = self.data.T.drop_duplicates().T
     def _initialize_base_structures(self):
         """a function to build the structures needed for processing all of the data
         """        
@@ -87,6 +93,7 @@ class TeamLevelFeatures:
             column_names (_type_): names of the columns of the parsed data
         """        
         split_data = self.data[data_column].str.split('-', expand=True)
+        
              
         split_data.columns=column_names
         
@@ -113,7 +120,8 @@ class TeamLevelFeatures:
     def create_all_efficiency_stats(self):
         """creates all the efficiency stats from the config file
         """        
-        for i_stat, i_inputs in config.team_feature_configs.efficiency_stats.items():
+        print("creating efficiency stats")
+        for i_stat, i_inputs in tqdm(config.team_feature_configs.efficiency_stats.items()):
             self.create_efficency_stats(i_inputs[0], i_inputs[1], i_stat)
     def build_team_stats(self):
         """creates all the team stats from the data file
@@ -121,4 +129,12 @@ class TeamLevelFeatures:
         print("building team stats")        
         for i_stat in tqdm(config.team_feature_configs.team_features):
             self._process_stat(i_stat)
+    def add_team_score(self):
+        home_team_idx=np.where(self.data["teamid"]==self.data["hometeamid"])[0]
+        home_score_position = self.data.columns.get_loc("homescore")
+        self.data["team points"]=0
+        self.data.iloc[home_team_idx, -1]=self.data.iloc[home_team_idx,home_score_position]
+        away_team_idx=np.where(self.data["teamid"]==self.data["awayteamid"])[0]
+        away_score_position = self.data.columns.get_loc("awayscore")
+        self.data.iloc[away_team_idx, -1]=self.data.iloc[away_team_idx,away_score_position]
     

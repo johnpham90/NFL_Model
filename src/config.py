@@ -21,7 +21,7 @@ class team_feature_configs:
                    "rushing efficiency": ["rush yards", "rush attempts"],
                    "third down efficiency": ["third down success", "third down attempts"]                   
                    }
-  team_features=["turnovers","total_yards","first_downs","passing tds","interceptions","rush attempts","rush yards","rush tds","fumbles","fumbles lost","sacks","sacked yards","penalties","penalty yards","completion efficiency","average completion","fourth down efficiency","rushing efficiency","third down efficiency"
+  team_features=["turnovers","total_yards","first_downs","passing tds","interceptions","rush attempts","rush yards","rush tds","fumbles","fumbles lost","sacks","sacked yards","penalties","penalty yards","completion efficiency","average completion","fourth down efficiency","rushing efficiency","third down efficiency","team points"
 ]
   
   
