@@ -7,15 +7,18 @@ from src import config
 
 class TeamLevelFeatures:
     def __init__(self):
-
+        self.average_windows=[2,5,10]
         self._load_data()
         self._initialize_base_structures()
         self.parse_all_data()
         self.create_all_efficiency_stats()
         self.add_team_score()        
         self.team_stats_dict={}
+        self.single_stats_dict={}
         self.build_team_stats()
-     
+        self.normalize_features()
+        # self.normalize_strength_of_schedule()
+        
         
     def _load_data(self):
         """this function loads the data that will be needed to generate teamlevel features
@@ -65,6 +68,7 @@ class TeamLevelFeatures:
         """        
         df_offense=self.stat_template.copy()
         df_defense=self.stat_template.copy()
+        df_single_game_stat=self.stat_template.copy()
         for i_team in self.teams:
             for i_season in self.seasons:
                 current_season_idx=np.where((self.data['teamid']==i_team) & (self.data['season']==i_season))[0]
@@ -82,9 +86,42 @@ class TeamLevelFeatures:
                 
                 df_offense.loc[master_index_loc.values, i_team]=mean_stat.values
                 df_defense.loc[master_index_def_loc.values, i_team]=mean_stat_def.values
+                df_single_game_stat.loc[master_index_loc.values, i_team]=current_data.loc[:, current_stat].values
 
         self.team_stats_dict[f'defensive {current_stat}']=df_defense.ffill().shift(1)
         self.team_stats_dict[f'offensive {current_stat}']=df_offense.ffill().shift(1)
+        self.single_stats_dict[current_stat]=df_single_game_stat
+    def build_defense_df(self):
+        self.df_matchups=self.stat_template.copy()
+        for i_team in self.teams:
+            team_index=np.where(self.data['teamid']==i_team)[0]
+            season_loc=self.data.columns.get_loc('season')
+            week_loc=self.data.columns.get_loc('week')
+            defenseid_loc=self.data.columns.get_loc('defenseid')
+            team_master_index=self.data.iloc[team_index, season_loc].astype(str)+'_'+self.data.iloc[team_index, week_loc].astype(str)
+            
+            opposing_defense=self.data.iloc[team_index, defenseid_loc]
+            
+            self.df_matchups.loc[team_master_index, i_team]=opposing_defense.values
+            
+    def normalize_strength_of_schedule(self):
+        self.build_defense_df()
+        
+        for i_stat in tqdm(config.team_feature_configs.team_features):
+            single_game_data=self.single_stats_dict[i_stat]
+            defense_data=self.team_stats_dict[f'defensive {i_stat}']
+            normalized_feature=self.stat_template.copy()
+            for i_game_week in self.df_matchups.index[1:]:
+                for i_team in self.df_matchups.columns:
+                    if defense_data.loc[i_game_week, i_team] !=0 and np.isfinite(float(defense_data.loc[i_game_week, i_team])) and np.isfinite(float(single_game_data.loc[i_game_week, i_team])):
+                        normalized_feature.loc[i_game_week, i_team]=float(single_game_data.loc[i_game_week, i_team])/defense_data.loc[i_game_week, i_team]
+                    else:
+                        normalized_feature.loc[i_game_week, i_team]=0
+            self.single_stats_dict[f'normalized {i_stat}']=normalized_feature
+            
+            for i_window in self.average_windows:
+                self.team_stats_dict[f'normalize {i_stat} {i_window}']=normalized_feature.rolling(window=i_window).mean().shift(1)
+
     def parse_data(self, data_column, column_names):
         """parses data thats gotta multiple data points in one column
 
@@ -137,4 +174,11 @@ class TeamLevelFeatures:
         away_team_idx=np.where(self.data["teamid"]==self.data["awayteamid"])[0]
         away_score_position = self.data.columns.get_loc("awayscore")
         self.data.iloc[away_team_idx, -1]=self.data.iloc[away_team_idx,away_score_position]
-    
+    def normalize_features(self):
+        features_to_normalize=list(self.team_stats_dict.keys()).copy()
+        for i_feature in features_to_normalize:
+            df=self.stat_template.copy()
+            for i_team in df.columns:
+                df[i_team]=(self.team_stats_dict[i_feature][i_team]-np.mean(self.team_stats_dict[i_feature], axis=1))/np.std(self.team_stats_dict[i_feature], axis=1)
+            
+            self.team_stats_dict[f"{i_feature}_normalized"]=df
