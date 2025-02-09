@@ -50,12 +50,12 @@ class NFLPredictor:
                 self.spread_dict[i_week]=[home_team_list[0], away_team_list[0], spread_list[0]]
     
     def build_x_y_variable(self):
-        feature_list=[]
+        self.feature_list=[]
         for i_feature in self.team_feautres.team_stats_dict.keys():
-            feature_list.append(f'home team {i_feature}')
-            feature_list.append(f'away team {i_feature}')
-        feature_list.append('spread')
-        df=pd.DataFrame(columns=feature_list) 
+            self.feature_list.append(f'home team {i_feature}')
+            self.feature_list.append(f'away team {i_feature}')
+        self.feature_list.append('spread')
+        df=pd.DataFrame(columns=self.feature_list) 
         game_data=pd.DataFrame(self.game_data)
         game_data.index=self.game_index
         
@@ -76,7 +76,17 @@ class NFLPredictor:
 
         self.x_y=df
         
-    
+    def build_single_game_features(self, home_team, away_team):
+        df=pd.DataFrame(columns=self.feature_list) 
+        for i_feature in self.team_feautres.team_stats_dict.keys():
+            current_feature_data=self.team_feautres.team_stats_dict[i_feature].loc[:,[home_team, away_team]]
+
+                    
+            df.loc[f"{home_team}_{away_team}", f"home team {i_feature}"]=current_feature_data.iloc[-1, 0]
+            df.loc[f"{home_team}_{away_team}", f"away team {i_feature}"]=current_feature_data.iloc[-1, 1]
+            
+        return df
+
     def build_random_forest_model(self, param_distirbution):
         df=self.x_y.dropna()
         
@@ -118,8 +128,8 @@ class NFLPredictor:
 
 
         # Create the plot
-            plt.figure(figsize=(10, 6))
-            sns.barplot(data=feature_importance, x='importance', y='feature', 
+            plt.figure(figsize=(10, 15))
+            sns.barplot(data=feature_importance.iloc[:50], x='importance', y='feature', 
                         palette='viridis')
             plt.title('Model Feature Importance')
             plt.xlabel('Importance Score')
