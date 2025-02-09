@@ -5,7 +5,7 @@
 
 class model_config:
   train_test_split=.2
-  start_season=2015
+  start_season=2021
     
 class team_feature_configs:
   parse_data_colums={"cmp_att_yd_td_int": ['completions', "pass attempts", "passing yards", "passing tds", "interceptions"],
@@ -21,7 +21,6 @@ class team_feature_configs:
                    "rushing efficiency": ["rush yards", "rush attempts"],
                    "third down efficiency": ["third down success", "third down attempts"]                   
                    }
-  team_features=["turnovers","total_yards","first_downs","passing tds","interceptions","rush attempts","rush yards","rush tds","fumbles","fumbles lost","sacks","sacked yards","penalties","penalty yards","completion efficiency","average completion","fourth down efficiency","rushing efficiency","third down efficiency","team points"
-]
-  
+  team_features=["turnovers","total_yards","first_downs","passing tds","interceptions","rush attempts","rush yards","rush tds","fumbles","fumbles lost","sacks","sacked yards","penalties","penalty yards","completion efficiency","average completion","fourth down efficiency","rushing efficiency","third down efficiency","team points"]
+
   
