@@ -10,8 +10,8 @@ import pickle
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from src.features import team_level_features_class
-from src import config
+from features.team_level_features.team_level_features import team_level_features_class
+from config import config
 
 class NFLPredictor:
     def __init__(self):
