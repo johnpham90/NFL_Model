@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 from src.utils.db_utils import get_connection, execute_query
-from src import config
+from config import config
 
 
 class TeamLevelFeatures:
