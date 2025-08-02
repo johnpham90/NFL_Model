@@ -1,0 +1,17 @@
+README.md
+setup.py
+nfl_model.egg-info/PKG-INFO
+nfl_model.egg-info/SOURCES.txt
+nfl_model.egg-info/dependency_links.txt
+nfl_model.egg-info/requires.txt
+nfl_model.egg-info/top_level.txt
+src/__init__.py
+src/evaluation.py
+src/data/__init__.py
+src/features/__init__.py
+src/features/features.py
+src/models/__init__.py
+src/models/model.py
+src/utils/__init__.py
+src/utils/db_utils.py
+tests/__init__.py
