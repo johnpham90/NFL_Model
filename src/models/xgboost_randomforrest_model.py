@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from features.team_level_features.team_level_features import team_level_features_class
-from config import config
+from . import config
 
 class NFLPredictor:
     def __init__(self):
@@ -32,6 +32,42 @@ class NFLPredictor:
         
         
         
+    def create_binary_spread_label(self):
+        
+        week_list=list(pd.DataFrame(self.game_index).drop_duplicates().values.flatten())
+        self.game_data["binary_spread_label"]=np.where(self.game_data['spreadfavoriteteam']==self.game_data['spreadteamcovered'],1,0)
+        df=self.game_data
+        
+        df.index=self.game_index
+        self.binary_spread_label={}
+        for i_week in week_list:
+
+            if type(df.loc[i_week,"binary_spread_label"]) != np.int64:
+                spread_list=list(df.loc[i_week,"binary_spread_label"])
+                home_team_list=list(df.loc[i_week,'hometeamid'])
+                away_team_list=list(df.loc[i_week,'awayteamid'])
+      
+                self.spread_dict[i_week] = [home_team_list, away_team_list, spread_list]
+            else:
+                self.spread_dict[i_week]=[home_team_list[0], away_team_list[0], spread_list[0]]
+    def create_binary_ou_label(self):
+        
+        week_list=list(pd.DataFrame(self.game_index).drop_duplicates().values.flatten())
+        self.game_data["binary_ou_label"]=np.where(self.game_data["overunderresults"]=="Over",1,0)
+        df=self.game_data
+        
+        df.index=self.game_index
+        self.binary_spread_label={}
+        for i_week in week_list:
+
+            if type(df.loc[i_week,"binary_ou_label"]) != np.int64:
+                spread_list=list(df.loc[i_week,"binary_ou_label" ])
+                home_team_list=list(df.loc[i_week,'hometeamid'])
+                away_team_list=list(df.loc[i_week,'awayteamid'])
+      
+                self.spread_dict[i_week] = [home_team_list, away_team_list, spread_list]
+            else:
+                self.spread_dict[i_week]=[home_team_list[0], away_team_list[0], spread_list[0]]
     def create_spread_dict(self):
         
         week_list=list(pd.DataFrame(self.game_index).drop_duplicates().values.flatten())
