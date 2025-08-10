@@ -10,8 +10,8 @@ import pickle
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from features.team_level_features.team_level_features import team_level_features_class
-from . import config
+from src.features.team_level_features import team_level_features_class
+from src.utils import config
 
 class NFLPredictor:
     def __init__(self):
@@ -27,50 +27,19 @@ class NFLPredictor:
         self.team_feautres=team_level_features_class.TeamLevelFeatures()
         self.team_x_variables=self.team_feautres.team_stats_dict
         self.game_index=(self.game_data['season'].astype(str)+'_'+self.game_data['week'].astype(str)).values
-        self.create_spread_dict()
+        self.create_labels_dict()
         self.random_state=42
         
         
         
-    def create_binary_spread_label(self):
-        
-        week_list=list(pd.DataFrame(self.game_index).drop_duplicates().values.flatten())
-        self.game_data["binary_spread_label"]=np.where(self.game_data['spreadfavoriteteam']==self.game_data['spreadteamcovered'],1,0)
-        df=self.game_data
-        
-        df.index=self.game_index
-        self.binary_spread_label={}
-        for i_week in week_list:
 
-            if type(df.loc[i_week,"binary_spread_label"]) != np.int64:
-                spread_list=list(df.loc[i_week,"binary_spread_label"])
-                home_team_list=list(df.loc[i_week,'hometeamid'])
-                away_team_list=list(df.loc[i_week,'awayteamid'])
-      
-                self.spread_dict[i_week] = [home_team_list, away_team_list, spread_list]
-            else:
-                self.spread_dict[i_week]=[home_team_list[0], away_team_list[0], spread_list[0]]
-    def create_binary_ou_label(self):
+    def create_labels_dict(self):
         
         week_list=list(pd.DataFrame(self.game_index).drop_duplicates().values.flatten())
+
         self.game_data["binary_ou_label"]=np.where(self.game_data["overunderresults"]=="Over",1,0)
-        df=self.game_data
-        
-        df.index=self.game_index
-        self.binary_spread_label={}
-        for i_week in week_list:
-
-            if type(df.loc[i_week,"binary_ou_label"]) != np.int64:
-                spread_list=list(df.loc[i_week,"binary_ou_label" ])
-                home_team_list=list(df.loc[i_week,'hometeamid'])
-                away_team_list=list(df.loc[i_week,'awayteamid'])
-      
-                self.spread_dict[i_week] = [home_team_list, away_team_list, spread_list]
-            else:
-                self.spread_dict[i_week]=[home_team_list[0], away_team_list[0], spread_list[0]]
-    def create_spread_dict(self):
-        
-        week_list=list(pd.DataFrame(self.game_index).drop_duplicates().values.flatten())
+        self.game_data["binary_spread_label"]=np.where(self.game_data['spreadfavoriteteam']==self.game_data['spreadteamcovered'],1,0)
+        self.game_data['total points']=self.game_data['homescore'].values+self.game_data['awayscore'].values
         df=self.game_data
         df.index=self.game_index
         self.spread_dict={}
@@ -78,12 +47,16 @@ class NFLPredictor:
 
             if type(df.loc[i_week,'spread']) != np.int64:
                 spread_list=list(df.loc[i_week,'spread'])
+                binary_ou_list=list(df.loc[i_week,"binary_ou_label"])
+                binary_spread_list=list(df.loc[i_week,"binary_spread_label"])
+                total_points_list=list(df.loc[i_week,'total points'])
                 home_team_list=list(df.loc[i_week,'hometeamid'])
                 away_team_list=list(df.loc[i_week,'awayteamid'])
+                game_summary_id_list=list(df.loc[i_week, "gamesummaryid"])
       
-                self.spread_dict[i_week] = [home_team_list, away_team_list, spread_list]
+                self.spread_dict[i_week] = [home_team_list, away_team_list, spread_list, total_points_list, binary_spread_list, binary_ou_list, game_summary_id_list]
             else:
-                self.spread_dict[i_week]=[home_team_list[0], away_team_list[0], spread_list[0]]
+                self.spread_dict[i_week]=[home_team_list[0], away_team_list[0], spread_list[0], total_points_list[0], binary_spread_list[0], binary_ou_list[0], game_summary_id_list[0]]
     
     def build_x_y_variable(self):
         self.feature_list=[]
@@ -91,24 +64,41 @@ class NFLPredictor:
             self.feature_list.append(f'home team {i_feature}')
             self.feature_list.append(f'away team {i_feature}')
         self.feature_list.append('spread')
-        df=pd.DataFrame(columns=self.feature_list) 
+        self.feature_list.append('total points')
+        self.feature_list.append("binary_spread_label")
+        self.feature_list.append("binary_ou_label")
+        self.feature_list.append("gamesummaryid")
         game_data=pd.DataFrame(self.game_data)
         game_data.index=self.game_index
+        
+        
+        df=pd.DataFrame(columns=self.feature_list)
+        
         
         for i_feature in self.team_feautres.team_stats_dict.keys():
             current_feature_data=self.team_feautres.team_stats_dict[i_feature]
             for i_game_week in self.spread_dict.keys():
                 if len(self.spread_dict[i_game_week][0][0])>1:
                     for i_game in range(len(self.spread_dict[i_game_week][0])):
-                    
+                        
+                        print(i_game_week, i_game)
+
                         df.loc[f"{i_game_week}_{i_game}", f"home team {i_feature}"]=current_feature_data.loc[i_game_week, self.spread_dict[i_game_week][0][i_game]]
                         df.loc[f"{i_game_week}_{i_game}", f"away team {i_feature}"]=current_feature_data.loc[i_game_week, self.spread_dict[i_game_week][1][i_game]]
                         df.loc[f"{i_game_week}_{i_game}", "spread"]=self.spread_dict[i_game_week][2][i_game]
+                        df.loc[f"{i_game_week}_{i_game}", "total points"]=self.spread_dict[i_game_week][3][i_game]
+                        df.loc[f"{i_game_week}_{i_game}", "binary_spread_label"]=self.spread_dict[i_game_week][4][i_game]
+                        df.loc[f"{i_game_week}_{i_game}", "binary_ou_label"]=self.spread_dict[i_game_week][5][i_game]
+                        df.loc[f"{i_game_week}_{i_game}", "gamesummaryid"]=self.spread_dict[i_game_week][6][i_game]
                 else:
 
                     df.loc[f"{i_game_week}_{i_game}", f"home team {i_feature}"]=current_feature_data.loc[i_game_week, self.spread_dict[i_game_week][0]]
                     df.loc[f"{i_game_week}_{i_game}", f"away team {i_feature}"]=current_feature_data.loc[i_game_week, self.spread_dict[i_game_week][1]]
-                    df.loc[f"{i_game_week}_{i_game}", "spread"]=self.spread_dict[i_game_week][2]                       
+                    df.loc[f"{i_game_week}_{i_game}", "spread"]=self.spread_dict[i_game_week][2]   
+                    df.loc[f"{i_game_week}_{i_game}", "total points"]=self.spread_dict[i_game_week][3]
+                    df.loc[f"{i_game_week}_{i_game}", "binary_spread_label"]=self.spread_dict[i_game_week][4]
+                    df.loc[f"{i_game_week}_{i_game}", "binary_ou_label"]=self.spread_dict[i_game_week][5]
+                    df.loc[f"{i_game_week}_{i_game}", "gamesummaryid"]=self.spread_dict[i_game_week][6]                    
 
         self.x_y=df
         
