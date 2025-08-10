@@ -3,6 +3,7 @@ import psycopg2
 from sqlalchemy import create_engine
 import pandas as pd
 from dotenv import load_dotenv
+from sqlalchemy import text
 
 def get_connection():
     """Create a connection to the Supabase database using environment variables"""
@@ -22,11 +23,10 @@ def get_connection():
         return None
 
 def execute_query(query, params=None):
-    """Execute a query and return results as a pandas DataFrame"""
     try:
         engine = get_connection()
         if params:
-            df = pd.read_sql_query(query, engine, params=params)
+            df = pd.read_sql_query(text(query), engine, params=params)
         else:
             df = pd.read_sql_query(query, engine)
         return df
