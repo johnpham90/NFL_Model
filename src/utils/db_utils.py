@@ -23,10 +23,11 @@ def get_connection():
         return None
 
 def execute_query(query, params=None):
+    """Execute a query and return results as a pandas DataFrame"""
     try:
         engine = get_connection()
         if params:
-            df = pd.read_sql_query(text(query), engine, params=params)
+            df = pd.read_sql_query(query, engine, params=params)
         else:
             df = pd.read_sql_query(query, engine)
         return df
