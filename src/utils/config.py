@@ -5,7 +5,12 @@
 
 class model_config:
   train_test_split=.2
-  start_season=2021
+  start_season=2022
+  classification_models=["binary_spread_label", "binary_ou_label"]
+  classification_models_names=["binary_spread_label_model", "binary_ou_label"]
+  
+  regression_models=["spread", "total point"]
+  regression_models_names=["spread_model", "total_points_model"]
     
 class team_feature_configs:
   parse_data_colums={"cmp_att_yd_td_int": ['completions', "pass attempts", "passing yards", "passing tds", "interceptions"],
