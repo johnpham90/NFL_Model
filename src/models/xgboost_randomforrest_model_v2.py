@@ -53,6 +53,11 @@ class NFLModelV2:
         # Placeholders
         self._dataset: Optional[pd.DataFrame] = None
         self.artifacts: Optional[ModelArtifacts] = None
+        # Outcome / target columns that must never be in feature set
+        self._OUTCOME_COLS = {
+            "spread","total_points","homescore","awayscore","points_diff",
+            "binary_spread_label","binary_ou_label"
+        }  # 'team_points' removed so its lagged histories can be used
 
     # ---------- Data & Features ----------
     def load_games(self, start_season: int):
@@ -169,67 +174,55 @@ class NFLModelV2:
         feature_frames: List[pd.DataFrame] = []
         built: List[str] = []
         skipped: List[str] = []
-        # Pre-grouped index objects for efficiency
-        grp_week = df.groupby(["season","week"])
+
+        # Helper functions (proper lag: shift before aggregations)
+        def prior_expanding(series: pd.Series) -> pd.Series:
+            s = series.shift(1 if exclude_current else 0)
+            return s.expanding(min_periods=1).mean()
+
+        def prior_rolling(series: pd.Series, w: int) -> pd.Series:
+            s = series.shift(1 if exclude_current else 0)
+            return s.rolling(window=w, min_periods=1).mean()
+
+        team_grp = df.groupby("teamid", group_keys=False)
+        def_grp = df.groupby("def_teamid", group_keys=False)
+
         for stat in self.stats:
-            if stat not in available:
+            # Skip forbidden outcome bases entirely
+            if stat in self._OUTCOME_COLS or stat not in available:
                 skipped.append(stat)
                 continue
-            stat_series = pd.to_numeric(df[stat], errors="coerce")
-            # Offensive expanding mean
-            off_hist = (df.groupby("teamid")[stat]
-                          .expanding()
-                          .mean()
-                          .shift(1 if exclude_current else 0)
-                          .reset_index(level=0, drop=True))
-            cols: Dict[str, pd.Series] = {f"{stat}__sg": stat_series,
-                                          f"{stat}__off_hist": off_hist}
+            raw = pd.to_numeric(df[stat], errors="coerce")
+            off_hist = team_grp[stat].apply(prior_expanding)
+            cols: Dict[str, pd.Series] = {f"{stat}__off_hist": off_hist}
             if include_defense:
-                def_hist = (df.groupby("def_teamid")[stat]
-                              .expanding()
-                              .mean()
-                              .shift(1 if exclude_current else 0)
-                              .reset_index(level=0, drop=True))
+                def_hist = def_grp[stat].apply(prior_expanding)
                 cols[f"{stat}__def_hist"] = def_hist
                 if include_differentials:
                     cols[f"{stat}__diff_hist"] = off_hist - def_hist
-                # Rolling windows + differentials
                 for w in roll_sizes:
-                    off_roll = (df.groupby("teamid")[stat]
-                                  .rolling(window=w, min_periods=1)
-                                  .mean()
-                                  .shift(1 if exclude_current else 0)
-                                  .reset_index(level=0, drop=True))
-                    def_roll = (df.groupby("def_teamid")[stat]
-                                  .rolling(window=w, min_periods=1)
-                                  .mean()
-                                  .shift(1 if exclude_current else 0)
-                                  .reset_index(level=0, drop=True))
+                    off_roll = team_grp[stat].apply(lambda s: prior_rolling(s, w))
+                    def_roll = def_grp[stat].apply(lambda s: prior_rolling(s, w))
                     cols[f"{stat}__off_roll{w}"] = off_roll
                     cols[f"{stat}__def_roll{w}"] = def_roll
                     if include_differentials:
                         cols[f"{stat}__diff_roll{w}"] = off_roll - def_roll
-                # SOS ratios
                 off_non0 = off_hist.replace(0, np.nan)
                 def_non0 = def_hist.replace(0, np.nan)
                 cols[f"{stat}__sos_ratio"] = off_non0 / def_non0
                 cols[f"{stat}__sos_inv_ratio"] = def_non0 / off_non0
-            # Z-scores (single game & off_hist) within week (avoid needing columns in df first)
+            # Historical z-score only (no single-game z to avoid raw leakage)
             week_keys = [df["season"], df["week"]]
-            sg_mean = stat_series.groupby(week_keys).transform('mean')
-            sg_std = stat_series.groupby(week_keys).transform('std').replace(0, np.nan)
             off_mean = off_hist.groupby(week_keys).transform('mean')
             off_std = off_hist.groupby(week_keys).transform('std').replace(0, np.nan)
-            cols[f"{stat}__sg_z"] = (stat_series - sg_mean) / sg_std
             cols[f"{stat}__off_hist_z"] = (off_hist - off_mean) / off_std
             feature_frames.append(pd.DataFrame(cols))
             built.extend(cols.keys())
+
         if skipped:
-            print(f"[INFO] Skipped stats (missing in parsed data): {skipped}")
-        # Concatenate all feature blocks at once (prevents fragmentation)
+            print(f"[INFO] Skipped stats (missing or forbidden): {skipped}")
         if feature_frames:
             feature_block = pd.concat(feature_frames, axis=1)
-            # Rebuild df including new features without repeated inserts
             df = pd.concat([df.reset_index(drop=True), feature_block.reset_index(drop=True)], axis=1)
         self._include_differentials = include_differentials and include_defense
         self._hist_features = built
@@ -240,10 +233,8 @@ class NFLModelV2:
         if not hasattr(self, "_hist_df"):
             raise RuntimeError("Call build_feature_matrices first.")
         df = self._hist_df
-        # Split into home / away team rows
         home = df[df["teamid"] == df["hometeamid"]].copy()
         away = df[df["teamid"] == df["awayteamid"]].copy()
-        # Select only built feature columns
         feature_base = [c for c in self._hist_features if c in home.columns]
         home_core_cols = [
             "gamesummaryid","season","week","hometeamid","awayteamid","homescore","awayscore",
@@ -252,7 +243,13 @@ class NFLModelV2:
         home_sel = home[home_core_cols + feature_base]
         away_sel = away[["gamesummaryid"] + feature_base].rename(columns={c: f"opp_{c}" for c in feature_base})
         game_df = home_sel.merge(away_sel, on="gamesummaryid", how="left")
-        self.feature_columns = feature_base + [f"opp_{c}" for c in feature_base]
+        feats = feature_base + [f"opp_{c}" for c in feature_base]
+        # Remove any residual single‑game markers / outcome bases
+        feats = [f for f in feats
+                 if "__sg" not in f and "__sg_z" not in f
+                 and not any(f.startswith(base + "__") for base in self._OUTCOME_COLS)]
+        self.feature_columns = sorted(set(feats))
+        self._sanitize_feature_columns()
         self._dataset = game_df.reset_index(drop=True)
         return self._dataset
 
@@ -261,7 +258,14 @@ class NFLModelV2:
         if self._dataset is None:
             raise RuntimeError("Dataset not built.")
         df = self._dataset.sort_values(["season","week"]).reset_index(drop=True)
-        feature_cols = [c for c in self.feature_columns if c in df.columns and pd.api.types.is_numeric_dtype(df[c])]
+        # Ensure no forbidden outcome columns leak
+        self._sanitize_feature_columns()
+        feature_cols = [
+            c for c in self.feature_columns
+            if c in df.columns
+            and c not in self._OUTCOME_COLS
+            and pd.api.types.is_numeric_dtype(df[c])
+        ]
         if not feature_cols:
             raise ValueError("No feature columns selected.")
         X = df[feature_cols].ffill().fillna(0)
@@ -271,6 +275,29 @@ class NFLModelV2:
         X_train, X_test = X.iloc[:split_idx], X.iloc[split_idx:]
         y_train, y_test = y.iloc[:split_idx], y.iloc[split_idx:]
         return X_train, X_test, y_train, y_test, feature_cols, is_class
+
+    # ---------- Leakage Guards ----------
+    def _sanitize_feature_columns(self):
+        """Remove any outcome / target columns that may have slipped into feature_columns."""
+        if not hasattr(self, 'feature_columns') or self.feature_columns is None:
+            return
+        cleaned = [c for c in self.feature_columns if c not in self._OUTCOME_COLS]
+        # Remove direct single-game features of outcome-related stats (leakage):
+        # Any feature with pattern <base>__sg or <base>__sg_z where base is in outcome set or equals target
+        leak_bases = {self.target, 'spread','total_points','homescore','awayscore','team_points','points_diff'}
+        def is_leak_feat(feat: str) -> bool:
+            if '__' not in feat:
+                return False
+            base, rest = feat.split('__', 1)
+            if base in leak_bases and (rest.startswith('sg') or rest.startswith('sg_z')):
+                return True
+            return False
+        cleaned = [c for c in cleaned if not is_leak_feat(c)]
+        if len(cleaned) != len(self.feature_columns):
+            self.feature_columns = cleaned
+        # Maintain stable ordering & hash for reproducibility
+        self.feature_columns = sorted(dict.fromkeys(self.feature_columns))
+
 
     class _BlockedTimeSeriesCV(BaseCrossValidator):
         def __init__(self, n_splits: int = 5):
