@@ -2,6 +2,7 @@ import os
 from sqlalchemy import create_engine
 import pandas as pd
 from dotenv import load_dotenv
+from sqlalchemy import text
 
 def get_connection():
     """Create a connection to the Supabase database using environment variables"""
