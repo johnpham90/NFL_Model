@@ -9,6 +9,7 @@ import numpy as np
 import pickle
 import matplotlib.pyplot as plt
 import seaborn as sns
+from tqdm import tqdm
 
 from src.features.team_level_features import team_level_features_class
 from src.utils import config
@@ -56,51 +57,65 @@ class NFLPredictor:
       
                 self.spread_dict[i_week] = [home_team_list, away_team_list, spread_list, total_points_list, binary_spread_list, binary_ou_list, game_summary_id_list]
             else:
-                self.spread_dict[i_week]=[home_team_list[0], away_team_list[0], spread_list[0], total_points_list[0], binary_spread_list[0], binary_ou_list[0], game_summary_id_list[0]]
+                spread_list=df.loc[i_week,'spread']
+                binary_ou_list=df.loc[i_week,"binary_ou_label"]
+                binary_spread_list=df.loc[i_week,"binary_spread_label"]
+                total_points_list=df.loc[i_week,'total points']
+                home_team_list=df.loc[i_week,'hometeamid']
+                away_team_list=df.loc[i_week,'awayteamid']
+                game_summary_id_list=df.loc[i_week, "gamesummaryid"]
+                self.spread_dict[i_week]=[home_team_list, away_team_list, spread_list, total_points_list, binary_spread_list, binary_ou_list, game_summary_id_list]
     
     def build_x_y_variable(self):
         self.feature_list=[]
+        self.labels_list=[]
         for i_feature in self.team_feautres.team_stats_dict.keys():
             self.feature_list.append(f'home team {i_feature}')
             self.feature_list.append(f'away team {i_feature}')
-        self.feature_list.append('spread')
-        self.feature_list.append('total points')
-        self.feature_list.append("binary_spread_label")
-        self.feature_list.append("binary_ou_label")
+        self.labels_list.append('spread')
+        self.labels_list.append('total points')
+        self.labels_list.append("binary_spread_label")
+        self.labels_list.append("binary_ou_label")
         self.feature_list.append("gamesummaryid")
+        self.labels_list.append("gamesummaryid")
         game_data=pd.DataFrame(self.game_data)
         game_data.index=self.game_index
         
         
-        df=pd.DataFrame(columns=self.feature_list)
+        df_x=pd.DataFrame(columns=self.feature_list)
+        df_y=pd.DataFrame(columns=self.labels_list)
         
-        
-        for i_feature in self.team_feautres.team_stats_dict.keys():
+        print("building X Y Dataframes")
+        for i_feature in tqdm(self.team_feautres.team_stats_dict.keys()):
+            
             current_feature_data=self.team_feautres.team_stats_dict[i_feature]
             for i_game_week in self.spread_dict.keys():
                 if len(self.spread_dict[i_game_week][0][0])>1:
                     for i_game in range(len(self.spread_dict[i_game_week][0])):
                         
-                        print(i_game_week, i_game)
+                        
 
-                        df.loc[f"{i_game_week}_{i_game}", f"home team {i_feature}"]=current_feature_data.loc[i_game_week, self.spread_dict[i_game_week][0][i_game]]
-                        df.loc[f"{i_game_week}_{i_game}", f"away team {i_feature}"]=current_feature_data.loc[i_game_week, self.spread_dict[i_game_week][1][i_game]]
-                        df.loc[f"{i_game_week}_{i_game}", "spread"]=self.spread_dict[i_game_week][2][i_game]
-                        df.loc[f"{i_game_week}_{i_game}", "total points"]=self.spread_dict[i_game_week][3][i_game]
-                        df.loc[f"{i_game_week}_{i_game}", "binary_spread_label"]=self.spread_dict[i_game_week][4][i_game]
-                        df.loc[f"{i_game_week}_{i_game}", "binary_ou_label"]=self.spread_dict[i_game_week][5][i_game]
-                        df.loc[f"{i_game_week}_{i_game}", "gamesummaryid"]=self.spread_dict[i_game_week][6][i_game]
+                        df_x.loc[f"{i_game_week}_{i_game}", f"home team {i_feature}"]=current_feature_data.loc[i_game_week, self.spread_dict[i_game_week][0][i_game]]
+                        df_x.loc[f"{i_game_week}_{i_game}", f"away team {i_feature}"]=current_feature_data.loc[i_game_week, self.spread_dict[i_game_week][1][i_game]]
+                        df_y.loc[f"{i_game_week}_{i_game}", "spread"]=self.spread_dict[i_game_week][2][i_game]
+                        df_y.loc[f"{i_game_week}_{i_game}", "total points"]=self.spread_dict[i_game_week][3][i_game]
+                        df_y.loc[f"{i_game_week}_{i_game}", "binary_spread_label"]=self.spread_dict[i_game_week][4][i_game]
+                        df_y.loc[f"{i_game_week}_{i_game}", "binary_ou_label"]=self.spread_dict[i_game_week][5][i_game]
+                        df_x.loc[f"{i_game_week}_{i_game}", "gamesummaryid"]=self.spread_dict[i_game_week][6][i_game]
+                        df_y.loc[f"{i_game_week}_{i_game}", "gamesummaryid"]=self.spread_dict[i_game_week][6][i_game]
                 else:
 
-                    df.loc[f"{i_game_week}_{i_game}", f"home team {i_feature}"]=current_feature_data.loc[i_game_week, self.spread_dict[i_game_week][0]]
-                    df.loc[f"{i_game_week}_{i_game}", f"away team {i_feature}"]=current_feature_data.loc[i_game_week, self.spread_dict[i_game_week][1]]
-                    df.loc[f"{i_game_week}_{i_game}", "spread"]=self.spread_dict[i_game_week][2]   
-                    df.loc[f"{i_game_week}_{i_game}", "total points"]=self.spread_dict[i_game_week][3]
-                    df.loc[f"{i_game_week}_{i_game}", "binary_spread_label"]=self.spread_dict[i_game_week][4]
-                    df.loc[f"{i_game_week}_{i_game}", "binary_ou_label"]=self.spread_dict[i_game_week][5]
-                    df.loc[f"{i_game_week}_{i_game}", "gamesummaryid"]=self.spread_dict[i_game_week][6]                    
+                    df_x.loc[f"{i_game_week}_0", f"home team {i_feature}"]=current_feature_data.loc[i_game_week, self.spread_dict[i_game_week][0]]
+                    df_x.loc[f"{i_game_week}_0", f"away team {i_feature}"]=current_feature_data.loc[i_game_week, self.spread_dict[i_game_week][1]]
+                    df_y.loc[f"{i_game_week}_0", "spread"]=self.spread_dict[i_game_week][2]   
+                    df_y.loc[f"{i_game_week}_0", "total points"]=self.spread_dict[i_game_week][3]
+                    df_y.loc[f"{i_game_week}_0", "binary_spread_label"]=self.spread_dict[i_game_week][4]
+                    df_y.loc[f"{i_game_week}_0", "binary_ou_label"]=self.spread_dict[i_game_week][5]
+                    df_y.loc[f"{i_game_week}_0", "gamesummaryid"]=self.spread_dict[i_game_week][6]
+                    df_x.loc[f"{i_game_week}_0", "gamesummaryid"]=self.spread_dict[i_game_week][6]                    
 
-        self.x_y=df
+        self.df_x=df_x
+        self.df_y=df_y
         
     def build_single_game_features(self, home_team, away_team):
         df=pd.DataFrame(columns=self.feature_list) 
@@ -113,32 +128,15 @@ class NFLPredictor:
             
         return df
 
-    def build_random_forest_model(self, param_distirbution):
-        df=self.x_y.dropna()
+
+    def build_xg_boost_model(self,x,y, param_distirbution, model_name, model):        
+        x_train, x_test, y_train,y_test=train_test_split(x,y, test_size=config.model_config.train_test_split, shuffle=False)
         
-        x=df.iloc[:,:-1]
-        y=df.iloc[:,-1]
         
-        self.x_train, self.x_test, self.y_train, self.y_test=train_test_split(x,y, test_size=config.model_config.train_test_split, shuffle=False)
-        
-        rf_model=RandomForestRegressor(random_state=self.random_state)
-        
-        model_parameters=RandomizedSearchCV(rf_model, param_distirbution,n_jobs=-1,cv=5).fit(self.x_train, self.y_train).best_params_
-        
-        self.rf_model=RandomForestRegressor(**model_parameters).fit(X=self.x_train, y=self.y_train)
-    def build_xg_boost_model(self, param_distirbution):
-        df=self.x_y.dropna()
-        
-        x=df.iloc[:,:-1]
-        y=df.iloc[:,-1]
-        
-        self.x_train, self.x_test, self.y_train, self.y_test=train_test_split(x,y, test_size=config.model_config.train_test_split, shuffle=False)
-        
-        xg_model=XGBRegressor(random_state=self.random_state)
-        
-        model_parameters=RandomizedSearchCV(xg_model, param_distirbution,n_jobs=-1,cv=5).fit(self.x_train.to_numpy(), self.y_train.to_numpy()).best_params_
-        
-        self.xg_model=XGBRegressor(**model_parameters).fit(X=self.x_train.to_numpy(), y=self.y_train.to_numpy())
+        model_parameters=RandomizedSearchCV(model(random_state=42), param_distirbution,n_jobs=-1,cv=5).fit(x_train.to_numpy(), y_train.to_numpy()).best_params_
+        model_parameters['random_state'] = 42  
+        xg_model=model(**model_parameters).fit(X=x_train.to_numpy(), y=y_train.to_numpy())
+        xg_model.save_model(f'{model_name}.json')
     
     def model_prediction(self, model,x=np.array([]),plot_feature_importance=False, plot_scatter=False):
         if x.shape[0]==0:
