@@ -133,9 +133,9 @@ class NFLPredictor:
         x_train, x_test, y_train,y_test=train_test_split(x,y, test_size=config.model_config.train_test_split, shuffle=False)
         
         
-        model_parameters=RandomizedSearchCV(model, param_distirbution,n_jobs=-1,cv=5).fit(x_train.to_numpy(), y_train.to_numpy()).best_params_
-        
-        xg_model=XGBRegressor(**model_parameters).fit(X=x_train.to_numpy(), y=y_train.to_numpy())
+        model_parameters=RandomizedSearchCV(model(random_state=42), param_distirbution,n_jobs=-1,cv=5).fit(x_train.to_numpy(), y_train.to_numpy()).best_params_
+        model_parameters['random_state'] = 42  
+        xg_model=model(**model_parameters).fit(X=x_train.to_numpy(), y=y_train.to_numpy())
         xg_model.save_model(f'{model_name}.json')
     
     def model_prediction(self, model,x=np.array([]),plot_feature_importance=False, plot_scatter=False):
