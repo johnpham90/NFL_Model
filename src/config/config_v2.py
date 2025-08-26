@@ -84,13 +84,29 @@ class TeamFeatureConfigV2:
     def canonicalize(self, name: str) -> str:
         return self.legacy_to_canonical.get(name, name)
 
+@dataclass
+class PlayerFeatureConfigV2:
+    offense_stat_cols: List[str] = field(default_factory=lambda: [
+        'pass_att', 'pass_cmp', 'pass_yds', 'pass_td', 'pass_int',
+        'rush_att', 'rush_yds', 'rush_td',
+        'rec', 'rec_yds', 'rec_td',
+        'fumbles', 'fumbles_lost'
+    ])
+    defense_stat_cols: List[str] = field(default_factory=lambda: [
+        'tackles_combined', 'tackles_solo', 'tackles_assists', 'tackles_loss',
+        'sacks', 'pass_defended', 'def_int', 'def_int_yds', 'def_int_td',
+        'fumbles_forced', 'fumbles_rec', 'fumbles_rec_yds', 'fumbles_rec_td'
+    ])
 
 model_config_v2 = ModelConfigV2()
 team_feature_configs_v2 = TeamFeatureConfigV2()
+player_feature_configs_v2 = PlayerFeatureConfigV2()
 
 __all__ = [
     "ModelConfigV2",
     "TeamFeatureConfigV2",
+    "PlayerFeatureConfigV2",
     "model_config_v2",
     "team_feature_configs_v2",
+    "player_feature_configs_v2",
 ]
