@@ -90,11 +90,14 @@ class PlayerFeatureConfigV2:
         'pass_att', 'pass_cmp', 'pass_yds', 'pass_td', 'pass_int',
         'rush_att', 'rush_yds', 'rush_td',
         'rec', 'rec_yds', 'rec_td',
-        'fumbles', 'fumbles_lost'
+        'fumbles', 'fumbles_lost',
+        'pass_rating', 'pass_long', 'rush_long', 'rec_long',
+        'pass_sacked', 'pass_sacked_yds', 'targets'
     ])
     defense_stat_cols: List[str] = field(default_factory=lambda: [
         'tackles_combined', 'tackles_solo', 'tackles_assists', 'tackles_loss',
         'sacks', 'pass_defended', 'def_int', 'def_int_yds', 'def_int_td',
+        'def_int_long', 'qb_hits',
         'fumbles_forced', 'fumbles_rec', 'fumbles_rec_yds', 'fumbles_rec_td'
     ])
 
