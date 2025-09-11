@@ -5,7 +5,21 @@
 
 class model_config:
   train_test_split=.2
-  start_season=2021
+  start_season=2022
+  classification_models=["binary_spread_label", "binary_ou_label"]
+  classification_models_names=["binary_spread_label_model", "binary_ou_label"]
+  
+  regression_models=["spread", "total points"]
+  regression_models_names=["spread_model", "total_points_model"]
+  param_dist = {
+    'n_estimators': [100, 200, 300, 400, 500],
+    'max_depth': [3, 4, 5, 6, 7, 8, 9, 10],
+    'learning_rate': [0.001, 0.01, 0.05, 0.1, 0.2],
+    'subsample': [0.6, 0.7, 0.8, 0.9, 1.0],
+    'colsample_bytree': [0.6, 0.7, 0.8, 0.9, 1.0],
+    'min_child_weight': [1, 2, 3, 4, 5],
+    'gamma': [0, 0.1, 0.2, 0.3, 0.4, 0.5]
+}
     
 class team_feature_configs:
   parse_data_colums={"cmp_att_yd_td_int": ['completions', "pass attempts", "passing yards", "passing tds", "interceptions"],

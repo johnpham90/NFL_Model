@@ -54,14 +54,18 @@ class NFLSchedule:
         
         query = text("""
             SELECT 
+                season,
                 week,
                 day,
                 date,
-                hometeamid as hometeam,
-                awayteamid as awayteam
+                hometeamid,
+                awayteamid,
+                spread,
+                spreadfavoriteteam,
+                over_under
             FROM stats.currentseasonschedule
             WHERE date >= CURRENT_DATE - INTERVAL ':past_days days'
-            AND date < CURRENT_DATE + INTERVAL '7 days'
+            AND date < CURRENT_DATE + INTERVAL '14 days'
             ORDER BY date ASC
         """)
         
