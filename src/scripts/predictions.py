@@ -58,29 +58,49 @@ def assemble_matchups(artifact, team_hist: pd.DataFrame, season: int, week: int,
         combined["week"] = week
         combined["hometeamid"] = home
         combined["awayteamid"] = away
-        # Set market_line_home and market_home_margin using spreadfavoriteteam logic (robust)
+        
+        # Set market_line_home and market_home_margin using spreadfavoriteteam logic (FIXED)
         if "spread" in g and "spreadfavoriteteam" in g:
             # Normalize team codes for robust comparison
-            favorite = str(g["spreadfavoriteteam"]).upper()
-            home = str(g["hometeamid"]).upper()
-            away = str(g["awayteamid"]).upper()
-            spread = float(g["spread"])
-            if favorite == home:
-                market_line_home = -abs(spread)
-                market_home_margin = abs(spread)
-            elif favorite == away:
-                market_line_home = abs(spread)
-                market_home_margin = -abs(spread)
+            favorite = str(g["spreadfavoriteteam"]).upper().strip()
+            home_team = str(g["hometeamid"]).upper().strip()
+            away_team = str(g["awayteamid"]).upper().strip()
+            spread_value = float(g["spread"])
+            
+            print(f"[DEBUG] Processing game: {home_team} vs {away_team}")
+            print(f"[DEBUG] Spread favorite: {favorite}, Spread value: {spread_value}")
+            
+            # The spread value in your data appears to be the line for the favorite team
+            # We need to convert this to the home team's perspective
+            if favorite == home_team:
+                # Home team is favored
+                # The spread value is the line for the home team (favorite)
+                market_home_margin = spread_value  # Should be negative if home team favored
+                print(f"[DEBUG] Home team {home_team} is favored by {abs(spread_value)}")
+            elif favorite == away_team:
+                # Away team is favored, so home team is underdog
+                # Flip the sign: if away team has -6.5, home team gets +6.5
+                market_home_margin = -spread_value
+                print(f"[DEBUG] Away team {favorite} is favored by {abs(spread_value)}, home team {home_team} gets +{abs(spread_value)}")
             else:
-                market_line_home = 0.0
+                # No clear favorite match (shouldn't happen with clean data)
                 market_home_margin = 0.0
+                print(f"[DEBUG] No favorite match found, setting spread to 0")
+            
+            # Keep market_line_home identical to market_home_margin to maintain clear semantics
+            market_line_home = market_home_margin
             combined["market_line_home"] = market_line_home
             combined["market_home_margin"] = market_home_margin
+            
+            print(f"[DEBUG] Final market_home_margin for {home_team}: {market_home_margin}")
+            
         if "over_under" in g:
             combined["market_total"] = g["over_under"]
+        
         # SAFETY PATCH: Remove duplicate keys by keeping only the first occurrence
         combined = combined[~combined.index.duplicated(keep='first')]
         rows.append(combined)
+    
     if not rows:
         raise ValueError("No matchup rows built (team IDs missing prior history?).")
     print(f"[DEBUG] Number of games processed in assemble_matchups: {len(rows)}")
@@ -92,9 +112,10 @@ def assemble_matchups(artifact, team_hist: pd.DataFrame, season: int, week: int,
     except Exception as e:
         print("[DEBUG] Exception during reindex:", e)
         raise
-    return X.reset_index(), frame.reset_index()[["season","week","hometeamid","awayteamid",
-                                                 *([c for c in ["market_line_home","market_home_margin","market_total"]
-                                                   if c in frame.columns])]]
+    return X.reset_index(), frame.reset_index()[["season","week","hometeamid","awayteamid"] + 
+                                                [c for c in ["market_line_home","market_home_margin","market_total"]
+                                                 if c in frame.columns]]
+     
 
 def win_probability(pred_spread, margin_std=13.5):
     return 1 - norm.cdf(0, loc=pred_spread, scale=margin_std)
@@ -198,7 +219,7 @@ def main(targets, season, week, start_season, artifacts_dir, output_dir, margin_
 if __name__ == "__main__":
     # Hardcoded for manual update each week
     season = 2025
-    week = 1
+    week = 2
     start_season = 2024  # must be <= season-1
     artifacts_dir = "artifacts"
     output_dir = "artifacts/predictions"
