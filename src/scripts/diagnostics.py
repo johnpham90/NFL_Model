@@ -67,9 +67,9 @@ def annotate_binaries(df: pd.DataFrame, artifacts_dir: str = "artifacts") -> pd.
         classes = tuple(getattr(art.model, "classes_", (0, 1))) if art else (0, 1)
         print(f"Artifact for {target}: {art_path.name} -> model.classes_ = {classes}")
 
-        # default meaning mapping (adjust if your training used different semantics)
+        # meaning mapping based on actual training code
         if target == "binary_spread_label":
-            meaning = {classes[0]: "fav DID NOT cover / home DID NOT win", classes[1]: "fav COVERED / home WON"}
+            meaning = {classes[0]: "FAVORITE did NOT cover", classes[1]: "FAVORITE covered"}
         elif target == "binary_ou_label":
             meaning = {classes[0]: "UNDER", classes[1]: "OVER"}
         else:
@@ -91,57 +91,182 @@ def annotate_binaries(df: pd.DataFrame, artifacts_dir: str = "artifacts") -> pd.
     return df
 
 
-def main():
-    pred_csv = Path("artifacts/predictions/spread_week2_predictions.csv")
-    if not pred_csv.exists():
-        print("Prediction CSV not found:", pred_csv)
-        return
-    df = pd.read_csv(pred_csv)
+def find_latest_all_targets(predictions_dir: str = "artifacts/predictions") -> Path:
+    pattern = str(Path(predictions_dir) / "all_targets_week*_predictions.csv")
+    files = glob.glob(pattern)
+    if not files:
+        return None
+    
+    # Sort by week number extracted from filename
+    def extract_week(filepath):
+        import re
+        match = re.search(r'week(\d+)', Path(filepath).name)
+        return int(match.group(1)) if match else 0
+    
+    latest_file = max(files, key=extract_week)
+    return Path(latest_file)
 
+
+def analyze_spreads(df: pd.DataFrame, sigma: float):
+    """Analyze spread predictions"""
+    spread_df = df[df["target"] == "spread"].copy()
+    if spread_df.empty:
+        print("No spread predictions found")
+        return
+    
+    print("\n" + "="*60)
+    print("SPREAD ANALYSIS")
+    print("="*60)
+    
     # model edge relative to market (higher -> model favors home more than market)
-    df["model_minus_market"] = df["prediction"].astype(float) - df["market_line_home"].astype(float)
+    spread_df["model_minus_market"] = spread_df["prediction"].astype(float) - spread_df["market_line_home"].astype(float)
 
     print("Edge stats (model - market):")
-    print(df["model_minus_market"].describe().round(3))
+    print(spread_df["model_minus_market"].describe().round(3))
 
-    print("\nPrediction distribution:")
-    print(df["prediction"].describe().round(3))
+    print("\nSpread prediction distribution:")
+    print(spread_df["prediction"].describe().round(3))
 
-    print("\nModel expects cover in {:.1%} of games".format((df["model_minus_market"] > 0).mean()))
-
-    # pick a regression artifact (spread) to infer sigma (RMSE) if available
-    spread_art = find_latest_artifact("spread_rf_v2") or find_latest_artifact("spread_rf")
-    artifact = load_artifact(spread_art) if spread_art else None
-    sigma = infer_sigma_from_artifact(artifact)
-    print(f"Using sigma (residual std) = {sigma:.2f} for calibrated probabilities")
+    print("\nModel expects home to cover in {:.1%} of games".format((spread_df["model_minus_market"] > 0).mean()))
 
     # calibrated probabilities
-    df["prob_home_win_calibrated"] = 1.0 - norm.cdf(0.0, loc=df["prediction"].astype(float), scale=sigma)
-    df["prob_home_covers_calibrated"] = 1.0 - norm.cdf(df["market_line_home"].astype(float), loc=df["prediction"].astype(float), scale=sigma)
+    spread_df["prob_home_win_calibrated"] = 1.0 - norm.cdf(0.0, loc=spread_df["prediction"].astype(float), scale=sigma)
+    spread_df["prob_home_covers_calibrated"] = 1.0 - norm.cdf(spread_df["market_line_home"].astype(float), loc=spread_df["prediction"].astype(float), scale=sigma)
 
     # show extremes for inspection
-    print("\nTop positive edges (model >> market):")
-    print(df.sort_values("model_minus_market", ascending=False)[["hometeamid", "awayteamid", "market_line_home", "prediction", "model_minus_market", "cover_prob"]].head(10).to_string(index=False))
+    print("\nTop positive spread edges (model >> market):")
+    cols = ["hometeamid", "awayteamid", "market_line_home", "prediction", "model_minus_market", "prob_home_covers_calibrated"]
+    print(spread_df.sort_values("model_minus_market", ascending=False)[cols].head(10).to_string(index=False))
 
-    print("\nTop negative edges (model << market):")
-    print(df.sort_values("model_minus_market")[ ["hometeamid", "awayteamid", "market_line_home", "prediction", "model_minus_market", "cover_prob"] ].head(10).to_string(index=False))
+    print("\nTop negative spread edges (model << market):")
+    print(spread_df.sort_values("model_minus_market")[cols].head(10).to_string(index=False))
 
     # suggested betting candidates
     EDGE_THRESHOLD = 3.0
     PROB_THRESHOLD = 0.60
-    candidates = df[(df["prob_home_covers_calibrated"] >= PROB_THRESHOLD) & (df["model_minus_market"] >= EDGE_THRESHOLD)]
-    print(f"\nSuggested betting candidates (cover_prob >= {PROB_THRESHOLD} and edge >= {EDGE_THRESHOLD}):")
+    candidates = spread_df[(spread_df["prob_home_covers_calibrated"] >= PROB_THRESHOLD) & (spread_df["model_minus_market"] >= EDGE_THRESHOLD)]
+    print(f"\nSuggested SPREAD betting candidates (cover_prob >= {PROB_THRESHOLD} and edge >= {EDGE_THRESHOLD}):")
     if candidates.empty:
         print("  None")
     else:
-        print(candidates[["hometeamid", "awayteamid", "market_line_home", "prediction", "model_minus_market", "prob_home_covers_calibrated"]].to_string(index=False))
+        print(candidates[cols].to_string(index=False))
+
+
+def analyze_totals(df: pd.DataFrame, sigma: float):
+    """Analyze total points (O/U) predictions"""
+    totals_df = df[df["target"] == "total_points"].copy()
+    if totals_df.empty:
+        print("No total points predictions found")
+        return
+    
+    print("\n" + "="*60)
+    print("OVER/UNDER ANALYSIS")
+    print("="*60)
+    
+    # model edge relative to market (higher -> model expects more points than market)
+    totals_df["model_minus_market"] = totals_df["prediction"].astype(float) - totals_df["market_total"].astype(float)
+
+    print("O/U Edge stats (model - market total):")
+    print(totals_df["model_minus_market"].describe().round(3))
+
+    print("\nTotal points prediction distribution:")
+    print(totals_df["prediction"].describe().round(3))
+
+    print("\nModel expects OVER in {:.1%} of games".format((totals_df["model_minus_market"] > 0).mean()))
+
+    # calibrated probabilities for over/under
+    totals_df["prob_over_calibrated"] = 1.0 - norm.cdf(totals_df["market_total"].astype(float), loc=totals_df["prediction"].astype(float), scale=sigma)
+    totals_df["prob_under_calibrated"] = 1.0 - totals_df["prob_over_calibrated"]
+
+    # show extremes for inspection
+    print("\nTop positive O/U edges (model expects higher scoring):")
+    cols = ["hometeamid", "awayteamid", "market_total", "prediction", "model_minus_market", "prob_over_calibrated"]
+    print(totals_df.sort_values("model_minus_market", ascending=False)[cols].head(10).to_string(index=False))
+
+    print("\nTop negative O/U edges (model expects lower scoring):")
+    cols_under = ["hometeamid", "awayteamid", "market_total", "prediction", "model_minus_market", "prob_under_calibrated"]
+    print(totals_df.sort_values("model_minus_market")[cols_under].head(10).to_string(index=False))
+
+    # suggested betting candidates
+    EDGE_THRESHOLD = 3.0
+    PROB_THRESHOLD = 0.60
+    
+    over_candidates = totals_df[(totals_df["prob_over_calibrated"] >= PROB_THRESHOLD) & (totals_df["model_minus_market"] >= EDGE_THRESHOLD)]
+    under_candidates = totals_df[(totals_df["prob_under_calibrated"] >= PROB_THRESHOLD) & (totals_df["model_minus_market"] <= -EDGE_THRESHOLD)]
+    
+    print(f"\nSuggested OVER betting candidates (over_prob >= {PROB_THRESHOLD} and edge >= {EDGE_THRESHOLD}):")
+    if over_candidates.empty:
+        print("  None")
+    else:
+        print(over_candidates[cols].to_string(index=False))
+    
+    print(f"\nSuggested UNDER betting candidates (under_prob >= {PROB_THRESHOLD} and edge <= -{EDGE_THRESHOLD}):")
+    if under_candidates.empty:
+        print("  None")
+    else:
+        print(under_candidates[cols_under].to_string(index=False))
+
+
+def analyze_binaries(df: pd.DataFrame):
+    """Analyze binary predictions"""
+    binary_df = df[df["target"].str.startswith("binary_")].copy()
+    if binary_df.empty:
+        print("No binary predictions found")
+        return
+    
+    print("\n" + "="*60)
+    print("BINARY PREDICTIONS ANALYSIS")
+    print("="*60)
+    
+    for target in binary_df["target"].unique():
+        target_df = binary_df[binary_df["target"] == target].copy()
+        print(f"\n{target.upper()}:")
+        
+        if "prob_0" in target_df.columns and "prob_1" in target_df.columns:
+            target_df["confidence"] = abs(target_df["prob_1"].astype(float) - target_df["prob_0"].astype(float))
+            target_df["predicted_class"] = (target_df["prob_1"].astype(float) > target_df["prob_0"].astype(float)).astype(int)
+            
+            print(f"  Class distribution: {target_df['predicted_class'].value_counts().to_dict()}")
+            print(f"  Average confidence: {target_df['confidence'].mean():.3f}")
+            
+            # High confidence predictions
+            high_conf = target_df[target_df["confidence"] >= 0.3].sort_values("confidence", ascending=False)
+            if not high_conf.empty:
+                print(f"\n  High confidence predictions (confidence >= 0.3):")
+                cols = ["hometeamid", "awayteamid", "predicted_class", "prob_0", "prob_1", "confidence"]
+                print(high_conf[cols].head(10).to_string(index=False))
+
+
+def main():
+    pred_csv = find_latest_all_targets()
+    if not pred_csv or not pred_csv.exists():
+        print("No all_targets prediction CSV found in artifacts/predictions/")
+        return
+    
+    print(f"Using prediction file: {pred_csv}")
+    df = pd.read_csv(pred_csv)
+    
+    print(f"Loaded {len(df)} predictions")
+    print(f"Target types: {df['target'].unique()}")
+    print(f"Games: {df[['hometeamid', 'awayteamid']].drop_duplicates().shape[0]}")
+
+    # Get sigma from spread artifact for calibrated probabilities
+    spread_art = find_latest_artifact("spread_rf_v2") or find_latest_artifact("spread_rf")
+    artifact = load_artifact(spread_art) if spread_art else None
+    sigma = infer_sigma_from_artifact(artifact)
+    print(f"\nUsing sigma (residual std) = {sigma:.2f} for calibrated probabilities")
+
+    # Analyze each target type
+    analyze_spreads(df, sigma)
+    analyze_totals(df, sigma)  
+    analyze_binaries(df)
 
     # annotate binary rows using artifacts
     out_df = annotate_binaries(df)
 
     out_path = pred_csv.with_name(pred_csv.stem + "_annotated.csv")
     out_df.to_csv(out_path, index=False)
-    print("Wrote annotated predictions to:", out_path)
+    print(f"\nWrote annotated predictions to: {out_path}")
 
 
 if __name__ == "__main__":
