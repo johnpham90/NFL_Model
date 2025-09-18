@@ -34,8 +34,13 @@ def train_target(target: str, start_season: int = 2021):
     """
     model = NFLModelV2(target=target)
     model.load_games(start_season=start_season)
-    # Build offensive + defensive + differential features
+
+    # Build Team Features
     model.build_feature_matrices(include_defense=True, include_differentials=True)
+
+     # Build player features 
+    model.build_player_feature_matrices(include_defense=True, include_differentials=True)
+    
     model.build_dataset()
     # Random Forest baseline (swap to fit_xgb for XGBoost)
     metrics = model.fit_random_forest()
