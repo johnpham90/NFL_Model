@@ -59,7 +59,8 @@ class NFLModelV2:
             "binary_spread_label","binary_ou_label"
         }  # 'team_points' removed so its lagged histories can be used
 
-    # ---------- Data & Features ----------
+    # ---------- Data & Features ------------------------------------------------------------------------------------------------------------------------------------------
+          #-------------Team Stats --------------------------
     def load_games(self, start_season: int):
         """Load per-team rows, expand composite columns, derive efficiencies.
 
@@ -259,7 +260,7 @@ class NFLModelV2:
         return self._dataset
     
 
-    #------------Player Level Features -----------
+                #------------Player Level Offense Features -----------
     def build_player_feature_matrices(self, exclude_current: bool = True, include_defense: bool = True, include_differentials: bool = True):
         """
         Build player-level rolling average features and add to existing _hist_df.
@@ -493,7 +494,7 @@ class NFLModelV2:
         else:
             return pd.DataFrame()
 
-    # ---------- Training ----------
+    # ---------- Training ---------------------------------------------------------------------------------------------------------------------------------
     def _select_X_y(self):
         if self._dataset is None:
             raise RuntimeError("Dataset not built.")
@@ -516,7 +517,7 @@ class NFLModelV2:
         y_train, y_test = y.iloc[:split_idx], y.iloc[split_idx:]
         return X_train, X_test, y_train, y_test, feature_cols, is_class
 
-    # ---------- Leakage Guards ----------
+    # ---------- Leakage Guards --------------------------------------------------------------------------------------------------------------------------------
     def _sanitize_feature_columns(self):
         """Remove any outcome / target columns that may have slipped into feature_columns."""
         if not hasattr(self, 'feature_columns') or self.feature_columns is None:

@@ -87,67 +87,54 @@ class TeamFeatureConfigV2:
 
 @dataclass
 class PlayerFeatureConfigV2:
-    # Position-specific stat groups for rolling averages
+    # Tier 1: Core skill positions only
+    position_rankings: List[str] = field(default_factory=lambda: [
+        "QB1",    # Most impactful individual player
+        "RB1",    # Primary ball carrier
+        "WR1",    # Top receiving target
+        "WR2",    # Secondary receiver
+        "WR3"     # Third receiving option
+    ])
+    
+    # Reduced rolling windows - focus on medium-term trends
+    rolling_windows: List[int] = field(default_factory=lambda: [5, 10])
+    
+    # Core stats only - most predictive for each position
     position_stat_groups: Dict[str, List[str]] = field(default_factory=lambda: {
         "QB": [
-            # Passing stats (primary for QB)
-            "pass_yds", "pass_td", "pass_int", "pass_cmp", "pass_att", "pass_rating",
-            "pass_long", "pass_sacked", "pass_sacked_yds",
-            # Rushing stats (QB mobility)
-            "rush_yds", "rush_td", "rush_att", "rush_long",
-            # Turnovers
-            "fumbles", "fumbles_lost"
+            # Core passing efficiency
+            "pass_yds", "pass_td", "pass_int", "pass_rating",
+            # Pressure handling
+            "pass_sacked",
+            # Mobility factor
+            "rush_yds", "rush_td",
+            # Ball security
+            "fumbles_lost"
         ],
         "RB": [
-            # Rushing stats (primary for RB)
-            "rush_yds", "rush_td", "rush_att", "rush_long",
-            # Receiving stats (pass-catching backs)
-            "rec_yds", "rec_td", "rec", "targets", "rec_long",
-            # Turnovers
-            "fumbles", "fumbles_lost"
+            # Core rushing production
+            "rush_yds", "rush_td", "rush_att",
+            # Pass catching (modern RBs)
+            "rec_yds", "rec_td", "targets",
+            # Ball security
+            "fumbles_lost"
         ],
         "WR": [
-            # Receiving stats (primary for WR)
-            "rec_yds", "rec_td", "rec", "targets", "rec_long",
-            # Occasional rushing (end-arounds, etc.)
-            "rush_yds", "rush_td", "rush_att", "rush_long",
-            # Turnovers
-            "fumbles", "fumbles_lost"
-        ],
-        "TE": [
-            # Receiving stats (primary for TE)
-            "rec_yds", "rec_td", "rec", "targets", "rec_long",
-            # Turnovers
-            "fumbles", "fumbles_lost"
+            # Core receiving production
+            "rec_yds", "rec_td", "rec", "targets",
+            # Ball security
+            "fumbles_lost"
         ]
     })
     
-    # Player rankings we want to track per team per game
-    position_rankings: List[str] = field(default_factory=lambda: [
-        "QB1",    # Top QB by pass attempts
-        "RB1",    # Top RB by rush attempts  
-        "TE1",    # Top TE by targets
-        "WR1",    # Top WR by targets
-        "WR2",    # 2nd WR by targets
-        "WR3"     # 3rd WR by targets
-    ])
-    
-    # Rolling window sizes (matching team features)
-    rolling_windows: List[int] = field(default_factory=lambda: [2, 5, 10])
-    
-    # Minimum games required for rolling averages
-    min_games_required: int = 1
-    
-    # Position ranking criteria (stat used to determine top player)
     ranking_criteria: Dict[str, str] = field(default_factory=lambda: {
-        "QB": "pass_att",     # Top QB by pass attempts
-        "RB": "rush_att",     # Top RB by rush attempts
-        "WR": "targets",      # Top WRs by targets
-        "TE": "targets"       # Top TE by targets
+        "QB": "pass_att",
+        "RB": "rush_att", 
+        "WR": "targets"
     })
     
     def get_position_stats(self, position: str) -> List[str]:
-        """Get relevant stats for a position."""
+        """Get core stats for a position."""
         return self.position_stat_groups.get(position, [])
     
     def get_ranking_stat(self, position: str) -> str:
