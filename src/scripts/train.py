@@ -14,6 +14,10 @@ Outputs:
 
 from pathlib import Path
 from datetime import datetime
+import sys
+import os
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from src.models.xgboost_randomforrest_model_v2 import NFLModelV2
 
 # List of targets to train. Adjust ordering or remove as needed.

@@ -94,3 +94,10 @@ __all__ = [
     "model_config_v2",
     "team_feature_configs_v2",
 ]
+
+TARGETS = [
+    "spread",
+    "total_points",
+    "binary_spread_label",
+    "binary_ou_label"
+]
