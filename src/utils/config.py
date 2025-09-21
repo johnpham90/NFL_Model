@@ -6,11 +6,7 @@
 class model_config:
   train_test_split=.2
   start_season=2022
-  classification_models=["binary_spread_label", "binary_ou_label"]
-  classification_models_names=["binary_spread_label_model", "binary_ou_label"]
-  
-  regression_models=["spread", "total points"]
-  regression_models_names=["spread_model", "total_points_model"]
+
   param_dist = {
     'n_estimators': [100, 200, 300, 400, 500],
     'max_depth': [3, 4, 5, 6, 7, 8, 9, 10],
