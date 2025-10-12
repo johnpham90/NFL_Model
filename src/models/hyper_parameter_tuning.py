@@ -131,13 +131,13 @@ class NFLHyperparameterTuner:
             'learning_rate': trial.suggest_float('learning_rate', 0.01, 0.3, log=True),
             'subsample': trial.suggest_float('subsample', 0.6, 1.0),
             'colsample_bytree': trial.suggest_float('colsample_bytree', 0.6, 1.0),
-            'reg_alpha': trial.suggest_float('reg_alpha', 1e-8, 10.0, log=True),
-            'reg_lambda': trial.suggest_float('reg_lambda', 1e-8, 10.0, log=True),
+            'reg_alpha': trial.suggest_float('reg_alpha', 1e-8, 10.0, ),
+            'reg_lambda': trial.suggest_float('reg_lambda', 1e-8, 10.0),
             'min_child_weight': trial.suggest_int('min_child_weight', 1, 10),
             'gamma': trial.suggest_float('gamma', 0, 10),
             "n_estimators":trial.suggest_int('n_estimators', 100, 5000),
             "early_stopping_rounds":trial.suggest_int('early_stopping_rounds', 10, 1000),
-            "lookback_seasons": trial.suggest_int('lookback_seasons', 2,10)
+            "lookback_seasons": trial.suggest_int('lookback_seasons', 2,5)
             
         }
         
@@ -152,7 +152,7 @@ class NFLHyperparameterTuner:
         # Set objective based on task type
         if task_type == 'classification':
             params['objective'] = 'binary:logistic'
-            params['eval_metric'] = 'logloss'
+            params['eval_metric'] = 'auc'
         else:  # regression
             params['objective'] = 'reg:squarederror'
             params['eval_metric'] = 'rmse'
@@ -210,7 +210,8 @@ class NFLHyperparameterTuner:
             # Calculate score based on task type
             if task_type == 'classification':
                 # Use AUC as the metric for classification
-                score = -log_loss(y_test, y_pred)
+                # score = -log_loss(y_test, y_pred)
+                score=roc_auc_score(y_test, y_pred)
                 
                 
             else:  # regression
