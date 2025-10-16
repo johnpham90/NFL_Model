@@ -47,7 +47,7 @@ class PlayerPropArtifacts:
 class NFLPlayerPropModel:
     """
     Player prop prediction model following NFLModelV2 architecture.
-    Supports position-specific models for QB, RB, WR/TE props.
+    Supports position-specific models for QB, RB, and PASS_CATCHER (RB+WR+TE) props.
     
     Features:
     - Time-series rolling features (expanding and windowed means/stds)
@@ -57,13 +57,13 @@ class NFLPlayerPropModel:
     """
     
     def __init__(
-        self,
-        position: PositionType,
-        prop_type: PropType,
-        target_type: TargetType = "yards",
-        test_size: float = 0.2,
-        random_state: int = 42,
-        stats: Optional[List[str]] = None
+    self,
+    position: PositionType,
+    prop_type: PropType,
+    target_type: TargetType = "yards",
+    test_size: float = 0.2,
+    random_state: int = 42,
+    stats: Optional[List[str]] = None, 
     ):
         """
         Initialize player prop model.
@@ -81,7 +81,7 @@ class NFLPlayerPropModel:
         self.target_type = target_type
         self.test_size = test_size
         self.random_state = random_state
-        
+
         # Get feature stats from config or use provided list
         if stats is None:
             self.stats = player_prop_feature_config.get_features_for_prop(prop_type)
@@ -101,33 +101,16 @@ class NFLPlayerPropModel:
     # ========== DATA LOADING ==========
     
     def load_player_games(self, start_season: int) -> pd.DataFrame:
-        """
-        Load player game-level data using centralized feature builder.
-        
-        Uses the main builder to orchestrate all feature engineering:
-        - Base stats loading
-        - Position filtering  
-        - Game lines integration
-        - TD indicators
-        
-        Args:
-            start_season: First season to include (e.g., 2020)
-            
-        Returns:
-            DataFrame with player game records and all features
-            
-        Raises:
-            ValueError: If prop_type is unknown or no data returned
-        """
+        """Load player game-level data using centralized feature builder."""
         print(f"Loading {self.prop_type} data for {self.position} from season {start_season}...")
 
-        # Use the main builder - includes game lines automatically
+        # Use builder with its defaults
         self.player_games = build_player_features(
             start_season=start_season,
             prop_type=self.prop_type,
             position=self.position,
-            add_indicators=True,
-            add_lines=True  # Include game line features
+            add_indicators=True
+            # All other features controlled by builder defaults
         )
         
         validate_dataframe(
@@ -144,8 +127,6 @@ class NFLPlayerPropModel:
     def build_feature_matrices(
         self,
         exclude_current: bool = True,
-        include_opponent_defense: bool = True,
-        include_matchup_history: bool = True
     ) -> List[str]:
         """
         Build rolling features, opponent defense stats, and matchup history.
@@ -246,100 +227,128 @@ class NFLPlayerPropModel:
                 axis=1
             )
         
+        # Add efficiency metrics calculated from HISTORICAL data (no leakage)
+        print(f"[INFO] Calculating efficiency metrics from historical data...")
+        efficiency_features = self._build_efficiency_features(df, player_grp, prior_expanding, prior_rolling)
+        if efficiency_features is not None and not efficiency_features.empty:
+            df = pd.concat([df.reset_index(drop=True), efficiency_features.reset_index(drop=True)], axis=1)
+            built.extend(efficiency_features.columns.tolist())
+        
         self._hist_features = built
         self._hist_df = df
         
-        # Add optional feature sets
-        if include_opponent_defense:
-            self._add_opponent_defense_features()
-        if include_matchup_history:
-            self._add_matchup_history()
-        
         return built
     
-    def _add_opponent_defense_features(self):
+    def _build_efficiency_features(
+        self,
+        df: pd.DataFrame,
+        player_grp,
+        prior_expanding,
+        prior_rolling
+    ) -> pd.DataFrame:
         """
-        Add opponent defensive stats (yards allowed by position).
+        Calculate efficiency metrics from historical data (no data leakage).
         
-        Aggregates how many yards the opponent defense has allowed to this
-        position group historically. Uses proper temporal ordering to prevent
-        data leakage.
+        Creates ratios like completion%, yds/att, td_rate from PREVIOUS games only.
+        Uses shift(1) to ensure we never see current game stats.
+        
+        Args:
+            df: DataFrame with current stats
+            player_grp: Grouped DataFrame by playerid
+            prior_expanding: Function for expanding mean with lag
+            prior_rolling: Function for rolling mean with lag
+        
+        Returns:
+            DataFrame with efficiency features
         """
-        print("Adding opponent defense features...")
-        df = self._hist_df.copy()
+        efficiency_cols = {}
         
-        # Select appropriate target column based on prop type
-        if self.prop_type == "pass_yds":
-            target_col, feature_name = 'pass_yds', 'opp_pass_yds_allowed_hist'
-        elif self.prop_type == "rush_yds":
-            target_col, feature_name = 'rush_yds', 'opp_rush_yds_allowed_hist'
-        elif self.prop_type in ["rec_yds", "receptions"]:
-            target_col, feature_name = 'rec_yds', 'opp_rec_yds_allowed_hist'
+        # QB Efficiency Metrics
+        if 'pass_att' in df.columns and 'pass_cmp' in df.columns:
+            completion_pct = player_grp.apply(
+                lambda g: (g['pass_cmp'].shift(1).expanding(min_periods=1).sum() / 
+                          g['pass_att'].shift(1).expanding(min_periods=1).sum().replace(0, np.nan))
+            ).reset_index(level=0, drop=True)
+            efficiency_cols['completion_pct__hist'] = completion_pct
+        
+        if 'pass_yds' in df.columns and 'pass_att' in df.columns:
+            yds_per_att = player_grp.apply(
+                lambda g: (g['pass_yds'].shift(1).expanding(min_periods=1).sum() / 
+                          g['pass_att'].shift(1).expanding(min_periods=1).sum().replace(0, np.nan))
+            ).reset_index(level=0, drop=True)
+            efficiency_cols['yds_per_att__hist'] = yds_per_att
+        
+        if 'pass_yds' in df.columns and 'pass_cmp' in df.columns:
+            yds_per_cmp = player_grp.apply(
+                lambda g: (g['pass_yds'].shift(1).expanding(min_periods=1).sum() / 
+                          g['pass_cmp'].shift(1).expanding(min_periods=1).sum().replace(0, np.nan))
+            ).reset_index(level=0, drop=True)
+            efficiency_cols['yds_per_cmp__hist'] = yds_per_cmp
+        
+        if 'pass_td' in df.columns and 'pass_att' in df.columns:
+            td_rate = player_grp.apply(
+                lambda g: (g['pass_td'].shift(1).expanding(min_periods=1).sum() / 
+                          g['pass_att'].shift(1).expanding(min_periods=1).sum().replace(0, np.nan))
+            ).reset_index(level=0, drop=True)
+            efficiency_cols['td_rate__hist'] = td_rate
+        
+        if 'pass_int' in df.columns and 'pass_att' in df.columns:
+            int_rate = player_grp.apply(
+                lambda g: (g['pass_int'].shift(1).expanding(min_periods=1).sum() / 
+                          g['pass_att'].shift(1).expanding(min_periods=1).sum().replace(0, np.nan))
+            ).reset_index(level=0, drop=True)
+            efficiency_cols['int_rate__hist'] = int_rate
+        
+        # RB Efficiency Metrics
+        if 'rush_yds' in df.columns and 'rush_att' in df.columns:
+            yds_per_carry = player_grp.apply(
+                lambda g: (g['rush_yds'].shift(1).expanding(min_periods=1).sum() / 
+                          g['rush_att'].shift(1).expanding(min_periods=1).sum().replace(0, np.nan))
+            ).reset_index(level=0, drop=True)
+            efficiency_cols['yds_per_carry__hist'] = yds_per_carry
+        
+        if 'rush_td' in df.columns and 'rush_att' in df.columns:
+            rush_td_rate = player_grp.apply(
+                lambda g: (g['rush_td'].shift(1).expanding(min_periods=1).sum() / 
+                          g['rush_att'].shift(1).expanding(min_periods=1).sum().replace(0, np.nan))
+            ).reset_index(level=0, drop=True)
+            efficiency_cols['rush_td_rate__hist'] = rush_td_rate
+        
+        # WR/TE Efficiency Metrics
+        if 'rec_yds' in df.columns and 'rec' in df.columns:
+            yds_per_rec = player_grp.apply(
+                lambda g: (g['rec_yds'].shift(1).expanding(min_periods=1).sum() / 
+                          g['rec'].shift(1).expanding(min_periods=1).sum().replace(0, np.nan))
+            ).reset_index(level=0, drop=True)
+            efficiency_cols['yds_per_rec__hist'] = yds_per_rec
+        
+        if 'rec_yds' in df.columns and 'targets' in df.columns:
+            yds_per_target = player_grp.apply(
+                lambda g: (g['rec_yds'].shift(1).expanding(min_periods=1).sum() / 
+                          g['targets'].shift(1).expanding(min_periods=1).sum().replace(0, np.nan))
+            ).reset_index(level=0, drop=True)
+            efficiency_cols['yds_per_target__hist'] = yds_per_target
+        
+        if 'rec' in df.columns and 'targets' in df.columns:
+            catch_rate = player_grp.apply(
+                lambda g: (g['rec'].shift(1).expanding(min_periods=1).sum() / 
+                          g['targets'].shift(1).expanding(min_periods=1).sum().replace(0, np.nan))
+            ).reset_index(level=0, drop=True)
+            efficiency_cols['catch_rate__hist'] = catch_rate
+        
+        if 'rec_td' in df.columns and 'rec' in df.columns:
+            rec_td_rate = player_grp.apply(
+                lambda g: (g['rec_td'].shift(1).expanding(min_periods=1).sum() / 
+                          g['rec'].shift(1).expanding(min_periods=1).sum().replace(0, np.nan))
+            ).reset_index(level=0, drop=True)
+            efficiency_cols['rec_td_rate__hist'] = rec_td_rate
+        
+        if efficiency_cols:
+            print(f"[INFO] Created {len(efficiency_cols)} historical efficiency metrics")
+            return pd.DataFrame(efficiency_cols)
         else:
-            return
-        
-        # Aggregate yards allowed by opponent per week
-        def_agg = df.groupby(['opp_teamid', 'season', 'week'])[target_col].mean().reset_index()
-        def_agg = def_agg.rename(columns={target_col: f'opp_{target_col}_allowed'})
-        def_agg = def_agg.sort_values(['opp_teamid', 'season', 'week'])
-        
-        # Calculate historical average (excluding current week)
-        def_agg[feature_name] = (
-            def_agg.groupby('opp_teamid')[f'opp_{target_col}_allowed']
-            .shift(1)
-            .expanding(min_periods=1)
-            .mean()
-            .reset_index(drop=True)
-        )
-        
-        # Merge back to main dataframe
-        df = df.merge(
-            def_agg[['opp_teamid', 'season', 'week', feature_name]],
-            on=['opp_teamid', 'season', 'week'],
-            how='left'
-        )
-        
-        self._hist_features.append(feature_name)
-        self._hist_df = df.fillna(0)
+            return pd.DataFrame()
     
-    def _add_matchup_history(self):
-        """
-        Add player career history vs specific opponent (vectorized).
-        
-        Calculates player's historical average performance against each specific
-        opponent. Uses vectorized operations for optimal performance.
-        """
-        print("Adding matchup history features...")
-        df = self._hist_df.copy()
-        
-        # Select target column based on prop type
-        target_col_map = {
-            "pass_yds": "pass_yds",
-            "rush_yds": "rush_yds",
-            "rec_yds": "rec_yds",
-            "receptions": "rec"
-        }
-        target_col = target_col_map.get(self.prop_type)
-        if not target_col:
-            return
-        
-        # Sort for proper time ordering
-        df = df.sort_values(['playerid', 'opp_teamid', 'season', 'week'])
-        
-        # Calculate expanding mean vs opponent (excluding current game)
-        df['player_vs_opp_avg'] = (
-            df.groupby(['playerid', 'opp_teamid'])[target_col]
-            .transform(lambda x: x.shift(1).expanding().mean())
-            .fillna(0)
-        )
-        
-        # Count of prior games vs opponent
-        df['player_vs_opp_games'] = (
-            df.groupby(['playerid', 'opp_teamid']).cumcount()
-        )
-        
-        self._hist_features.extend(['player_vs_opp_avg', 'player_vs_opp_games'])
-        self._hist_df = df
     
     def build_dataset(self) -> pd.DataFrame:
         """
@@ -358,7 +367,77 @@ class NFLPlayerPropModel:
             raise RuntimeError("Call build_feature_matrices() first.")
         
         df = self._hist_df.copy()
+        
+        # Start with rolling/historical features
         feature_base = [c for c in self._hist_features if c in df.columns]
+        
+        # Add other feature columns that aren't metadata, stats, or targets
+        # (e.g., opponent defense features, game lines, matchup history)
+        core_metadata = [
+            "gamesummaryid", "playerid", "player", "teamid",
+            "season", "week", "is_home", "position"
+        ]
+        
+        # ALL current-game statistics (outcome variables)
+        # These columns exist in the data but should NOT be used as features
+        # (they're used to CREATE rolling features, but not used directly)
+        current_game_stats = {
+            # Passing stats
+            "pass_yds", "pass_td", "pass_att", "pass_cmp", "pass_int",
+            "pass_air_yds", "pass_yac", "pass_target_yds", "pass_first_down",
+            "pass_sacked", "pass_pressured", "pass_blitzed", "pass_hits", "pass_hurried",
+            "pass_rating", "pass_drops", "pass_spikes", "pass_throwaways",
+            # Derived passing efficiency (calculated from current game)
+            "pass_air_yds_per_att", "pass_air_yds_per_cmp", "pass_yac_per_cmp",
+            "pass_tgt_yds_per_att", "pass_poor_throw_pct", "pass_drop_pct",
+            "pass_first_down_pct", "pass_pressured_pct",
+            "completion_pct", "yds_per_att", "yds_per_cmp", "td_rate", "int_rate",
+            # QB rushing stats
+            "qb_rush_att", "qb_rush_yds", "qb_rush_td", "qb_rush_yac",
+            "qb_rush_broken_tackles", "qb_rush_first_down",
+            # Rushing stats
+            "rush_yds", "rush_att", "rush_td", "rush_yac", "rush_first_down",
+            "rush_broken_tackles", "rush_scrambles",
+            "yds_per_carry", "fumble_rate",
+            # Receiving stats
+            "rec_yds", "rec", "rec_td", "rec_air_yds", "rec_yac", "rec_first_down",
+            "rec_broken_tackles", "rec_drops", "targets", "rec_adot",
+            "rec_target_int", "rec_catchable_targets",
+            "yds_per_rec", "yds_per_target", "catch_rate",
+            # Position-specific derived stats
+            "rb_target_vol", "rb_catch_efficiency", "rb_shallow_routes",
+            "wr_air_yards", "wr_deep_routes", "wr_explosiveness",
+            "te_yac", "te_first_downs", "te_intermediate",
+            # Binary outcomes
+            "has_pass_td", "has_rush_td", "has_rec_td", "has_any_td"
+        }
+        
+        # Safe pre-game features (known before game starts)
+        pregame_features = {
+            "days_rest", "weeks_from_bye", "is_favorite", "is_home",
+            "is_rb", "is_wr", "is_te",  # Position indicators
+        }
+        
+        # Find columns that are valid features:
+        # - Not metadata
+        # - Not current-game stats  
+        # - Not already in rolling features
+        # - Known before game time (lines, defense, matchup) OR explicitly pre-game
+        additional_features = [
+            c for c in df.columns 
+            if c not in core_metadata
+            and c not in current_game_stats
+            and c not in feature_base
+            and not c.startswith("_")  # Skip private columns
+            # Include: lines (spread/total), opponent features (opp_), matchup (vs_opp), pre-game
+            and (c in pregame_features or 
+                 any(x in c for x in ['spread', 'total', 'moneyline', 'implied', 
+                                      'opp_', 'vs_opp', 'player_vs_opp']))
+        ]
+        
+        if additional_features:
+            print(f"[INFO] Adding {len(additional_features)} non-rolling features: {additional_features[:10]}{'...' if len(additional_features) > 10 else ''}")
+            feature_base.extend(additional_features)
         
         # Core metadata columns
         core_cols = [

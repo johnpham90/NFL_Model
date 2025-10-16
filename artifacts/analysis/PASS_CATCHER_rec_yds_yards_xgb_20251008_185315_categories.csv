@@ -1,0 +1,8 @@
+category,total_importance,avg_importance,count,total_pct,best_rank
+rolling,307485.56,3660.54,84,69.54,1
+historical,100590.35,3143.45,32,22.75,2
+indicators,15405.95,5135.32,3,3.49,4
+lines,9215.45,1843.09,5,2.09,42
+other,4000.65,2000.33,2,0.91,66
+matchup,3710.76,1855.38,2,0.83,92
+defense,1699.97,1699.97,1,0.38,111

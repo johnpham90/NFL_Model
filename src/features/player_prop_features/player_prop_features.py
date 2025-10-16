@@ -153,6 +153,86 @@ def validate_required_columns(df: pd.DataFrame, required_cols: list, context: st
         )
 
 
+def add_position_features(df: pd.DataFrame, prop_type: PropType) -> pd.DataFrame:
+    """
+    Add position indicators and position-specific interaction features.
+    
+    For receiving props, creates features that capture position-specific patterns:
+    - RB: More checkdowns, screens, higher catch rate, lower yards per target
+    - WR: Deep routes, more air yards, boom/bust profiles
+    - TE: Red zone targets, intermediate routes, first downs
+    
+    Args:
+        df: DataFrame with current_position column
+        prop_type: Type of prop being predicted
+        
+    Returns:
+        DataFrame with added position features and interactions
+    """
+    if 'current_position' not in df.columns:
+        print("[WARNING] No current_position column - skipping position features")
+        return df
+    
+    # Basic one-hot encoding
+    df['is_rb'] = (df['current_position'] == 'RB').astype(int)
+    df['is_wr'] = (df['current_position'] == 'WR').astype(int)
+    df['is_te'] = (df['current_position'] == 'TE').astype(int)
+    
+    features_added = ['is_rb', 'is_wr', 'is_te']
+    
+    # Position-specific interaction features for receiving props
+    if prop_type in ['rec_yds', 'receptions']:
+        
+        # RB-specific features (short routes, high catch rate)
+        if 'targets' in df.columns:
+            df['rb_target_vol'] = df['is_rb'] * df['targets']
+            features_added.append('rb_target_vol')
+        
+        if 'rec_adot' in df.columns:
+            df['rb_shallow_routes'] = df['is_rb'] * (df['rec_adot'] < 5).astype(int)
+            features_added.append('rb_shallow_routes')
+        
+        if 'rec' in df.columns and 'targets' in df.columns:
+            # Catch rate for RBs (typically higher than WR/TE)
+            catch_rate = np.where(df['targets'] > 0, df['rec'] / df['targets'], 0)
+            df['rb_catch_efficiency'] = df['is_rb'] * catch_rate
+            features_added.append('rb_catch_efficiency')
+        
+        # WR-specific features (deep routes, air yards)
+        if 'rec_air_yds' in df.columns:
+            df['wr_air_yards'] = df['is_wr'] * df['rec_air_yds']
+            features_added.append('wr_air_yards')
+        
+        if 'rec_adot' in df.columns:
+            df['wr_deep_routes'] = df['is_wr'] * (df['rec_adot'] > 10).astype(int)
+            features_added.append('wr_deep_routes')
+        
+        if 'rec_yds' in df.columns and 'targets' in df.columns:
+            # Yards per target for WRs (typically higher than RB/TE)
+            yds_per_tgt = np.where(df['targets'] > 0, df['rec_yds'] / df['targets'], 0)
+            df['wr_explosiveness'] = df['is_wr'] * yds_per_tgt
+            features_added.append('wr_explosiveness')
+        
+        # TE-specific features (red zone, intermediate, first downs)
+        if 'rec_first_down' in df.columns:
+            df['te_first_downs'] = df['is_te'] * df['rec_first_down']
+            features_added.append('te_first_downs')
+        
+        if 'rec_adot' in df.columns:
+            # TEs typically work intermediate (5-15 yard) routes
+            is_intermediate = df['rec_adot'].between(5, 15).astype(int)
+            df['te_intermediate'] = df['is_te'] * is_intermediate
+            features_added.append('te_intermediate')
+        
+        if 'rec_yac' in df.columns:
+            # TEs often good YAC in intermediate game
+            df['te_yac'] = df['is_te'] * df['rec_yac']
+            features_added.append('te_yac')
+    
+    print(f"[INFO] Added {len(features_added)} position features for {prop_type}")
+    return df
+
+
 # ========== EFFICIENCY CALCULATIONS ==========
 
 
@@ -517,6 +597,7 @@ def load_player_data(start_season: int, prop_type: PropType, add_indicators: boo
     - Opponent team calculation
     - Efficiency metrics (from config)
     - Position filtering (optional)
+    - Position features and interactions (for receiving props)
     - Game lines (optional)
     - Optional TD indicators
     
@@ -524,7 +605,8 @@ def load_player_data(start_season: int, prop_type: PropType, add_indicators: boo
         start_season: First season to include
         prop_type: Type of prop data to load ("pass_yds", "rush_yds", "rec_yds", "receptions", "any_td")
         add_indicators: If True, add binary TD indicators
-        position: Optional position filter (QB, RB, WR, TE, PASS_CATCHER)
+        position: Optional position filter (QB, RB, WR, TE, PASS_CATCHER). 
+                  Use PASS_CATCHER to get all pass catchers (RB+WR+TE combined)
         add_lines: If True, add betting lines and game context
         
     Returns:
@@ -562,7 +644,7 @@ def load_player_data(start_season: int, prop_type: PropType, add_indicators: boo
     # Combine all seasons
     df = pd.concat(all_data, ignore_index=True)
     
-    # POSITION FILTERING using actual position data
+    # POSITION FILTERING - only filter if position is explicitly specified
     if position and 'current_position' in df.columns:
         original_count = len(df)
         
@@ -570,14 +652,24 @@ def load_player_data(start_season: int, prop_type: PropType, add_indicators: boo
             df = df[df['current_position'] == 'RB']
             print(f"[INFO] Filtered to RBs: {original_count} -> {len(df)} records")
         elif position == "PASS_CATCHER":
-            df = df[df['current_position'].isin(['WR', 'TE'])]
-            print(f"[INFO] Filtered to WR/TE: {original_count} -> {len(df)} records")
+            # Include RB, WR, TE - everyone who catches passes
+            df = df[df['current_position'].isin(['RB', 'WR', 'TE'])]
+            print(f"[INFO] Kept all pass catchers (RB/WR/TE): {original_count} -> {len(df)} records")
         elif position == "QB":
             df = df[df['current_position'] == 'QB']
             print(f"[INFO] Filtered to QBs: {original_count} -> {len(df)} records")
         elif position in ["WR", "TE"]:
             df = df[df['current_position'] == position]
             print(f"[INFO] Filtered to {position}: {original_count} -> {len(df)} records")
+    elif prop_type in ['rec_yds', 'receptions'] and 'current_position' in df.columns:
+        # If no position specified for receiving props, keep all pass catchers
+        original_count = len(df)
+        df = df[df['current_position'].isin(['RB', 'WR', 'TE'])]
+        print(f"[INFO] Kept all pass catchers by default: {original_count} -> {len(df)} records")
+    
+    # ADD POSITION FEATURES for receiving props (creates interaction features)
+    if prop_type in ['rec_yds', 'receptions']:
+        df = add_position_features(df, prop_type)
     
     # ADD GAME LINES if requested
     if add_lines:
@@ -616,13 +708,29 @@ def load_rb_combined_data(start_season: int) -> pd.DataFrame:
     return combined
 
 def load_any_td_data(start_season: int, position: PositionType = None) -> pd.DataFrame:
-    """Load position-appropriate data for anytime TD prediction."""
+    """
+    Load position-appropriate data for anytime TD prediction.
+    
+    Note: 
+    - RB: Combines rushing + receiving (can score both ways)
+    - WR/TE: Only receiving (rarely rush)
+    - PASS_CATCHER: Not recommended for any_td (mixed RB/WR/TE have different TD patterns)
+    """
     if position == "RB":
+        # RBs can score rushing OR receiving TDs - need both datasets
         return load_rb_combined_data(start_season)
-    elif position in ["WR", "TE", "PASS_CATCHER"]:
-        df = load_player_data(start_season, "rec_yds", add_indicators=True)
+    elif position in ["WR", "TE"]:
+        # WR/TE only score receiving TDs (rushing TDs extremely rare)
+        df = load_player_data(start_season, "rec_yds", add_indicators=True, position=position)
         df['has_any_td'] = df.get('has_rec_td', 0)
         return df
+    elif position == "PASS_CATCHER":
+        # PASS_CATCHER includes RBs who can score rushing TDs - need special handling
+        raise NotImplementedError(
+            "PASS_CATCHER any_td not supported. RBs can score rushing TDs, "
+            "but WR/TE cannot. Use position='RB' for RB any_td predictions, "
+            "or use rec_yds TD probability for pure receiving TDs."
+        )
     else:
         raise ValueError(f"Position {position} not supported for any_td")
 __all__ = [

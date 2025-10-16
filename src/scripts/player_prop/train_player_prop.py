@@ -2,13 +2,17 @@
 Train player prop models for all position-prop combinations.
 
 Positions:
-- QB: pass_yds, pass_td_probability
-- RB: rush_yds, rec_yds, receptions, any_time touchdowns
-- PASS_CATCHER (WR/TE): rec_yds, rec_td_probability, receptions
+- QB: pass_yds (yards + TD probability)
+- RB: rush_yds (yards), any_td (TD probability)
+- PASS_CATCHER (RB+WR+TE): rec_yds (yards + TD probability), receptions
 
 Outputs:
 - One pickled model artifact per position-prop-target combination
-  Named: <position>_<prop>_<target>_xgb_<timestamp>.pkl
+  Named: <position>_<prop>_<target>_<xgb/rf>_<timestamp>.pkl
+
+FEATURE TOGGLES:
+  Edit src/features/player_prop_features/main_player_prop_builder.py (lines 29-32)
+  to control which features are included in all models.
 """
 
 from pathlib import Path
@@ -25,11 +29,9 @@ MODEL_CONFIGS = [
     
     # RB Models
     {"position": "RB", "prop_type": "rush_yds", "target_type": "yards"},
-    {"position": "RB", "prop_type": "rec_yds", "target_type": "yards"},
-    {"position": "RB", "prop_type": "receptions", "target_type": "receptions"},
     {"position": "RB", "prop_type": "any_td", "target_type": "any_td_probability"},
     
-    # WR/TE Models (combined as PASS_CATCHER)
+    # PASS_CATCHER Models (RB+WR+TE combined with position as feature)
     {"position": "PASS_CATCHER", "prop_type": "rec_yds", "target_type": "yards"},
     {"position": "PASS_CATCHER", "prop_type": "rec_yds", "target_type": "td_probability"},
     {"position": "PASS_CATCHER", "prop_type": "receptions", "target_type": "receptions"},
@@ -65,11 +67,8 @@ def train_model(position: PositionType,
     # Load data
     model.load_player_games(start_season=start_season)
     
-    # Build features
-    model.build_feature_matrices(
-        include_opponent_defense=True,
-        include_matchup_history=True
-    )
+    # Build features (uses defaults from main_player_prop_builder.py)
+    model.build_feature_matrices()
     
     # Build dataset
     model.build_dataset()
@@ -97,13 +96,20 @@ def train_model(position: PositionType,
 
 
 def main(start_season: int = 2018, use_xgb: bool = True):
-    """Train all configured models."""
+    """
+    Train all configured models.
+    
+    Args:
+        start_season: First season to include in training
+        use_xgb: Use XGBoost (True) or Random Forest (False)
+    """
     results = {}
     
     print(f"\n{'='*80}")
     print(f"Training {len(MODEL_CONFIGS)} Player Prop Models")
     print(f"Start Season: {start_season}")
     print(f"Model Type: {'XGBoost' if use_xgb else 'Random Forest'}")
+    print(f"Feature Toggles: See main_player_prop_builder.py")
     print(f"{'='*80}")
     
     for config in MODEL_CONFIGS:
@@ -137,5 +143,4 @@ def main(start_season: int = 2018, use_xgb: bool = True):
 
 
 if __name__ == "__main__":
-    # Train with XGBoost by default
     main(start_season=2018, use_xgb=True)

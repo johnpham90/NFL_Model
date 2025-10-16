@@ -1,10 +1,52 @@
 """Player prop model configuration mirroring team-level config structure."""
 from dataclasses import dataclass, field
-from typing import Dict, List, Literal
+from typing import Dict, List, Literal, Tuple
 
 PropType = Literal["pass_yds", "rush_yds", "rec_yds", "receptions", "any_td"]
 PositionType = Literal["QB", "RB", "WR", "TE", "PASS_CATCHER"]
 TargetType = Literal["yards", "td_probability", "receptions", "any_td_probability"]
+
+
+# ========== CENTRALIZED MAPPINGS ==========
+# These mappings are used across multiple feature files to ensure consistency
+
+# Prop type to target column mappings
+PROP_TYPE_TO_TARGET_COL: Dict[str, str] = {
+    "pass_yds": "pass_yds",
+    "rush_yds": "rush_yds",
+    "rec_yds": "rec_yds",
+    "receptions": "rec",
+    "any_td": "has_any_td"
+}
+
+# Prop type to opponent defense target mappings
+PROP_TYPE_TO_DEFENSE_TARGET: Dict[str, Tuple[str, str]] = {
+    'pass_yds': ('pass_yds', 'opp_pass_yds_allowed_hist'),
+    'rush_yds': ('rush_yds', 'opp_rush_yds_allowed_hist'),
+    'rec_yds': ('rec_yds', 'opp_rec_yds_allowed_hist'),
+    'receptions': ('rec', 'opp_rec_allowed_hist')
+}
+
+# Model target type to column mappings
+TARGET_TYPE_TO_COL: Dict[Tuple[str, str], str] = {
+    ("yards", "pass_yds"): "pass_yds",
+    ("yards", "rush_yds"): "rush_yds",
+    ("yards", "rec_yds"): "rec_yds",
+    ("td_probability", "pass_yds"): "has_pass_td",
+    ("td_probability", "rush_yds"): "has_rush_td",
+    ("td_probability", "rec_yds"): "has_rec_td",
+    ("any_td_probability", "any_td"): "has_any_td",
+    ("receptions", "receptions"): "rec"
+}
+
+# Position to snap count position mappings
+POSITION_TO_SNAP_POS: Dict[str, List[str]] = {
+    'QB': ['QB'],
+    'RB': ['RB'],
+    'PASS_CATCHER': ['RB', 'WR', 'TE'],
+    'WR': ['WR'],
+    'TE': ['TE']
+}
 
 
 @dataclass
@@ -163,4 +205,8 @@ __all__ = [
     "PropType",
     "PositionType",
     "TargetType",
+    "PROP_TYPE_TO_TARGET_COL",
+    "PROP_TYPE_TO_DEFENSE_TARGET",
+    "TARGET_TYPE_TO_COL",
+    "POSITION_TO_SNAP_POS",
 ]
