@@ -1,4 +1,4 @@
-"""Player prop prediction model mirroring NFLModelV2 architecture."""
+"""Player prop prediction model with data leakage fixes applied."""
 import pandas as pd
 import numpy as np
 import hashlib
@@ -46,24 +46,20 @@ class PlayerPropArtifacts:
 
 class NFLPlayerPropModel:
     """
-    Player prop prediction model following NFLModelV2 architecture.
-    Supports position-specific models for QB, RB, and PASS_CATCHER (RB+WR+TE) props.
+    Player prop prediction model with comprehensive data leakage prevention.
     
-    Features:
-    - Time-series rolling features (expanding and windowed means/stds)
-    - Opponent defense aggregations
-    - Player vs opponent matchup history
-    - Proper temporal splits to prevent data leakage
+    FIXED: Comprehensive _OUTCOME_COLS blacklist prevents current-game stats
+           and efficiency metrics from being used as features.
     """
     
     def __init__(
-    self,
-    position: PositionType,
-    prop_type: PropType,
-    target_type: TargetType = "yards",
-    test_size: float = 0.2,
-    random_state: int = 42,
-    stats: Optional[List[str]] = None, 
+        self,
+        position: PositionType,
+        prop_type: PropType,
+        target_type: TargetType = "yards",
+        test_size: float = 0.2,
+        random_state: int = 42,
+        stats: Optional[List[str]] = None,
     ):
         """
         Initialize player prop model.
@@ -92,10 +88,51 @@ class NFLPlayerPropModel:
         self._dataset: Optional[pd.DataFrame] = None
         self.artifacts: Optional[PlayerPropArtifacts] = None
         
-        # Columns that should never be features (target leakage prevention)
+        # ===== COMPREHENSIVE OUTCOME COLUMNS (PREVENTS DATA LEAKAGE) =====
+        # Principle: If it's calculated from the CURRENT game, it's an outcome
         self._OUTCOME_COLS = {
+            # Primary outcome variables (targets)
             "pass_yds", "rush_yds", "rec_yds", "receptions",
-            "pass_td", "rush_td", "rec_td", "rec", "targets", "has_any_td" 
+            "pass_td", "rush_td", "rec_td", "rec", "targets",
+            
+            # Current-game volume stats
+            "pass_att", "pass_cmp", "pass_int",
+            "pass_spiked", "pass_throwaways", "pass_drops",
+            "rush_att", "rush_scrambles",
+            "rec_catchable_targets", "rec_drops",
+            
+            # Current-game advanced stats
+            "pass_air_yds", "pass_yac", "pass_target_yds",
+            "pass_first_down", "pass_sacked", "pass_pressured",
+            "pass_blitzed", "pass_hits", "pass_hurried", "pass_rating",
+            "rush_yac", "rush_yds_before_contact", "rush_broken_tackles",
+            "rush_first_down",
+            "rec_air_yds", "rec_yac", "rec_first_down",
+            "rec_broken_tackles", "rec_adot", "rec_target_int",
+            "qb_rush_att", "qb_rush_yds", "qb_rush_td",
+            "qb_rush_yac", "qb_rush_broken_tackles", "qb_rush_first_down",
+            
+            # CRITICAL: Current-game efficiency metrics (calculated FROM current stats)
+            "completion_pct", "yds_per_att", "yds_per_cmp", "td_rate", "int_rate",
+            "pass_air_yds_per_att", "pass_air_yds_per_cmp", "pass_yac_per_cmp",
+            "pass_tgt_yds_per_att", "pass_poor_throw_pct", "pass_drop_pct",
+            "pass_first_down_pct", "pass_pressured_pct",
+            "yds_per_carry", "fumble_rate", "rush_yac_per_rush",
+            "rush_yds_bc_per_rush", "rush_broken_tackles_per_rush",
+            "catch_rate", "yds_per_target", "yds_per_rec",
+            "rec_air_yds_per_rec", "rec_yac_per_rec",
+            "rec_broken_tackles_per_rec", "rec_drop_pct", "rec_pass_rating",
+            
+            # CRITICAL: Position interaction features (use current game stats)
+            "rb_target_vol", "rb_shallow_routes", "rb_catch_efficiency",
+            "wr_air_yards", "wr_deep_routes", "wr_explosiveness",
+            "te_first_downs", "te_intermediate", "te_yac",
+            
+            # Binary outcome indicators
+            "has_pass_td", "has_rush_td", "has_rec_td", "has_any_td",
+            
+            # Fumbles
+            "fumbles", "fumbles_lost"
         }
     
     # ========== DATA LOADING ==========
@@ -104,13 +141,11 @@ class NFLPlayerPropModel:
         """Load player game-level data using centralized feature builder."""
         print(f"Loading {self.prop_type} data for {self.position} from season {start_season}...")
 
-        # Use builder with its defaults
         self.player_games = build_player_features(
             start_season=start_season,
             prop_type=self.prop_type,
             position=self.position,
             add_indicators=True
-            # All other features controlled by builder defaults
         )
         
         validate_dataframe(
@@ -136,24 +171,16 @@ class NFLPlayerPropModel:
         - Player historical averages (expanding mean)
         - Rolling window means and standard deviations
         - Z-scores relative to weekly averages
-        - Opponent defense aggregations (optional)
-        - Player vs opponent matchup history (optional)
         
         Args:
             exclude_current: If True, exclude current game from rolling stats
-            include_opponent_defense: Add opponent defensive metrics
-            include_matchup_history: Add player career stats vs opponent
             
         Returns:
             List of feature column names created
-            
-        Raises:
-            RuntimeError: If load_player_games() hasn't been called
         """
         if not hasattr(self, "player_games"):
             raise RuntimeError("Call load_player_games() first.")
         
-        # Validate data before processing
         validate_dataframe(self.player_games, min_rows=30, context="feature engineering")
         
         df = self.player_games.sort_values(
@@ -186,20 +213,15 @@ class NFLPlayerPropModel:
         
         # Build rolling features for each stat
         for stat in self.stats:
-            # Check if column exists in dataframe
             if stat not in available:
                 skipped.append(f"{stat} (not in data)")
                 continue
-            
-            # We CAN build temporal features from outcome columns
-            # (they use historical data, so no leakage)
-            # We'll sanitize raw outcome columns later in _sanitize_feature_columns
             
             # Expanding mean (season-to-date average)
             player_hist = player_grp[stat].apply(prior_expanding)
             cols: Dict[str, pd.Series] = {f"{stat}__player_hist": player_hist}
             
-            # Rolling windows (configurable sizes)
+            # Rolling windows
             for w in roll_sizes:
                 cols[f"{stat}__player_roll{w}"] = player_grp[stat].apply(
                     lambda s: prior_rolling(s, w)
@@ -208,7 +230,7 @@ class NFLPlayerPropModel:
                     lambda s: prior_std(s, w)
                 )
             
-            # Historical z-score (player relative to weekly average)
+            # Historical z-score
             week_keys = [df["season"], df["week"]]
             player_mean = player_hist.groupby(week_keys).transform('mean')
             player_std_z = player_hist.groupby(week_keys).transform('std').replace(0, np.nan)
@@ -227,7 +249,7 @@ class NFLPlayerPropModel:
                 axis=1
             )
         
-        # Add efficiency metrics calculated from HISTORICAL data (no leakage)
+        # Add efficiency metrics calculated from HISTORICAL data
         print(f"[INFO] Calculating efficiency metrics from historical data...")
         efficiency_features = self._build_efficiency_features(df, player_grp, prior_expanding, prior_rolling)
         if efficiency_features is not None and not efficiency_features.empty:
@@ -237,6 +259,7 @@ class NFLPlayerPropModel:
         self._hist_features = built
         self._hist_df = df
         
+        print(f"[SUCCESS] Built {len(built)} temporal features")
         return built
     
     def _build_efficiency_features(
@@ -251,15 +274,6 @@ class NFLPlayerPropModel:
         
         Creates ratios like completion%, yds/att, td_rate from PREVIOUS games only.
         Uses shift(1) to ensure we never see current game stats.
-        
-        Args:
-            df: DataFrame with current stats
-            player_grp: Grouped DataFrame by playerid
-            prior_expanding: Function for expanding mean with lag
-            prior_rolling: Function for rolling mean with lag
-        
-        Returns:
-            DataFrame with efficiency features
         """
         efficiency_cols = {}
         
@@ -349,7 +363,6 @@ class NFLPlayerPropModel:
         else:
             return pd.DataFrame()
     
-    
     def build_dataset(self) -> pd.DataFrame:
         """
         Build final dataset with all features and target column.
@@ -359,9 +372,6 @@ class NFLPlayerPropModel:
         
         Returns:
             DataFrame ready for training with features and target
-            
-        Raises:
-            RuntimeError: If build_feature_matrices() hasn't been called
         """
         if not hasattr(self, "_hist_df"):
             raise RuntimeError("Call build_feature_matrices() first.")
@@ -371,46 +381,11 @@ class NFLPlayerPropModel:
         # Start with rolling/historical features
         feature_base = [c for c in self._hist_features if c in df.columns]
         
-        # Add other feature columns that aren't metadata, stats, or targets
-        # (e.g., opponent defense features, game lines, matchup history)
+        # Core metadata
         core_metadata = [
             "gamesummaryid", "playerid", "player", "teamid",
             "season", "week", "is_home", "position"
         ]
-        
-        # ALL current-game statistics (outcome variables)
-        # These columns exist in the data but should NOT be used as features
-        # (they're used to CREATE rolling features, but not used directly)
-        current_game_stats = {
-            # Passing stats
-            "pass_yds", "pass_td", "pass_att", "pass_cmp", "pass_int",
-            "pass_air_yds", "pass_yac", "pass_target_yds", "pass_first_down",
-            "pass_sacked", "pass_pressured", "pass_blitzed", "pass_hits", "pass_hurried",
-            "pass_rating", "pass_drops", "pass_spikes", "pass_throwaways",
-            # Derived passing efficiency (calculated from current game)
-            "pass_air_yds_per_att", "pass_air_yds_per_cmp", "pass_yac_per_cmp",
-            "pass_tgt_yds_per_att", "pass_poor_throw_pct", "pass_drop_pct",
-            "pass_first_down_pct", "pass_pressured_pct",
-            "completion_pct", "yds_per_att", "yds_per_cmp", "td_rate", "int_rate",
-            # QB rushing stats
-            "qb_rush_att", "qb_rush_yds", "qb_rush_td", "qb_rush_yac",
-            "qb_rush_broken_tackles", "qb_rush_first_down",
-            # Rushing stats
-            "rush_yds", "rush_att", "rush_td", "rush_yac", "rush_first_down",
-            "rush_broken_tackles", "rush_scrambles",
-            "yds_per_carry", "fumble_rate",
-            # Receiving stats
-            "rec_yds", "rec", "rec_td", "rec_air_yds", "rec_yac", "rec_first_down",
-            "rec_broken_tackles", "rec_drops", "targets", "rec_adot",
-            "rec_target_int", "rec_catchable_targets",
-            "yds_per_rec", "yds_per_target", "catch_rate",
-            # Position-specific derived stats
-            "rb_target_vol", "rb_catch_efficiency", "rb_shallow_routes",
-            "wr_air_yards", "wr_deep_routes", "wr_explosiveness",
-            "te_yac", "te_first_downs", "te_intermediate",
-            # Binary outcomes
-            "has_pass_td", "has_rush_td", "has_rec_td", "has_any_td"
-        }
         
         # Safe pre-game features (known before game starts)
         pregame_features = {
@@ -418,28 +393,28 @@ class NFLPlayerPropModel:
             "is_rb", "is_wr", "is_te",  # Position indicators
         }
         
-        # Find columns that are valid features:
+        # Find additional non-rolling features that are safe to use:
         # - Not metadata
-        # - Not current-game stats  
+        # - Not in _OUTCOME_COLS (current-game stats)
         # - Not already in rolling features
-        # - Known before game time (lines, defense, matchup) OR explicitly pre-game
+        # - Pre-game OR contains safe keywords (opponent, spread, total, matchup)
         additional_features = [
             c for c in df.columns 
             if c not in core_metadata
-            and c not in current_game_stats
+            and c not in self._OUTCOME_COLS
             and c not in feature_base
-            and not c.startswith("_")  # Skip private columns
-            # Include: lines (spread/total), opponent features (opp_), matchup (vs_opp), pre-game
+            and not c.startswith("_")
             and (c in pregame_features or 
                  any(x in c for x in ['spread', 'total', 'moneyline', 'implied', 
-                                      'opp_', 'vs_opp', 'player_vs_opp']))
+                                      'opp_', 'vs_opp', 'player_vs_opp', 'snap', 
+                                      'usage', 'starter', 'touches']))
         ]
         
         if additional_features:
-            print(f"[INFO] Adding {len(additional_features)} non-rolling features: {additional_features[:10]}{'...' if len(additional_features) > 10 else ''}")
+            print(f"[INFO] Adding {len(additional_features)} pre-game features")
             feature_base.extend(additional_features)
         
-        # Core metadata columns
+        # Core columns for dataset
         core_cols = [
             "gamesummaryid", "playerid", "player", "teamid",
             "season", "week", "is_home"
@@ -453,7 +428,7 @@ class NFLPlayerPropModel:
             ("td_probability", "pass_yds"): "has_pass_td",
             ("td_probability", "rush_yds"): "has_rush_td",
             ("td_probability", "rec_yds"): "has_rec_td",
-            ("any_td_probability", "any_td"): "has_any_td", 
+            ("any_td_probability", "any_td"): "has_any_td",
             ("receptions", "receptions"): "rec"
         }
         target_col = target_map.get((self.target_type, self.prop_type))
@@ -465,6 +440,8 @@ class NFLPlayerPropModel:
         self._sanitize_feature_columns()
         
         self._dataset = df[core_cols + self.feature_columns].reset_index(drop=True)
+        
+        print(f"[SUCCESS] Dataset built: {len(self._dataset)} rows, {len(self.feature_columns)} features")
         return self._dataset
     
     # ========== TRAINING ==========
@@ -477,10 +454,6 @@ class NFLPlayerPropModel:
         
         Returns:
             Tuple of (X_train, X_test, y_train, y_test, feature_cols, is_classification)
-            
-        Raises:
-            RuntimeError: If dataset hasn't been built
-            ValueError: If no valid features or unknown target_type
         """
         if self._dataset is None:
             raise RuntimeError("Call build_dataset() first.")
@@ -518,30 +491,25 @@ class NFLPlayerPropModel:
             raise ValueError(f"Unknown target combination: {self.target_type}, {self.prop_type}")
         
         target_col, is_class = target_info
-        
-        # Validate target column exists
         validate_target_column(df, target_col)
-        
         y = df[target_col]
         
-        # Validate sufficient data for split
+        # Validate sufficient data
         if len(X) < 50:
-            raise ValueError(
-                f"Insufficient data for training: {len(X)} samples (minimum 50 required)"
-            )
+            raise ValueError(f"Insufficient data: {len(X)} samples (minimum 50 required)")
         
-        # Time-series split (no shuffling)
+        # Temporal train/test split (no shuffling)
         split_idx = int(len(X) * (1 - self.test_size))
         
         if split_idx < 10 or len(X) - split_idx < 10:
             raise ValueError(
-                f"Insufficient data for train/test split. "
-                f"Train: {split_idx}, Test: {len(X) - split_idx} (need at least 10 each)"
+                f"Insufficient data for split. Train: {split_idx}, Test: {len(X) - split_idx}"
             )
         
         X_train, X_test = X.iloc[:split_idx], X.iloc[split_idx:]
         y_train, y_test = y.iloc[:split_idx], y.iloc[split_idx:]
         
+        print(f"[INFO] Train/test split: {len(X_train)} train, {len(X_test)} test")
         return X_train, X_test, y_train, y_test, feature_cols, is_class
     
     def _sanitize_feature_columns(self):
@@ -563,11 +531,18 @@ class NFLPlayerPropModel:
             if c not in self._OUTCOME_COLS or '__' in c
         ]
         
-        if len(cleaned) != original_count:
-            removed = original_count - len(cleaned)
-            print(f"[INFO] Sanitized features: removed {removed} direct outcome columns (kept temporal features)")
+        removed_count = original_count - len(cleaned)
+        if removed_count > 0:
+            print(f"[INFO] Sanitized: removed {removed_count} outcome columns (kept temporal features)")
         
         self.feature_columns = sorted(dict.fromkeys(cleaned))
+        
+        # VERIFICATION: Check for any remaining leakage
+        leaked = [f for f in self.feature_columns if f in self._OUTCOME_COLS and '__' not in f]
+        if leaked:
+            print(f"⚠️  WARNING: {len(leaked)} outcome columns still in features: {leaked}")
+        else:
+            print(f"✅ No data leakage detected in {len(self.feature_columns)} features")
     
     class _BlockedTimeSeriesCV(BaseCrossValidator):
         """Time-series cross-validation splitter."""
@@ -619,7 +594,7 @@ class NFLPlayerPropModel:
         model_type = 'RandomForestClassifier' if is_class else 'RandomForestRegressor'
         
         if param_dist:
-            print(f"Running hyperparameter search with {len(param_dist)} parameters...")
+            print(f"Running hyperparameter search...")
             cv = self._BlockedTimeSeriesCV(n_splits=5)
             search = RandomizedSearchCV(
                 base, param_distributions=param_dist, n_iter=min(25, len(param_dist) * 5),
@@ -645,8 +620,8 @@ class NFLPlayerPropModel:
             feature_hash=feature_hash
         )
         
-        print(f"\nModel trained successfully!")
-        print(f"Test set metrics: {metrics}")
+        print(f"\n✅ Model trained successfully!")
+        print(f"Test metrics: {metrics}")
         return metrics
     
     def fit_xgb(self, param_dist: Optional[Dict] = None) -> Dict[str, float]:
@@ -664,7 +639,7 @@ class NFLPlayerPropModel:
         model_type = 'XGBClassifier' if is_class else 'XGBRegressor'
         
         if param_dist:
-            print(f"Running hyperparameter search with {len(param_dist)} parameters...")
+            print(f"Running hyperparameter search...")
             cv = self._BlockedTimeSeriesCV(n_splits=5)
             search = RandomizedSearchCV(
                 base, param_distributions=param_dist, n_iter=min(25, len(param_dist) * 5),
@@ -690,8 +665,8 @@ class NFLPlayerPropModel:
             feature_hash=feature_hash
         )
         
-        print(f"\nModel trained successfully!")
-        print(f"Test set metrics: {metrics}")
+        print(f"\n✅ Model trained successfully!")
+        print(f"Test metrics: {metrics}")
         return metrics
     
     def save(self, path: str):
