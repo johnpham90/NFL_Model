@@ -162,6 +162,7 @@ class NFLHyperparameterTuner:
         cv_scores = []
         
         y = self.data[target_name].values
+        self.y=y
         
         for train_idx, test_idx in tscv.split(self.data[self.date_column]):
             train_idx_unique=np.unique(self.data.iloc[train_idx]["qid"])
@@ -222,7 +223,7 @@ class NFLHyperparameterTuner:
         
         return np.mean(cv_scores)
     
-    def tune_hyperparameters(self, n_trials=100, n_jobs=-1):
+    def tune_hyperparameters_all_models(self, n_trials=100, n_jobs=-1):
         """
         Tune hyperparameters for all targets
         """
@@ -249,7 +250,22 @@ class NFLHyperparameterTuner:
             print(f"Best parameters for {target_name}:")
             for param, value in study.best_params.items():
                 print(f"  {param}: {value}")
-    
+    def tune_model_hyperparameters(self, target_name, task_type, n_trials=100, n_jobs=-1):
+        direction = 'maximize'  # We want to maximize AUC for classification and minimize RMSE (but we negate it)
+        study = optuna.create_study(direction=direction)
+        
+        # Optimize
+        study.optimize(
+            lambda trial: self.objective_function(trial, target_name, task_type),
+            n_trials=n_trials,
+            n_jobs=n_jobs,
+            show_progress_bar=True
+        )
+        
+        # Store results
+        self.studies = study
+        self.best_params= study.best_params
+
     def train_final_models(self, test_size=config_v2.ModelConfigV2.test_size):
         """
         Train final models using best parameters

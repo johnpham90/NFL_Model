@@ -158,9 +158,9 @@ class NFLModelV2:
         else:
             df["binary_spread_label"] = (df["spread"] > 0).astype(int)
         if "overunderresults" in df.columns:
-            df["binary_ou_label"] = (df["overunderresults"] == "Over").astype(int)
-        else:
-            df["binary_ou_label"] = (df["total_points"] > df["total_points"].median()).astype(int)
+            df["binary_ou_label"] = np.where(df["overunderresults"] == "Over",1,0).astype(int)
+        # else:
+        #     df["binary_ou_label"] = (df["total_points"] > df["total_points"].median()).astype(int)
 
         # Per-team points (offensive points scored by this team in the game)
         df["team_points"] = np.where(

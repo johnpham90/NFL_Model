@@ -379,19 +379,19 @@ class NFLModelAnalyzer:
         if show_plots or save_plots:
             if self.model_type == 'classification':
                 # Confusion Matrix
-                save_path = f"{save_dir}confusion_matrix.png" if save_plots else None
+                save_path = f"{save_dir}confusion_matrix_{self.model_name}.png" if save_plots else None
                 self.plot_confusion_matrix(save_path=save_path)
                 
                 # ROC Curve (if probabilities available)
                 if self.y_pred_proba is not None and len(np.unique(self.y_true)) == 2:
-                    save_path = f"{save_dir}roc_curve.png" if save_plots else None
+                    save_path = f"{save_dir}roc_curve_{self.model_name}.png" if save_plots else None
                     self.plot_roc_curve(save_path=save_path)
             
             # Prediction distribution
-            save_path = f"{save_dir}prediction_distribution.png" if save_plots else None
+            save_path = f"{save_dir}prediction_distribution_{self.model_name}.png" if save_plots else None
             self.plot_prediction_distribution(save_path=save_path)
         
         # Generate report
-        self.generate_report()
+        # self.generate_report()
         
         return self.results

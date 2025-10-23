@@ -103,6 +103,6 @@ TARGETS = [
 ]
 
 models={"binary_spread_label":"classification", 
-        "binary_ou_label":"classification",
-        "spread":"regression",
-        "total_points":"regression"}
+        "binary_ou_label":"classification"}
+        # "spread":"regression",
+        # "total_points":"regression"}
