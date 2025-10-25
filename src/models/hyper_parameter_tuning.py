@@ -5,6 +5,7 @@ import xgboost as xgb
 from sklearn.model_selection import TimeSeriesSplit
 from sklearn.metrics import accuracy_score, roc_auc_score, mean_squared_error, mean_absolute_error, log_loss
 from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier
 import warnings
 
 import sys
@@ -178,8 +179,8 @@ class NFLHyperparameterTuner:
             if lookback_season>config_v2.model_config_v2.start_season:
             
                 training_data=training_data.iloc[np.where(training_data["season"]>=lookback_season)]
-            train_idx_unique=np.unique(self.data.iloc[test_idx]["qid"])
-            testing_data=self.data[self.data["qid"].isin(train_idx_unique)]
+            test_idx_unique=np.unique(self.data.iloc[test_idx]["qid"])
+            testing_data=self.data[self.data["qid"].isin(test_idx_unique)]
             
             y_test=testing_data[target_name].values
             
@@ -207,6 +208,76 @@ class NFLHyperparameterTuner:
             
             # Make predictions
             y_pred = model.predict(dtest)
+            
+            # Calculate score based on task type
+            if task_type == 'classification':
+                # Use AUC as the metric for classification
+                # score = -log_loss(y_test, y_pred)
+                score=roc_auc_score(y_test, y_pred)
+                
+                
+            else:  # regression
+                # Use negative RMSE as the metric for regression (Optuna maximizes)
+                score = -np.sqrt(mean_squared_error(y_test, y_pred))
+            
+            cv_scores.append(score)
+        
+        return np.mean(cv_scores)
+    def objective_function_rf(self, trial, target_name, task_type):
+        """
+        Objective function for Optuna optimization
+        """
+        # Suggest hyperparameters
+        params = {
+            "n_estimators":trial.suggest_int('n_estimators', 100, 1000),
+            'max_depth': trial.suggest_int('max_depth', 3, 10),
+            'min_samples_leaf': trial.suggest_float('min_samples_leaf', 0.01, .2),            
+            "lookback_seasons": trial.suggest_int('lookback_seasons', 2,5)
+            
+            
+        }
+        
+        # Number of boosting rounds
+
+        
+        lookback_seasons=params.pop("lookback_seasons")
+        
+        # Set objective based on task type
+        if task_type == 'classification':
+            model = RandomForestClassifier(**params, random_state=42, class_weight="balanced_subsample", n_jobs=-1)
+        else:  # regression
+            params['objective'] = 'reg:squarederror'
+            params['eval_metric'] = 'rmse'
+        
+        # Time series cross validation
+        tscv = TimeSeriesSplit(n_splits=5)
+        cv_scores = []
+        
+        y = self.data[target_name].values
+        self.y=y
+        
+        for train_idx, test_idx in tscv.split(self.data[self.date_column]):
+            train_idx_unique=np.unique(self.data.iloc[train_idx]["qid"])
+
+            training_data=self.data[self.data["qid"].isin(train_idx_unique)]
+            
+            
+            current_season=np.max(training_data["season"])
+            lookback_season=current_season-lookback_seasons
+            
+            if lookback_season>config_v2.model_config_v2.start_season:
+            
+                training_data=training_data.iloc[np.where(training_data["season"]>=lookback_season)]
+            train_idx_unique=np.unique(self.data.iloc[test_idx]["qid"])
+            testing_data=self.data[self.data["qid"].isin(train_idx_unique)]
+            
+            y_test=testing_data[target_name].values
+
+            
+            model.fit(training_data[self.feature_columns],training_data[target_name].values)
+            
+            # Make predictions
+            y_pred = model.predict(testing_data[self.feature_columns])
             
             # Calculate score based on task type
             if task_type == 'classification':
@@ -265,6 +336,21 @@ class NFLHyperparameterTuner:
         # Store results
         self.studies = study
         self.best_params= study.best_params
+    def tune_model_hyperparameters_rf(self, target_name, task_type, n_trials=100, n_jobs=-1):
+        direction = 'maximize'  # We want to maximize AUC for classification and minimize RMSE (but we negate it)
+        study = optuna.create_study(direction=direction)
+        
+        # Optimize
+        study.optimize(
+            lambda trial: self.objective_function_rf(trial, target_name, task_type),
+            n_trials=n_trials,
+            n_jobs=n_jobs,
+            show_progress_bar=True
+        )
+        
+        # Store results
+        self.studies_rf = study
+        self.best_params_rf= study.best_params
 
     def train_final_models(self, test_size=config_v2.ModelConfigV2.test_size):
         """
