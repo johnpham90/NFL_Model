@@ -14,6 +14,7 @@ from src.config.config_v2 import model_config_v2
 from src.utils.schedule_utility import get_current_week
 import xgboost as xgb
 ALL_TARGETS = ["binary_spread_label", "binary_ou_label"]
+# ALL_TARGETS = ["binary_spread_label"]
 
 def latest_artifact(target: str, artifacts_dir: Path) -> Path:
     files = sorted(artifacts_dir.glob(f"{target}_xg_v2_*.pkl"))
@@ -139,11 +140,13 @@ def predict_target(target: str,
                    margin_std: float = 13.5,
                    total_std: float = 13.5) -> pd.DataFrame:
     print(f"[DEBUG] Entered predict_target for {target}, season={season}, week={week}")
-    art_path = f"C://nfl_model//NFL_Model//artifacts//{target}_xgb_v2_20251019.pkl"
+    art_path = f"C://nfl_model//NFL_Model//artifacts//{target}_xgb_v2_20251026.pkl"
+    art_path_rf = f"C://nfl_model//NFL_Model//artifacts//{target}_rf_v2_20251026.pkl"
     artifact = load_artifact(art_path)
+    artifact_rf = load_artifact(art_path_rf)
     model = NFLModelV2(target=target)
     model.load_games(start_season=start_season)
-    model.build_feature_matrices(include_defense=True, include_differentials=True)
+    model.build_feature_matrices(include_defense=True, include_differentials=False)
     model.build_dataset()
     
     X_train, X_test, y_train_, y_test, feature_cols, is_class = model._select_X_y()
@@ -157,9 +160,12 @@ def predict_target(target: str,
     design_X, meta = assemble_matchups(artifact, team_hist, season, week, schedule_wk)
     dmatrix=xgb.DMatrix(design_X.to_numpy()[:,1:], np.zeros(design_X.shape[0]), feature_names=design_X.columns[1:].to_list())
     preds = artifact.predict(dmatrix)
+    preds_rf = artifact_rf.predict_proba(design_X.iloc[:,1:])[:,1]
     out = meta.copy()
     out["target"] = target
     out["prediction"] = preds
+    out["prediction_rf"] = preds_rf
+    out["ensamble_prediction"] = np.where((out["prediction"] >= 0.5) & (out["prediction_rf"] >= 0.5), 1, 0)
 
     # Add win/cover/over probabilities for regression targets
 
@@ -220,7 +226,7 @@ def main(targets, season, week, start_season, artifacts_dir, output_dir, margin_
 if __name__ == "__main__":
     # Hardcoded for manual update each week
     season = 2025
-    week = 7
+    week = 8
     start_season = 2024  # must be <= season-1
     artifacts_dir = "artifacts"
     output_dir = "artifacts/predictions"

@@ -17,7 +17,6 @@ from datetime import datetime
 import sys
 import os
 import xgboost as xgb
-from sklearn.ensemble import RandomForestClassifier
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from src.models.xgboost_randomforrest_model_v2 import NFLModelV2
 from src.config import config_v2
@@ -30,7 +29,8 @@ TARGETS = config_v2.TARGETS
 
 for tgt, i_type in config_v2.models.items():
 
-    model = NFLModelV2(target=tgt)
+    model = NFLModelV2(target=tgt)\
+        
     model.load_games(start_season=2010)
     # Build offensive + defensive + differential features
     model.build_feature_matrices(include_defense=True, include_differentials=True)
@@ -41,10 +41,9 @@ for tgt, i_type in config_v2.models.items():
     target_columns=TARGETS,
     date_column='qid'  # optional
 )
-    tuner.tune_model_hyperparameters_rf(n_trials=50, target_name=tgt, task_type=i_type)
+    tuner.tune_model_hyperparameters(n_trials=50, target_name=tgt, task_type=i_type)
     
-    params=tuner.best_params_rf.copy()
-    params["class_weight"]="balanced_subsample"
+    params=tuner.best_params.copy()
     
     season_lookback=params.pop("lookback_seasons")
     
@@ -55,24 +54,42 @@ for tgt, i_type in config_v2.models.items():
     model.build_feature_matrices(include_defense=True, include_differentials=True)
     model.build_dataset()
     
-
+    n_estimators = params.pop("n_estimators")
     
-
+    params['objective'] = 'binary:logistic'
+    params['eval_metric'] = 'auc'
+        
+        # Early stopping rounds
+    early_stopping_rounds = params.pop("early_stopping_rounds")
     
     X_train, X_test, y_train_, y_test, feature_cols, is_class = model._select_X_y()
     
 
         
+    dtrain = xgb.DMatrix(X_train.values, label=y_train_.values, feature_names=X_train.columns.tolist())
+
+    dtest=xgb.DMatrix(X_test.values, y_test.values, feature_names=X_train.columns.tolist())
+
+    neg_count = np.sum(y_train_.values == 0)
+    pos_count = np.sum(y_train_.values == 1)
+    scale_pos_weight = neg_count / pos_count
+    params["scale_pos_weight"]=scale_pos_weight
     
             # Train model with early stopping
-    model = RandomForestClassifier(**params, random_state=42, n_jobs=-1)
-    model.fit(X_train, y_train_)
-    predictions=model.predict_proba(X_test)
+    model = xgb.train(
+        params=params,
+        dtrain=dtrain,
+        num_boost_round=n_estimators,
+        evals=[(dtest, 'validation')],
+        early_stopping_rounds=early_stopping_rounds,
+        verbose_eval=1
+    )
+    predictions=model.predict(dtest)
 
     ts = datetime.utcnow().strftime("%Y%m%d")
     artifacts_dir = Path("artifacts")
     artifacts_dir.mkdir(exist_ok=True)
-    out_path = artifacts_dir / f"{tgt}_rf_v2_{ts}.pkl"
+    out_path = artifacts_dir / f"{tgt}_xgb_v2_{ts}.pkl"
     with open(out_path, 'wb') as f:
         pickle.dump(model, f)
         
@@ -82,9 +99,9 @@ for tgt, i_type in config_v2.models.items():
 
     win_loss_analyzer = model_analysis.NFLModelAnalyzer(
     model_type='classification',
-    model_name=f"{tgt}_rf",
+    model_name=tgt,
     target_names=['Loss', 'Win'])
     
-    binary_predictions=np.where(predictions[:,1]>=.5, 1,0)
-    win_loss_analyzer.set_predictions(y_test.values, binary_predictions, predictions[:,1])
+    binary_predictions=np.where(predictions>=.5, 1,0)
+    win_loss_analyzer.set_predictions(y_test.values, binary_predictions, predictions)
     win_loss_analyzer.full_analysis()
