@@ -140,8 +140,8 @@ def predict_target(target: str,
                    margin_std: float = 13.5,
                    total_std: float = 13.5) -> pd.DataFrame:
     print(f"[DEBUG] Entered predict_target for {target}, season={season}, week={week}")
-    art_path = f"C://nfl_model//NFL_Model//artifacts//{target}_xgb_v2_20251026.pkl"
-    art_path_rf = f"C://nfl_model//NFL_Model//artifacts//{target}_rf_v2_20251026.pkl"
+    art_path = f"C://nfl_model//NFL_Model//artifacts//{target}_xgb_v2_20251030.pkl"
+    art_path_rf = f"C://nfl_model//NFL_Model//artifacts//{target}_rf_v2_20251030.pkl"
     artifact = load_artifact(art_path)
     artifact_rf = load_artifact(art_path_rf)
     model = NFLModelV2(target=target)
@@ -226,7 +226,7 @@ def main(targets, season, week, start_season, artifacts_dir, output_dir, margin_
 if __name__ == "__main__":
     # Hardcoded for manual update each week
     season = 2025
-    week = 8
+    week = 9
     start_season = 2024  # must be <= season-1
     artifacts_dir = "artifacts"
     output_dir = "artifacts/predictions"
