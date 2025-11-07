@@ -1,0 +1,16 @@
+season,week,hometeamid,awayteamid,market_line_home,market_home_margin,market_total,target,prediction
+2025,7,CIN,PIT,5.5,5.5,44.5,binary_spread_label,0.5547581
+2025,7,LAC,IND,-1.5,-1.5,48.5,binary_spread_label,0.37406248
+2025,7,SFO,ATL,-2.5,-2.5,47.5,binary_spread_label,0.41955498
+2025,7,KAN,LVR,-11.5,-11.5,45.5,binary_spread_label,0.35942158
+2025,7,TEN,NWE,7.0,7.0,42.5,binary_spread_label,0.519962
+2025,7,CLE,MIA,-2.5,-2.5,39.5,binary_spread_label,0.47450614
+2025,7,CHI,NOR,-4.5,-4.5,46.5,binary_spread_label,0.43759817
+2025,7,NYJ,CAR,1.5,1.5,42.5,binary_spread_label,0.5910806
+2025,7,MIN,PHI,1.5,1.5,43.5,binary_spread_label,0.39205658
+2025,7,DEN,NYG,-7.0,-7.0,39.5,binary_spread_label,0.73615897
+2025,7,DAL,WAS,2.5,2.5,54.5,binary_spread_label,0.59459704
+2025,7,ARI,GNB,6.5,6.5,45.5,binary_spread_label,0.7166725
+2025,7,JAX,LAR,3.0,3.0,44.5,binary_spread_label,0.43517908
+2025,7,DET,TAM,-5.5,-5.5,52.5,binary_spread_label,0.7369892
+2025,7,SEA,HOU,-3.0,-3.0,41.5,binary_spread_label,0.45385453

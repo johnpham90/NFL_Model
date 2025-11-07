@@ -98,6 +98,7 @@ class NFLModelV2:
         ORDER BY g.season, g.week, g.gamesummaryid;
         """
         df = execute_query(q)
+        df["market_spread"]=df["spread"]
         if df is None or df.empty:
             raise ValueError("No game data returned.")
         df = df.copy()
@@ -157,9 +158,9 @@ class NFLModelV2:
         else:
             df["binary_spread_label"] = (df["spread"] > 0).astype(int)
         if "overunderresults" in df.columns:
-            df["binary_ou_label"] = (df["overunderresults"] == "Over").astype(int)
-        else:
-            df["binary_ou_label"] = (df["total_points"] > df["total_points"].median()).astype(int)
+            df["binary_ou_label"] = np.where(df["overunderresults"] == "Over",1,0).astype(int)
+        # else:
+        #     df["binary_ou_label"] = (df["total_points"] > df["total_points"].median()).astype(int)
 
         # Per-team points (offensive points scored by this team in the game)
         df["team_points"] = np.where(
@@ -169,8 +170,9 @@ class NFLModelV2:
             self.stats.append("team_points")
 
         self.games = df
+    
 
-    def build_feature_matrices(self, exclude_current: bool = True, include_defense: bool = True, include_differentials: bool = True):
+    def build_feature_matrices(self, exclude_current: bool = True, include_defense: bool = True, include_differentials: bool = True, include_spread: bool=True, include_total: bool=True):
         if not hasattr(self, "games"):
             raise RuntimeError("Call load_games first.")
         df = self.games.sort_values(["season","week","gamesummaryid"]).copy()
@@ -188,7 +190,9 @@ class NFLModelV2:
         def prior_rolling(series: pd.Series, w: int) -> pd.Series:
             s = series.shift(1 if exclude_current else 0)
             return s.rolling(window=w, min_periods=1).mean()
-
+        def build_spread_feature(data: pd.DataFrame):
+            spread_feature=np.where((data["hometeamid"].values==data["spreadfavoriteteam"].values), data["market_spread"].values*-1, data["market_spread"])
+            return pd.Series(spread_feature)
         team_grp = df.groupby("teamid", group_keys=False)
         def_grp = df.groupby("def_teamid", group_keys=False)
 
@@ -221,6 +225,7 @@ class NFLModelV2:
             off_mean = off_hist.groupby(week_keys).transform('mean')
             off_std = off_hist.groupby(week_keys).transform('std').replace(0, np.nan)
             cols[f"{stat}__off_hist_z"] = (off_hist - off_mean) / off_std
+
             feature_frames.append(pd.DataFrame(cols))
             built.extend(cols.keys())
 
@@ -230,8 +235,15 @@ class NFLModelV2:
             feature_block = pd.concat(feature_frames, axis=1)
             df = pd.concat([df.reset_index(drop=True), feature_block.reset_index(drop=True)], axis=1)
         self._include_differentials = include_differentials and include_defense
+        if include_spread:
+            df["spread_feature"]=build_spread_feature(df)
+            built.append("spread_feature")
+        if include_total:
+            df["over_under_feature"]=df["over_under"]
+            built.append("over_under_feature")
         self._hist_features = built
         self._hist_df = df
+        
         return built
     
     def build_dataset(self):

@@ -22,6 +22,10 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+nfl_env/
+venv/
+env/
+.venv/
 
 # Jupyter Notebook
 .ipynb_checkpoints
@@ -34,3 +38,8 @@ wheels/
 
 # macOS
 .DS_Store
+
+echo nfl_env/ >> .gitignore
+echo __pycache__/ >> .gitignore
+echo *.pyc >> .gitignore
+echo .env >> .gitignore

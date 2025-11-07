@@ -5,7 +5,7 @@ from typing import Dict, List
 
 @dataclass
 class ModelConfigV2:
-    start_season: int = 2021
+    start_season: int = 2010
     test_size: float = 0.20
     random_state: int = 42
 
@@ -94,3 +94,15 @@ __all__ = [
     "model_config_v2",
     "team_feature_configs_v2",
 ]
+
+TARGETS = [
+    "spread",
+    "total_points",
+    "binary_spread_label",
+    "binary_ou_label"
+]
+
+models={"binary_spread_label":"classification", 
+        "binary_ou_label":"classification"}
+        # "spread":"regression",
+        # "total_points":"regression"}
