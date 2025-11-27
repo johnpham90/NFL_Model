@@ -46,7 +46,7 @@ class NFLSchedule:
         
         Args:
             include_past_days (int): How many days back to include (default: 4)
-                                   Updated for NFL's expanded schedule including Wednesday games
+                                Updated for NFL's expanded schedule including Wednesday games
             
         Returns:
             pd.DataFrame: This week's games
@@ -70,7 +70,9 @@ class NFLSchedule:
         """)
         
         try:
-            df = pd.read_sql_query(query, self.engine, params={"past_days": include_past_days})
+            # Use connection context manager for SQLAlchemy 2.0
+            with self.engine.connect() as conn:
+                df = pd.read_sql_query(query, conn, params={"past_days": include_past_days})
             
             if df.empty:
                 print("⚠️  No games found for current week")
@@ -86,6 +88,8 @@ class NFLSchedule:
             
         except Exception as e:
             print(f"❌ Error retrieving current week: {e}")
+            import traceback
+            traceback.print_exc()
             raise
     
     def get_team_schedule(self, team_id: str) -> pd.DataFrame:
@@ -149,7 +153,7 @@ def get_current_week(include_past_days: int = 4) -> pd.DataFrame:
     schedule = NFLSchedule()
     return schedule.get_current_week(include_past_days)
     
-    def get_team_schedule(self, team_id: str) -> pd.DataFrame:
+def get_team_schedule(self, team_id: str) -> pd.DataFrame:
         """
         Get schedule for a specific team
         
