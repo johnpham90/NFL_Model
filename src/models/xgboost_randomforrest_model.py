@@ -26,7 +26,7 @@ import seaborn as sns
 from tqdm import tqdm
 
 from src.features.team_level_features import team_level_features_class
-from src.utils import config
+from src.config import config
 
 class NFLPredictor:
     def __init__(self):

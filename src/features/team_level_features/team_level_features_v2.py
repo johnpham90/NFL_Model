@@ -31,7 +31,7 @@ def _parse_composites(df: pd.DataFrame) -> pd.DataFrame:
     """Expand configured composite stat columns into atomic numeric columns.
 
     Uses legacy->canonical mapping from config to ensure consistent column names
-    (e.g. 'fourth down converstions' -> 'fourth_down_conversions').
+    (e.g. 'fourth down conversions' -> 'fourth_down_conversions').
     """
     for comp_col, parts in PARSE_MAP.items():
         if comp_col not in df.columns:

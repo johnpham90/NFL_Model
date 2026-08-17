@@ -15,7 +15,7 @@ class TeamFeatureConfigV2:
     # Legacy names (with spaces / typos) preserved
     parse_data_colums: Dict[str, List[str]] = field(default_factory=lambda: {
         "cmp_att_yd_td_int": ['completions', "pass attempts", "passing yards", "passing tds", "interceptions"],
-        "fourth_down_conv": ["fourth down converstions", "fourth down attempts"],
+        "fourth_down_conv": ["fourth down conversions", "fourth down attempts"],
         "rush_yds_tds": ["rush attempts", "rush yards", "rush tds"],
         "fumbles_lost": ["fumbles", "fumbles lost"],
         "sacked_yards": ["sacks", "sacked yards"],
@@ -25,13 +25,13 @@ class TeamFeatureConfigV2:
     efficiency_stats: Dict[str, List[str]] = field(default_factory=lambda: {
         "completion efficiency": ['completions', "pass attempts"],
         "average completion": ["passing yards", "completions"],
-        "fourth down efficiency": ["fourth down converstions", "fourth down attempts"],
+        "fourth down efficiency": ["fourth down conversions", "fourth down attempts"],
         "rushing efficiency": ["rush yards", "rush attempts"],
         "third down efficiency": ["third down success", "third down attempts"],
     })
     team_features: List[str] = field(default_factory=lambda: [
         "turnovers","total_yards","pass attempts","passing yards","third down attempts",
-        "fourth down converstions","fourth down attempts","first_downs","passing tds",
+        "fourth down conversions","fourth down attempts","first_downs","passing tds",
         "interceptions","rush attempts","rush yards","rush tds","fumbles","fumbles lost",
         "sacks","sacked yards","penalties","penalty yards","team points",
         "completion efficiency","average completion","fourth down efficiency",
@@ -42,7 +42,7 @@ class TeamFeatureConfigV2:
         "pass attempts": "pass_attempts",
         "passing yards": "passing_yards",
         "third down attempts": "third_down_attempts",
-        "fourth down converstions": "fourth_down_conversions",
+        "fourth down conversions": "fourth_down_conversions",
         "fourth down attempts": "fourth_down_attempts",
         "passing tds": "passing_tds",
         "rush attempts": "rush_attempts",
