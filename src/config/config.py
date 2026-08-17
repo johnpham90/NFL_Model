@@ -1,3 +1,16 @@
+"""DEPRECATED: This module is deprecated. Use config_v2.py instead.
+
+Migration:
+    from src.config.config_v2 import model_config_v2, team_feature_configs_v2
+"""
+import warnings
+warnings.warn(
+    "config.py is deprecated. "
+    "Use config_v2.model_config_v2 and config_v2.team_feature_configs_v2 instead.",
+    DeprecationWarning,
+    stacklevel=2
+)
+
 # data:
 #   raw_dir: data/raw
 #   processed_dir: data/processed

@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 from src.utils.db_utils import get_connection, execute_query
-from src.utils import config
+from src.config.config_v2 import model_config_v2
 
 
 class TeamLevelFeatures:
@@ -27,8 +27,8 @@ class TeamLevelFeatures:
             SELECT gs.gamesummaryid, gs.awayscore, gs.homescore, ts.*
             FROM stats.gamesummary gs
             join stats.teamstats ts on gs.gamesummaryid = ts.gamesummaryid
-            WHERE ts.season > {config.model_config.start_season}
-                and gs.season > {config.model_config.start_season}
+            WHERE ts.season > {model_config_v2.start_season}
+                and gs.season > {model_config_v2.start_season}
             """
         self.data=execute_query(query)
         self.data=self.data.sort_values(['season', 'week'])

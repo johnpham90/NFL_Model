@@ -1,3 +1,17 @@
+"""DEPRECATED: This module is deprecated. Use team_level_features_class.py instead.
+
+Migration:
+    from src.features.team_level_features.team_level_features_class import TeamLevelFeatures
+    features = TeamLevelFeatures()
+"""
+import warnings
+warnings.warn(
+    "team_level_features.py is deprecated. "
+    "Use team_level_features_class.TeamLevelFeatures instead.",
+    DeprecationWarning,
+    stacklevel=2
+)
+
 import pandas as pd
 import numpy as np
 from src.utils.db_utils import get_connection, execute_query

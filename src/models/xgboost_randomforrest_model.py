@@ -1,3 +1,17 @@
+"""DEPRECATED: This module is deprecated. Use xgboost_randomforrest_model_v2.py instead.
+
+Migration:
+    from src.models.xgboost_randomforrest_model_v2 import NFLModelV2
+    model = NFLModelV2(target="spread")
+"""
+import warnings
+warnings.warn(
+    "xgboost_randomforrest_model.py is deprecated. "
+    "Use xgboost_randomforrest_model_v2.NFLModelV2 instead.",
+    DeprecationWarning,
+    stacklevel=2
+)
+
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.ensemble import RandomForestRegressor
