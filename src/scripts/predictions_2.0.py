@@ -226,7 +226,7 @@ def main(targets, season, week, start_season, artifacts_dir, output_dir, margin_
 if __name__ == "__main__":
     # Hardcoded for manual update each week
     season = 2025
-    week = 9
+    week = 1
     start_season = 2024  # must be <= season-1
     artifacts_dir = "artifacts"
     output_dir = "artifacts/predictions"
