@@ -61,20 +61,38 @@ for tgt, i_type in config_v2.models.items():
     
     X_train, X_test, y_train_, y_test, feature_cols, is_class = model._select_X_y()
     
-
-        
+    # Train model with class balancing for classification targets
+    rf_model = RandomForestClassifier(**params, random_state=42, n_jobs=-1)
+    rf_model.fit(X_train, y_train_)
+    predictions = rf_model.predict_proba(X_test)
+    preds = rf_model.predict(X_test)
     
-            # Train model with early stopping
-    model = RandomForestClassifier(**params, random_state=42, n_jobs=-1)
-    model.fit(X_train, y_train_)
-    predictions=model.predict_proba(X_test)
-
-    ts = datetime.utcnow().strftime("%Y%m%d")
+    # Calculate metrics
+    from sklearn.metrics import accuracy_score, precision_recall_fscore_support
+    acc = accuracy_score(y_test.values, preds)
+    p, r, f, _ = precision_recall_fscore_support(y_test.values, preds, average="weighted", zero_division=0)
+    metrics = {"accuracy": acc, "precision": p, "recall": r, "f1": f}
+    
+    # Create proper ModelArtifacts wrapper (required by predictions.py)
+    import hashlib
+    from src.models.xgboost_randomforrest_model_v2 import ModelArtifacts
+    feature_hash = hashlib.sha256(('|'.join(feature_cols)).encode()).hexdigest()[:16]
+    artifact = ModelArtifacts(
+        model=rf_model,
+        feature_columns=feature_cols,
+        target=tgt,
+        metrics=metrics,
+        model_type='RandomForestClassifier',
+        params=params,
+        feature_hash=feature_hash
+    )
+    
+    ts = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
     artifacts_dir = Path("artifacts")
     artifacts_dir.mkdir(exist_ok=True)
     out_path = artifacts_dir / f"{tgt}_rf_v2_{ts}.pkl"
     with open(out_path, 'wb') as f:
-        pickle.dump(model, f)
+        pickle.dump(artifact, f)
         
     
 

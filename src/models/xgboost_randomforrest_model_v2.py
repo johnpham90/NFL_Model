@@ -345,7 +345,17 @@ class NFLModelV2:
 
     def fit_random_forest(self, param_dist: Optional[Dict] = None):
         X_train, X_test, y_train, y_test, feature_cols, is_class = self._select_X_y()
-        base = RandomForestClassifier(random_state=self.random_state, n_jobs=-1) if is_class else RandomForestRegressor(random_state=self.random_state, n_jobs=-1)
+        # For classifiers: use balanced class weights and limit depth to prevent overfitting
+        if is_class:
+            base = RandomForestClassifier(
+                random_state=self.random_state, 
+                n_jobs=-1,
+                class_weight="balanced_subsample",
+                max_depth=10,
+                min_samples_leaf=5
+            )
+        else:
+            base = RandomForestRegressor(random_state=self.random_state, n_jobs=-1)
         model_type = 'RandomForestClassifier' if is_class else 'RandomForestRegressor'
         if param_dist:
             cv = self._BlockedTimeSeriesCV(n_splits=5)
