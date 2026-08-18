@@ -17,18 +17,20 @@ from datetime import datetime
 import sys
 import os
 import xgboost as xgb
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.metrics import accuracy_score, precision_recall_fscore_support, mean_absolute_error, r2_score
+import hashlib
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from src.models.xgboost_randomforrest_model_v2 import NFLModelV2
-from src.config import config_v2
+from src.models.nfl_model import NFLModelV2, ModelArtifacts
+from src.config import config
 from src.models import hyper_parameter_tuning
 import pickle
 from src.evaluation import model_analysis
 import numpy as np
 # List of targets to train. Adjust ordering or remove as needed.
-TARGETS = config_v2.TARGETS
+TARGETS = config.TARGETS
 
-for tgt, i_type in config_v2.models.items():
+for tgt, i_type in config.models.items():
 
     model = NFLModelV2(target=tgt)
     model.load_games(start_season=2010)
@@ -44,7 +46,10 @@ for tgt, i_type in config_v2.models.items():
     tuner.tune_model_hyperparameters_rf(n_trials=50, target_name=tgt, task_type=i_type)
     
     params=tuner.best_params_rf.copy()
-    params["class_weight"]="balanced_subsample"
+    
+    # class_weight only for classification
+    if i_type == "classification":
+        params["class_weight"]="balanced_subsample"
     
     season_lookback=params.pop("lookback_seasons")
     
@@ -55,34 +60,40 @@ for tgt, i_type in config_v2.models.items():
     model.build_feature_matrices(include_defense=True, include_differentials=True)
     model.build_dataset()
     
-
-    
-
-    
     X_train, X_test, y_train_, y_test, feature_cols, is_class = model._select_X_y()
     
-    # Train model with class balancing for classification targets
-    rf_model = RandomForestClassifier(**params, random_state=42, n_jobs=-1)
-    rf_model.fit(X_train, y_train_)
-    predictions = rf_model.predict_proba(X_test)
-    preds = rf_model.predict(X_test)
-    
-    # Calculate metrics
-    from sklearn.metrics import accuracy_score, precision_recall_fscore_support
-    acc = accuracy_score(y_test.values, preds)
-    p, r, f, _ = precision_recall_fscore_support(y_test.values, preds, average="weighted", zero_division=0)
-    metrics = {"accuracy": acc, "precision": p, "recall": r, "f1": f}
+    # Use appropriate model type based on task
+    if i_type == "classification":
+        rf_model = RandomForestClassifier(**params, random_state=42, n_jobs=-1)
+        rf_model.fit(X_train, y_train_)
+        predictions = rf_model.predict_proba(X_test)
+        preds = rf_model.predict(X_test)
+        
+        # Calculate classification metrics
+        acc = accuracy_score(y_test.values, preds)
+        p, r, f, _ = precision_recall_fscore_support(y_test.values, preds, average="weighted", zero_division=0)
+        metrics = {"accuracy": acc, "precision": p, "recall": r, "f1": f}
+        model_type_str = 'RandomForestClassifier'
+    else:
+        rf_model = RandomForestRegressor(**params, random_state=42, n_jobs=-1)
+        rf_model.fit(X_train, y_train_)
+        preds = rf_model.predict(X_test)
+        predictions = None  # No probabilities for regression
+        
+        # Calculate regression metrics
+        mae = mean_absolute_error(y_test.values, preds)
+        r2 = r2_score(y_test.values, preds)
+        metrics = {"mae": mae, "r2": r2}
+        model_type_str = 'RandomForestRegressor'
     
     # Create proper ModelArtifacts wrapper (required by predictions.py)
-    import hashlib
-    from src.models.xgboost_randomforrest_model_v2 import ModelArtifacts
     feature_hash = hashlib.sha256(('|'.join(feature_cols)).encode()).hexdigest()[:16]
     artifact = ModelArtifacts(
         model=rf_model,
         feature_columns=feature_cols,
         target=tgt,
         metrics=metrics,
-        model_type='RandomForestClassifier',
+        model_type=model_type_str,
         params=params,
         feature_hash=feature_hash
     )
@@ -98,11 +109,15 @@ for tgt, i_type in config_v2.models.items():
 
     print(f"[DONE] {tgt}: {out_path}")
 
-    win_loss_analyzer = model_analysis.NFLModelAnalyzer(
-    model_type='classification',
-    model_name=f"{tgt}_rf",
-    target_names=['Loss', 'Win'])
-    
-    binary_predictions=np.where(predictions[:,1]>=.5, 1,0)
-    win_loss_analyzer.set_predictions(y_test.values, binary_predictions, predictions[:,1])
-    win_loss_analyzer.full_analysis()
+    # Run analysis only for classification targets
+    if i_type == "classification":
+        win_loss_analyzer = model_analysis.NFLModelAnalyzer(
+            model_type='classification',
+            model_name=f"{tgt}_rf",
+            target_names=['Loss', 'Win'])
+        
+        binary_predictions = np.where(predictions[:, 1] >= 0.5, 1, 0)
+        win_loss_analyzer.set_predictions(y_test.values, binary_predictions, predictions[:, 1])
+        win_loss_analyzer.full_analysis()
+    else:
+        print(f"  Metrics: MAE={metrics['mae']:.3f}, R2={metrics['r2']:.3f}")

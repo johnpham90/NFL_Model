@@ -16,7 +16,7 @@ from typing import Tuple, List
 import numpy as np
 import pandas as pd
 from src.utils.db_utils import execute_query
-from src.config.config_v2 import team_feature_configs_v2
+from src.config.config import team_feature_configs as team_feature_configs_v2
 
 # Mapping of composite column -> list of parts (legacy names preserved in config)
 PARSE_MAP = getattr(team_feature_configs_v2, "parse_data_colums", {}) or {}

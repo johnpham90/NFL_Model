@@ -8,9 +8,9 @@ current_dir = os.getcwd()
 project_root = os.path.join(current_dir, '..', '..') 
 
 sys.path.append(project_root)
-from src.models.xgboost_randomforrest_model_v2 import NFLModelV2
+from src.models.nfl_model import NFLModelV2
 from src.models import hyper_parameter_tuning
-from src.config import config_v2
+from src.config import config
 from src.evaluation import model_analysis
 import numpy as np
 
@@ -18,11 +18,11 @@ import xgboost as xgb
 import pickle
 
 
-TARGETS = config_v2.models
+TARGETS = config.models
 
 
 model = NFLModelV2()
-model.load_games(start_season=config_v2.model_config_v2.start_season)
+model.load_games(start_season=config.model_config_v2.start_season)
 # Build offensive + defensive + differential features
 model.build_feature_matrices(include_defense=True, include_differentials=True)
 model.build_dataset()
@@ -58,7 +58,7 @@ for i_label, i_param in best_params_dict:
         
         # Early stopping rounds
     early_stopping_rounds = params.pop("early_stopping_rounds")
-    task_type=config_v2.models[i_label]
+    task_type=config.models[i_label]
     if task_type == 'classification':
         params['objective'] = 'binary:logistic'
         params['eval_metric'] = 'logloss'
@@ -75,10 +75,10 @@ for i_label, i_param in best_params_dict:
         scale_pos_weight = neg_count / pos_count
         params["scale_pos_weight"]=scale_pos_weight
     
-    x_train=X_train.iloc[:int(-X_train.shape[0]*config_v2.model_config_v2.test_size)]
-    x_val=X_train.iloc[int(-X_train.shape[0]*config_v2.model_config_v2.test_size):]
-    y_train=y_train_.iloc[:int(-X_train.shape[0]*config_v2.model_config_v2.test_size)]
-    y_val=y_train_.iloc[int(-X_train.shape[0]*config_v2.model_config_v2.test_size):]
+    x_train=X_train.iloc[:int(-X_train.shape[0]*config.model_config_v2.test_size)]
+    x_val=X_train.iloc[int(-X_train.shape[0]*config.model_config_v2.test_size):]
+    y_train=y_train_.iloc[:int(-X_train.shape[0]*config.model_config_v2.test_size)]
+    y_val=y_train_.iloc[int(-X_train.shape[0]*config.model_config_v2.test_size):]
         
     dtrain = xgb.DMatrix(x_train.values, label=y_train.values)
     dval = xgb.DMatrix(x_val.values, label=y_val.values)

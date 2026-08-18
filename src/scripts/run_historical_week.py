@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from src.models.xgboost_randomforrest_model_v2 import NFLModelV2
+from src.models.nfl_model import NFLModelV2
 from src.scripts.predictions import assemble_matchups
 from src.utils.db_utils import execute_query
 

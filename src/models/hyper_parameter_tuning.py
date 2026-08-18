@@ -12,8 +12,8 @@ import sys
 import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from src.models.xgboost_randomforrest_model_v2 import NFLModelV2
-from src.config import config_v2
+from src.models.nfl_model import NFLModelV2
+from src.config import config
 warnings.filterwarnings('ignore')
 
 def add_game_week_qid(df, season_col='season', week_col='week', qid_col='qid'):
@@ -176,7 +176,7 @@ class NFLHyperparameterTuner:
             current_season=np.max(val_data["season"])
             lookback_season=current_season-lookback_seasons
             
-            if lookback_season>config_v2.model_config_v2.start_season:
+            if lookback_season>config.model_config_v2.start_season:
             
                 training_data=training_data.iloc[np.where(training_data["season"]>=lookback_season)]
             test_idx_unique=np.unique(self.data.iloc[test_idx]["qid"])
@@ -244,10 +244,11 @@ class NFLHyperparameterTuner:
         
         # Set objective based on task type
         if task_type == 'classification':
+            from sklearn.ensemble import RandomForestClassifier
             model = RandomForestClassifier(**params, random_state=42, class_weight="balanced_subsample", n_jobs=-1)
         else:  # regression
-            params['objective'] = 'reg:squarederror'
-            params['eval_metric'] = 'rmse'
+            from sklearn.ensemble import RandomForestRegressor
+            model = RandomForestRegressor(**params, random_state=42, n_jobs=-1)
         
         # Time series cross validation
         tscv = TimeSeriesSplit(n_splits=5)
@@ -265,7 +266,7 @@ class NFLHyperparameterTuner:
             current_season=np.max(training_data["season"])
             lookback_season=current_season-lookback_seasons
             
-            if lookback_season>config_v2.model_config_v2.start_season:
+            if lookback_season>config.model_config_v2.start_season:
             
                 training_data=training_data.iloc[np.where(training_data["season"]>=lookback_season)]
             train_idx_unique=np.unique(self.data.iloc[test_idx]["qid"])
@@ -352,7 +353,7 @@ class NFLHyperparameterTuner:
         self.studies_rf = study
         self.best_params_rf= study.best_params
 
-    def train_final_models(self, test_size=config_v2.ModelConfigV2.test_size):
+    def train_final_models(self, test_size=config.ModelConfigV2.test_size):
         """
         Train final models using best parameters
         """

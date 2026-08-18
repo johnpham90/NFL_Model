@@ -18,11 +18,11 @@ import sys
 import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from src.models.xgboost_randomforrest_model_v2 import NFLModelV2
-from src.config import config_v2
+from src.models.nfl_model import NFLModelV2
+from src.config import config
 
 # List of targets to train. Adjust ordering or remove as needed.
-TARGETS = config_v2.TARGETS
+TARGETS = config.TARGETS
 
 def train_target(target: str, start_season: int = 2021):
     """

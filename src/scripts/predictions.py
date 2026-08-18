@@ -6,8 +6,8 @@ import pandas as pd
 import numpy as np
 from scipy.stats import norm
 
-from src.models.xgboost_randomforrest_model_v2 import NFLModelV2
-from src.config.config_v2 import model_config_v2
+from src.models.nfl_model import NFLModelV2
+from src.config.config import model_config_v2
 from src.utils.schedule_utility import get_current_week
 
 ALL_TARGETS = ["spread", "total_points", "binary_spread_label", "binary_ou_label"]
