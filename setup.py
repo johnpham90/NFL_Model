@@ -32,6 +32,7 @@ setup(
         'scikit-learn>=1.2.0,<2.0',
         'xgboost>=1.7.0,<3.0',
         'lightgbm>=3.3.0,<5.0',
+        'optuna>=3.0.0,<5.0',
         
         # Database
         'psycopg2-binary>=2.9.0,<3.0',

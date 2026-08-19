@@ -74,10 +74,16 @@ for tgt, i_type in config.models.items():
 
     # scale_pos_weight only for classification
     if i_type == "classification":
+        if y_train_.nunique() < 2 or y_test.nunique() < 2:
+            print(f"[SKIP] {tgt}: insufficient class variation in the train/test split for XGBoost training.")
+            continue
         neg_count = np.sum(y_train_.values == 0)
         pos_count = np.sum(y_train_.values == 1)
-        scale_pos_weight = neg_count / pos_count
-        params["scale_pos_weight"] = scale_pos_weight
+        params["base_score"] = 0.5
+        if pos_count and neg_count:
+            params["scale_pos_weight"] = neg_count / pos_count
+        else:
+            params.pop("scale_pos_weight", None)
     
     # Train model with early stopping
     xgb_model = xgb.train(

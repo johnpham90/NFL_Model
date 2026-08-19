@@ -154,6 +154,7 @@ class NFLHyperparameterTuner:
         if task_type == 'classification':
             params['objective'] = 'binary:logistic'
             params['eval_metric'] = 'auc'
+            params['base_score'] = 0.5
         else:  # regression
             params['objective'] = 'reg:squarederror'
             params['eval_metric'] = 'rmse'
@@ -184,12 +185,18 @@ class NFLHyperparameterTuner:
             
             y_test=testing_data[target_name].values
             
-            # Scale features
-            if task_type=="classification":
+            # Guard against degenerate folds where one class is absent; XGBoost will reject base_score=0
+            if task_type == "classification":
+                if training_data[target_name].nunique() < 2 or val_data[target_name].nunique() < 2 or np.unique(y_test).size < 2:
+                    continue
                 neg_count = np.sum(training_data[target_name].values == 0)
                 pos_count = np.sum(training_data[target_name].values == 1)
-                scale_pos_weight = neg_count / pos_count
-                params["scale_pos_weight"]=scale_pos_weight
+                if pos_count == 0 or neg_count == 0:
+                    params["base_score"] = 0.5
+                    params.pop("scale_pos_weight", None)
+                else:
+                    params["scale_pos_weight"] = neg_count / pos_count
+                    params["base_score"] = 0.5
             
             # Create DMatrix for XGBoost
             dtrain = xgb.DMatrix(training_data[self.feature_columns].values, label=training_data[target_name].values)
@@ -197,14 +204,17 @@ class NFLHyperparameterTuner:
             dtest=xgb.DMatrix(testing_data[self.feature_columns].values, label=y_test)
             
             # Train model with early stopping
-            model = xgb.train(
-                params=params,
-                dtrain=dtrain,
-                num_boost_round=n_estimators,
-                evals=[(dval, 'validation')],
-                early_stopping_rounds=early_stopping_rounds,
-                verbose_eval=False
-            )
+            try:
+                model = xgb.train(
+                    params=params,
+                    dtrain=dtrain,
+                    num_boost_round=n_estimators,
+                    evals=[(dval, 'validation')],
+                    early_stopping_rounds=early_stopping_rounds,
+                    verbose_eval=False
+                )
+            except ValueError:
+                return -1e9
             
             # Make predictions
             y_pred = model.predict(dtest)
@@ -212,7 +222,8 @@ class NFLHyperparameterTuner:
             # Calculate score based on task type
             if task_type == 'classification':
                 # Use AUC as the metric for classification
-                # score = -log_loss(y_test, y_pred)
+                if np.unique(y_test).size < 2:
+                    return -1e9
                 score=roc_auc_score(y_test, y_pred)
                 
                 
@@ -222,7 +233,7 @@ class NFLHyperparameterTuner:
             
             cv_scores.append(score)
         
-        return np.mean(cv_scores)
+        return np.mean(cv_scores) if cv_scores else -1e9
     def objective_function_rf(self, trial, target_name, task_type):
         """
         Objective function for Optuna optimization

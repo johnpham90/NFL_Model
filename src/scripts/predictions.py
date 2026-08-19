@@ -8,6 +8,7 @@ from scipy.stats import norm
 
 from src.models.nfl_model import NFLModelV2
 from src.config.config import model_config_v2
+from src.utils.db_utils import execute_query
 from src.utils.schedule_utility import get_current_week
 
 ALL_TARGETS = ["spread", "total_points", "binary_spread_label", "binary_ou_label"]
@@ -167,12 +168,38 @@ def predict_target(target: str,
     print(f"[{target}] {len(out)} games -> {out_path.name}")
     return out
 
+def load_schedule_for_week(season: int, week: int | None, fallback_to_historical: bool = True) -> pd.DataFrame:
+    """Load the schedule for a specific week, falling back to the historical games table if needed."""
+    schedule = get_current_week()
+    if schedule is not None and not schedule.empty and "week" in schedule.columns:
+        if week is not None:
+            wk_rows = schedule[schedule["week"] == week].copy()
+            if not wk_rows.empty:
+                if "season" not in wk_rows.columns:
+                    wk_rows["season"] = season
+                return wk_rows
+
+    if not fallback_to_historical or week is None:
+        return pd.DataFrame(columns=["season", "week", "day", "date", "hometeamid", "awayteamid", "spread", "spreadfavoriteteam", "over_under"])
+
+    query = """
+        SELECT season, week, date, hometeamid, awayteamid, spread, spreadfavoriteteam, over_under
+        FROM stats.gamesummary
+        WHERE season = :season AND week = :week
+        ORDER BY date, gamesummaryid
+    """
+    hist = execute_query(query, {"season": season, "week": week})
+    if hist is None or hist.empty:
+        return pd.DataFrame(columns=["season", "week", "day", "date", "hometeamid", "awayteamid", "spread", "spreadfavoriteteam", "over_under"])
+    return hist.copy()
+
+
 def main(targets, season, week, start_season, artifacts_dir, output_dir, margin_std, total_std, infer_week):
     artifacts_dir_p = Path(artifacts_dir)
     output_dir_p = Path(output_dir)
     output_dir_p.mkdir(parents=True, exist_ok=True)
 
-    schedule = get_current_week()
+    schedule = load_schedule_for_week(season=season, week=week, fallback_to_historical=True)
     if "season" not in schedule.columns:
         schedule["season"] = season
 
@@ -219,7 +246,7 @@ def main(targets, season, week, start_season, artifacts_dir, output_dir, margin_
 if __name__ == "__main__":
     # Hardcoded for manual update each week
     season = 2025
-    week = 3
+    week = 1
     start_season = 2024  # must be <= season-1
     artifacts_dir = "artifacts"
     output_dir = "artifacts/predictions"
