@@ -31,6 +31,7 @@ class TeamFeatureConfigV2:
     })
     team_features: List[str] = field(default_factory=lambda: [
         "turnovers","total_yards","pass attempts","passing yards","third down attempts",
+        "time_of_possession",
         "fourth down conversions","fourth down attempts","first_downs","passing tds",
         "interceptions","rush attempts","rush yards","rush tds","fumbles","fumbles lost",
         "sacks","sacked yards","penalties","penalty yards","team points",
@@ -49,8 +50,12 @@ class TeamFeatureConfigV2:
         "rush yards": "rush_yards",
         "rush tds": "rush_tds",
         "fumbles lost": "fumbles_lost",
+        "time_of_possession": "time_of_possession_seconds",
+        "time_of_possession_seconds": "time_of_possession_seconds",
         "sacked yards": "sacked_yards",
         "penalty yards": "penalty_yards",
+        "penalty_yards": "penalties_yards",
+        "penalties_yards": "penalties_yards",
         "team points": "team_points",
         "completion efficiency": "completion_efficiency",
         "average completion": "yards_per_completion",
@@ -61,6 +66,7 @@ class TeamFeatureConfigV2:
     })
     canonical_base_team_features: List[str] = field(default_factory=lambda: [
         "turnovers","total_yards","pass_attempts","passing_yards","third_down_attempts",
+        "time_of_possession_seconds",
         "fourth_down_conversions","fourth_down_attempts","first_downs","passing_tds",
         "interceptions","rush_attempts","rush_yards","rush_tds","fumbles","fumbles_lost",
         "sacks","sacked_yards","penalties","penalty_yards","team_points",
