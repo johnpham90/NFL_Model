@@ -1,0 +1,821 @@
+[I 2026-08-25 09:51:08,975] A new study created in memory with name: no-name-3b1098a0-0ac4-4f10-bb63-0ba606ff66ef
+Successfully connected to the database!
+Added qid column with 336 unique season-week combinations
+QID range: 0 to 335
+
+  0%|          | 0/50 [00:00<?, ?it/s]
+                                      
+
+  0%|          | 0/50 [00:55<?, ?it/s]
+Best trial: 9. Best value: 0.501392:   0%|          | 0/50 [00:55<?, ?it/s]
+Best trial: 9. Best value: 0.501392:   2%|2         | 1/50 [00:55<44:57, 55.05s/it]
+                                                                                   
+
+Best trial: 9. Best value: 0.501392:   2%|2         | 1/50 [01:28<44:57, 55.05s/it]
+Best trial: 2. Best value: 0.502523:   2%|2         | 1/50 [01:28<44:57, 55.05s/it]
+Best trial: 2. Best value: 0.502523:   4%|4         | 2/50 [01:28<33:43, 42.15s/it]
+                                                                                   
+
+Best trial: 2. Best value: 0.502523:   4%|4         | 2/50 [01:31<33:43, 42.15s/it]
+Best trial: 2. Best value: 0.502523:   4%|4         | 2/50 [01:31<33:43, 42.15s/it]
+Best trial: 2. Best value: 0.502523:   6%|6         | 3/50 [01:31<19:07, 24.42s/it]
+                                                                                   
+
+Best trial: 2. Best value: 0.502523:   6%|6         | 3/50 [01:35<19:07, 24.42s/it]
+Best trial: 2. Best value: 0.502523:   6%|6         | 3/50 [01:35<19:07, 24.42s/it]
+Best trial: 2. Best value: 0.502523:   8%|8         | 4/50 [01:35<12:37, 16.46s/it]
+                                                                                   
+
+Best trial: 2. Best value: 0.502523:   8%|8         | 4/50 [02:29<12:37, 16.46s/it]
+Best trial: 4. Best value: 0.502912:   8%|8         | 4/50 [02:29<12:37, 16.46s/it]
+Best trial: 4. Best value: 0.502912:  10%|#         | 5/50 [02:29<22:17, 29.73s/it]
+                                                                                   
+
+Best trial: 4. Best value: 0.502912:  10%|#         | 5/50 [02:30<22:17, 29.73s/it]
+Best trial: 4. Best value: 0.502912:  10%|#         | 5/50 [02:30<22:17, 29.73s/it]
+Best trial: 4. Best value: 0.502912:  12%|#2        | 6/50 [02:30<14:44, 20.10s/it]
+                                                                                   
+
+Best trial: 4. Best value: 0.502912:  12%|#2        | 6/50 [02:50<14:44, 20.10s/it]
+Best trial: 8. Best value: 0.503319:  12%|#2        | 6/50 [02:50<14:44, 20.10s/it]
+Best trial: 8. Best value: 0.503319:  14%|#4        | 7/50 [02:50<14:26, 20.15s/it]
+                                                                                   
+
+Best trial: 8. Best value: 0.503319:  14%|#4        | 7/50 [03:18<14:26, 20.15s/it]
+Best trial: 8. Best value: 0.503319:  14%|#4        | 7/50 [03:18<14:26, 20.15s/it]
+Best trial: 8. Best value: 0.503319:  16%|#6        | 8/50 [03:18<15:51, 22.66s/it]
+                                                                                   
+
+Best trial: 8. Best value: 0.503319:  16%|#6        | 8/50 [04:03<15:51, 22.66s/it]
+Best trial: 8. Best value: 0.503319:  16%|#6        | 8/50 [04:04<15:51, 22.66s/it]
+Best trial: 8. Best value: 0.503319:  18%|#8        | 9/50 [04:04<20:20, 29.76s/it]
+                                                                                   
+
+Best trial: 8. Best value: 0.503319:  18%|#8        | 9/50 [04:44<20:20, 29.76s/it]
+Best trial: 7. Best value: 0.506475:  18%|#8        | 9/50 [04:44<20:20, 29.76s/it]
+Best trial: 7. Best value: 0.506475:  20%|##        | 10/50 [04:44<22:06, 33.16s/it]
+                                                                                    
+
+Best trial: 7. Best value: 0.506475:  20%|##        | 10/50 [04:59<22:06, 33.16s/it]
+Best trial: 12. Best value: 0.508214:  20%|##        | 10/50 [04:59<22:06, 33.16s/it]
+Best trial: 12. Best value: 0.508214:  22%|##2       | 11/50 [04:59<17:53, 27.52s/it]
+                                                                                     
+
+Best trial: 12. Best value: 0.508214:  22%|##2       | 11/50 [04:59<17:53, 27.52s/it]
+Best trial: 12. Best value: 0.508214:  22%|##2       | 11/50 [04:59<17:53, 27.52s/it]
+Best trial: 12. Best value: 0.508214:  24%|##4       | 12/50 [04:59<12:10, 19.22s/it]
+                                                                                     
+
+Best trial: 12. Best value: 0.508214:  24%|##4       | 12/50 [05:00<12:10, 19.22s/it]
+Best trial: 12. Best value: 0.508214:  24%|##4       | 12/50 [05:00<12:10, 19.22s/it]
+Best trial: 12. Best value: 0.508214:  26%|##6       | 13/50 [05:00<08:26, 13.68s/it]
+                                                                                     
+
+Best trial: 12. Best value: 0.508214:  26%|##6       | 13/50 [05:02<08:26, 13.68s/it]
+Best trial: 12. Best value: 0.508214:  26%|##6       | 13/50 [05:02<08:26, 13.68s/it]
+Best trial: 12. Best value: 0.508214:  28%|##8       | 14/50 [05:02<06:04, 10.14s/it]
+                                                                                     
+
+Best trial: 12. Best value: 0.508214:  28%|##8       | 14/50 [05:05<06:04, 10.14s/it]
+Best trial: 12. Best value: 0.508214:  28%|##8       | 14/50 [05:05<06:04, 10.14s/it]
+Best trial: 12. Best value: 0.508214:  30%|###       | 15/50 [05:05<04:35,  7.88s/it]
+                                                                                     
+
+Best trial: 12. Best value: 0.508214:  30%|###       | 15/50 [05:32<04:35,  7.88s/it]
+Best trial: 12. Best value: 0.508214:  30%|###       | 15/50 [05:32<04:35,  7.88s/it]
+Best trial: 12. Best value: 0.508214:  32%|###2      | 16/50 [05:32<07:44, 13.67s/it]
+                                                                                     
+
+Best trial: 12. Best value: 0.508214:  32%|###2      | 16/50 [05:33<07:44, 13.67s/it]
+Best trial: 12. Best value: 0.508214:  32%|###2      | 16/50 [05:33<07:44, 13.67s/it]
+Best trial: 12. Best value: 0.508214:  34%|###4      | 17/50 [05:33<05:21,  9.75s/it]
+                                                                                     
+
+Best trial: 12. Best value: 0.508214:  34%|###4      | 17/50 [05:40<05:21,  9.75s/it]
+Best trial: 12. Best value: 0.508214:  34%|###4      | 17/50 [05:40<05:21,  9.75s/it]
+Best trial: 12. Best value: 0.508214:  36%|###6      | 18/50 [05:40<04:47,  8.98s/it]
+                                                                                     
+
+Best trial: 12. Best value: 0.508214:  36%|###6      | 18/50 [05:54<04:47,  8.98s/it]
+Best trial: 12. Best value: 0.508214:  36%|###6      | 18/50 [05:54<04:47,  8.98s/it]
+Best trial: 12. Best value: 0.508214:  38%|###8      | 19/50 [05:54<05:25, 10.50s/it]
+                                                                                     
+
+Best trial: 12. Best value: 0.508214:  38%|###8      | 19/50 [06:05<05:25, 10.50s/it]
+Best trial: 12. Best value: 0.508214:  38%|###8      | 19/50 [06:05<05:25, 10.50s/it]
+Best trial: 12. Best value: 0.508214:  40%|####      | 20/50 [06:05<05:22, 10.75s/it]
+                                                                                     
+
+Best trial: 12. Best value: 0.508214:  40%|####      | 20/50 [06:06<05:22, 10.75s/it]
+Best trial: 12. Best value: 0.508214:  40%|####      | 20/50 [06:06<05:22, 10.75s/it]
+Best trial: 12. Best value: 0.508214:  42%|####2     | 21/50 [06:06<03:46,  7.80s/it]
+                                                                                     
+
+Best trial: 12. Best value: 0.508214:  42%|####2     | 21/50 [08:10<03:46,  7.80s/it]
+Best trial: 12. Best value: 0.508214:  42%|####2     | 21/50 [08:10<03:46,  7.80s/it]
+Best trial: 12. Best value: 0.508214:  44%|####4     | 22/50 [08:10<19:55, 42.71s/it]
+                                                                                     
+
+Best trial: 12. Best value: 0.508214:  44%|####4     | 22/50 [08:16<19:55, 42.71s/it]
+Best trial: 12. Best value: 0.508214:  44%|####4     | 22/50 [08:16<19:55, 42.71s/it]
+Best trial: 12. Best value: 0.508214:  46%|####6     | 23/50 [08:16<14:12, 31.59s/it]
+                                                                                     
+
+Best trial: 12. Best value: 0.508214:  46%|####6     | 23/50 [10:26<14:12, 31.59s/it]
+Best trial: 12. Best value: 0.508214:  46%|####6     | 23/50 [10:26<14:12, 31.59s/it]
+Best trial: 12. Best value: 0.508214:  48%|####8     | 24/50 [10:26<26:27, 61.07s/it]
+                                                                                     
+
+Best trial: 12. Best value: 0.508214:  48%|####8     | 24/50 [10:27<26:27, 61.07s/it]
+Best trial: 12. Best value: 0.508214:  48%|####8     | 24/50 [10:27<26:27, 61.07s/it]
+Best trial: 12. Best value: 0.508214:  50%|#####     | 25/50 [10:27<18:00, 43.22s/it]
+                                                                                     
+
+Best trial: 12. Best value: 0.508214:  50%|#####     | 25/50 [10:34<18:00, 43.22s/it]
+Best trial: 12. Best value: 0.508214:  50%|#####     | 25/50 [10:34<18:00, 43.22s/it]
+Best trial: 12. Best value: 0.508214:  52%|#####2    | 26/50 [10:34<12:52, 32.19s/it]
+                                                                                     
+
+Best trial: 12. Best value: 0.508214:  52%|#####2    | 26/50 [10:46<12:52, 32.19s/it]
+Best trial: 12. Best value: 0.508214:  52%|#####2    | 26/50 [10:46<12:52, 32.19s/it]
+Best trial: 12. Best value: 0.508214:  54%|#####4    | 27/50 [10:46<10:03, 26.26s/it]
+                                                                                     
+
+Best trial: 12. Best value: 0.508214:  54%|#####4    | 27/50 [10:55<10:03, 26.26s/it]
+Best trial: 12. Best value: 0.508214:  54%|#####4    | 27/50 [10:55<10:03, 26.26s/it]
+Best trial: 12. Best value: 0.508214:  56%|#####6    | 28/50 [10:55<07:40, 20.94s/it]
+                                                                                     
+
+Best trial: 12. Best value: 0.508214:  56%|#####6    | 28/50 [11:02<07:40, 20.94s/it]
+Best trial: 12. Best value: 0.508214:  56%|#####6    | 28/50 [11:02<07:40, 20.94s/it]
+Best trial: 12. Best value: 0.508214:  58%|#####8    | 29/50 [11:02<05:52, 16.78s/it]
+                                                                                     
+
+Best trial: 12. Best value: 0.508214:  58%|#####8    | 29/50 [11:03<05:52, 16.78s/it]
+Best trial: 12. Best value: 0.508214:  58%|#####8    | 29/50 [11:03<05:52, 16.78s/it]
+Best trial: 12. Best value: 0.508214:  60%|######    | 30/50 [11:03<04:01, 12.09s/it]
+                                                                                     
+
+Best trial: 12. Best value: 0.508214:  60%|######    | 30/50 [11:12<04:01, 12.09s/it]
+Best trial: 12. Best value: 0.508214:  60%|######    | 30/50 [11:12<04:01, 12.09s/it]
+Best trial: 12. Best value: 0.508214:  62%|######2   | 31/50 [11:12<03:34, 11.28s/it]
+                                                                                     
+
+Best trial: 12. Best value: 0.508214:  62%|######2   | 31/50 [11:14<03:34, 11.28s/it]
+Best trial: 12. Best value: 0.508214:  62%|######2   | 31/50 [11:15<03:34, 11.28s/it]
+Best trial: 12. Best value: 0.508214:  64%|######4   | 32/50 [11:15<02:34,  8.56s/it]
+                                                                                     
+
+Best trial: 12. Best value: 0.508214:  64%|######4   | 32/50 [11:40<02:34,  8.56s/it]
+Best trial: 12. Best value: 0.508214:  64%|######4   | 32/50 [11:40<02:34,  8.56s/it]
+Best trial: 12. Best value: 0.508214:  66%|######6   | 33/50 [11:40<03:54, 13.77s/it]
+                                                                                     
+[I 2026-08-25 09:52:04,015] Trial 9 finished with value: 0.5013917436433283 and parameters: {'n_estimators': 103, 'max_depth': 7, 'min_samples_leaf': 0.10118510232254095, 'lookback_seasons': 3}. Best is trial 9 with value: 0.5013917436433283.
+[I 2026-08-25 09:52:37,132] Trial 2 finished with value: 0.5025226473003249 and parameters: {'n_estimators': 170, 'max_depth': 10, 'min_samples_leaf': 0.06026030632081485, 'lookback_seasons': 4}. Best is trial 2 with value: 0.5025226473003249.
+[I 2026-08-25 09:52:40,399] Trial 3 finished with value: 0.49642942446841465 and parameters: {'n_estimators': 189, 'max_depth': 3, 'min_samples_leaf': 0.05360871323265674, 'lookback_seasons': 5}. Best is trial 2 with value: 0.5025226473003249.
+[I 2026-08-25 09:52:44,693] Trial 10 finished with value: 0.49976489129875823 and parameters: {'n_estimators': 212, 'max_depth': 8, 'min_samples_leaf': 0.1901167139175822, 'lookback_seasons': 3}. Best is trial 2 with value: 0.5025226473003249.
+[I 2026-08-25 09:53:37,971] Trial 4 finished with value: 0.5029120046301332 and parameters: {'n_estimators': 355, 'max_depth': 9, 'min_samples_leaf': 0.14136418090846248, 'lookback_seasons': 3}. Best is trial 4 with value: 0.5029120046301332.
+[I 2026-08-25 09:53:39,249] Trial 16 finished with value: 0.49631187172182656 and parameters: {'n_estimators': 103, 'max_depth': 4, 'min_samples_leaf': 0.018471997971941302, 'lookback_seasons': 2}. Best is trial 4 with value: 0.5029120046301332.
+[I 2026-08-25 09:53:59,626] Trial 8 finished with value: 0.5033194945652322 and parameters: {'n_estimators': 437, 'max_depth': 4, 'min_samples_leaf': 0.16925501775223414, 'lookback_seasons': 2}. Best is trial 8 with value: 0.5033194945652322.
+[I 2026-08-25 09:54:27,562] Trial 0 finished with value: 0.502909290590711 and parameters: {'n_estimators': 495, 'max_depth': 3, 'min_samples_leaf': 0.08761936364283916, 'lookback_seasons': 5}. Best is trial 8 with value: 0.5033194945652322.
+[I 2026-08-25 09:55:12,827] Trial 13 finished with value: 0.4903204542537817 and parameters: {'n_estimators': 618, 'max_depth': 5, 'min_samples_leaf': 0.057704340602867284, 'lookback_seasons': 2}. Best is trial 8 with value: 0.5033194945652322.
+[I 2026-08-25 09:55:53,788] Trial 7 finished with value: 0.5064751004073796 and parameters: {'n_estimators': 730, 'max_depth': 5, 'min_samples_leaf': 0.16873797321268622, 'lookback_seasons': 2}. Best is trial 7 with value: 0.5064751004073796.
+[I 2026-08-25 09:56:08,555] Trial 12 finished with value: 0.508213913391142 and parameters: {'n_estimators': 765, 'max_depth': 8, 'min_samples_leaf': 0.17808858011420944, 'lookback_seasons': 4}. Best is trial 12 with value: 0.508213913391142.
+[I 2026-08-25 09:56:08,711] Trial 18 finished with value: 0.49629738229878556 and parameters: {'n_estimators': 348, 'max_depth': 6, 'min_samples_leaf': 0.1750243894445123, 'lookback_seasons': 5}. Best is trial 12 with value: 0.508213913391142.
+[I 2026-08-25 09:56:09,628] Trial 5 finished with value: 0.49964380218630866 and parameters: {'n_estimators': 776, 'max_depth': 8, 'min_samples_leaf': 0.023558304263367927, 'lookback_seasons': 3}. Best is trial 12 with value: 0.508213913391142.
+[I 2026-08-25 09:56:11,413] Trial 1 finished with value: 0.5012064307488874 and parameters: {'n_estimators': 778, 'max_depth': 8, 'min_samples_leaf': 0.19802110846235682, 'lookback_seasons': 5}. Best is trial 12 with value: 0.508213913391142.
+[I 2026-08-25 09:56:14,275] Trial 15 finished with value: 0.5027494183821843 and parameters: {'n_estimators': 540, 'max_depth': 6, 'min_samples_leaf': 0.11966718108663173, 'lookback_seasons': 5}. Best is trial 12 with value: 0.508213913391142.
+[I 2026-08-25 09:56:41,434] Trial 6 finished with value: 0.4959504032946107 and parameters: {'n_estimators': 871, 'max_depth': 6, 'min_samples_leaf': 0.07274074059814212, 'lookback_seasons': 2}. Best is trial 12 with value: 0.508213913391142.
+[I 2026-08-25 09:56:42,059] Trial 14 finished with value: 0.50324911047596 and parameters: {'n_estimators': 686, 'max_depth': 4, 'min_samples_leaf': 0.054925109926460186, 'lookback_seasons': 5}. Best is trial 12 with value: 0.508213913391142.
+[I 2026-08-25 09:56:49,227] Trial 11 finished with value: 0.5049516186464295 and parameters: {'n_estimators': 869, 'max_depth': 8, 'min_samples_leaf': 0.1545181204807016, 'lookback_seasons': 5}. Best is trial 12 with value: 0.508213913391142.
+[I 2026-08-25 09:57:03,240] Trial 17 finished with value: 0.4968186419695041 and parameters: {'n_estimators': 629, 'max_depth': 7, 'min_samples_leaf': 0.022894183464250026, 'lookback_seasons': 5}. Best is trial 12 with value: 0.508213913391142.
+[I 2026-08-25 09:57:14,527] Trial 19 finished with value: 0.4919912085462707 and parameters: {'n_estimators': 528, 'max_depth': 4, 'min_samples_leaf': 0.04662360351612266, 'lookback_seasons': 2}. Best is trial 12 with value: 0.508213913391142.
+[I 2026-08-25 09:57:15,591] Trial 22 finished with value: 0.4986355762047662 and parameters: {'n_estimators': 273, 'max_depth': 9, 'min_samples_leaf': 0.1616217983702014, 'lookback_seasons': 5}. Best is trial 12 with value: 0.508213913391142.
+[I 2026-08-25 09:59:19,701] Trial 20 finished with value: 0.4952830546996833 and parameters: {'n_estimators': 887, 'max_depth': 5, 'min_samples_leaf': 0.030240497236410487, 'lookback_seasons': 3}. Best is trial 12 with value: 0.508213913391142.
+[I 2026-08-25 09:59:25,288] Trial 21 finished with value: 0.4931713304845216 and parameters: {'n_estimators': 835, 'max_depth': 9, 'min_samples_leaf': 0.057692457081247595, 'lookback_seasons': 2}. Best is trial 12 with value: 0.508213913391142.
+[I 2026-08-25 10:01:35,172] Trial 26 finished with value: 0.5032598304757939 and parameters: {'n_estimators': 905, 'max_depth': 6, 'min_samples_leaf': 0.1425899046192649, 'lookback_seasons': 4}. Best is trial 12 with value: 0.508213913391142.
+[I 2026-08-25 10:01:36,646] Trial 24 finished with value: 0.5044289649612148 and parameters: {'n_estimators': 934, 'max_depth': 6, 'min_samples_leaf': 0.14191356265629385, 'lookback_seasons': 4}. Best is trial 12 with value: 0.508213913391142.
+[I 2026-08-25 10:01:43,148] Trial 23 finished with value: 0.5030776399095804 and parameters: {'n_estimators': 993, 'max_depth': 6, 'min_samples_leaf': 0.13648811736429045, 'lookback_seasons': 4}. Best is trial 12 with value: 0.508213913391142.
+[I 2026-08-25 10:01:55,577] Trial 25 finished with value: 0.507273620483409 and parameters: {'n_estimators': 962, 'max_depth': 7, 'min_samples_leaf': 0.14130329823886345, 'lookback_seasons': 4}. Best is trial 12 with value: 0.508213913391142.
+[I 2026-08-25 10:02:04,133] Trial 27 finished with value: 0.5076020740216758 and parameters: {'n_estimators': 981, 'max_depth': 10, 'min_samples_leaf': 0.1409784560487359, 'lookback_seasons': 4}. Best is trial 12 with value: 0.508213913391142.
+[I 2026-08-25 10:02:11,108] Trial 28 finished with value: 0.5034858805353306 and parameters: {'n_estimators': 997, 'max_depth': 10, 'min_samples_leaf': 0.14944662367907927, 'lookback_seasons': 4}. Best is trial 12 with value: 0.508213913391142.
+[I 2026-08-25 10:02:12,333] Trial 29 finished with value: 0.5047529648246807 and parameters: {'n_estimators': 934, 'max_depth': 10, 'min_samples_leaf': 0.14552642893597462, 'lookback_seasons': 4}. Best is trial 12 with value: 0.508213913391142.
+[I 2026-08-25 10:02:21,715] Trial 31 finished with value: 0.505717144435468 and parameters: {'n_estimators': 938, 'max_depth': 10, 'min_samples_leaf': 0.1347835229278862, 'lookback_seasons': 4}. Best is trial 12 with value: 0.508213913391142.
+[I 2026-08-25 10:02:23,962] Trial 30 finished with value: 0.5079867917385353 and parameters: {'n_estimators': 961, 'max_depth': 9, 'min_samples_leaf': 0.14317015568217592, 'lookback_seasons': 4}. Best is trial 12 with value: 0.508213913391142.
+[I 2026-08-25 10:02:49,923] Trial 32 finished with value: 0.5046481440338291 and parameters: {'n_estimators': 969, 'max_depth': 10, 'min_samples_leaf': 0.1345363549117237, 'lookback_seasons': 4}. Best is trial 12 with value: 0.508213913391142.
+
+Best trial: 12. Best value: 0.508214:  66%|######6   | 33/50 [11:47<03:54, 13.77s/it]
+Best trial: 12. Best value: 0.508214:  66%|######6   | 33/50 [11:47<03:54, 13.77s/it]
+Best trial: 12. Best value: 0.508214:  68%|######8   | 34/50 [11:47<03:04, 11.56s/it]
+                                                                                     
+
+Best trial: 12. Best value: 0.508214:  68%|######8   | 34/50 [12:02<03:04, 11.56s/it]
+Best trial: 12. Best value: 0.508214:  68%|######8   | 34/50 [12:02<03:04, 11.56s/it]
+Best trial: 12. Best value: 0.508214:  70%|#######   | 35/50 [12:02<03:08, 12.55s/it]
+                                                                                     
+
+Best trial: 12. Best value: 0.508214:  70%|#######   | 35/50 [15:02<03:08, 12.55s/it]
+Best trial: 12. Best value: 0.508214:  70%|#######   | 35/50 [15:02<03:08, 12.55s/it]
+Best trial: 12. Best value: 0.508214:  72%|#######2  | 36/50 [15:02<14:38, 62.73s/it]
+                                                                                     
+
+Best trial: 12. Best value: 0.508214:  72%|#######2  | 36/50 [15:08<14:38, 62.73s/it]
+Best trial: 12. Best value: 0.508214:  72%|#######2  | 36/50 [15:08<14:38, 62.73s/it]
+Best trial: 12. Best value: 0.508214:  74%|#######4  | 37/50 [15:08<09:55, 45.79s/it]
+                                                                                     
+
+Best trial: 12. Best value: 0.508214:  74%|#######4  | 37/50 [16:15<09:55, 45.79s/it]
+Best trial: 12. Best value: 0.508214:  74%|#######4  | 37/50 [16:15<09:55, 45.79s/it]
+Best trial: 12. Best value: 0.508214:  76%|#######6  | 38/50 [16:15<10:27, 52.27s/it]
+                                                                                     
+
+Best trial: 12. Best value: 0.508214:  76%|#######6  | 38/50 [16:19<10:27, 52.27s/it]
+Best trial: 40. Best value: 0.508945:  76%|#######6  | 38/50 [16:19<10:27, 52.27s/it]
+Best trial: 40. Best value: 0.508945:  78%|#######8  | 39/50 [16:19<06:53, 37.63s/it]
+                                                                                     
+
+Best trial: 40. Best value: 0.508945:  78%|#######8  | 39/50 [16:30<06:53, 37.63s/it]
+Best trial: 40. Best value: 0.508945:  78%|#######8  | 39/50 [16:30<06:53, 37.63s/it]
+Best trial: 40. Best value: 0.508945:  80%|########  | 40/50 [16:30<04:58, 29.88s/it]
+                                                                                     
+
+Best trial: 40. Best value: 0.508945:  80%|########  | 40/50 [16:36<04:58, 29.88s/it]
+Best trial: 40. Best value: 0.508945:  80%|########  | 40/50 [16:36<04:58, 29.88s/it]
+Best trial: 40. Best value: 0.508945:  82%|########2 | 41/50 [16:36<03:22, 22.55s/it]
+                                                                                     
+
+Best trial: 40. Best value: 0.508945:  82%|########2 | 41/50 [16:36<03:22, 22.55s/it]
+Best trial: 40. Best value: 0.508945:  82%|########2 | 41/50 [16:36<03:22, 22.55s/it]
+                                                                                     
+
+Best trial: 40. Best value: 0.508945:  84%|########4 | 42/50 [16:42<03:00, 22.55s/it]
+Best trial: 40. Best value: 0.508945:  84%|########4 | 42/50 [16:42<03:00, 22.55s/it]
+Best trial: 40. Best value: 0.508945:  86%|########6 | 43/50 [16:42<01:34, 13.54s/it]
+                                                                                     
+
+Best trial: 40. Best value: 0.508945:  86%|########6 | 43/50 [16:50<01:34, 13.54s/it]
+Best trial: 40. Best value: 0.508945:  86%|########6 | 43/50 [16:50<01:34, 13.54s/it]
+Best trial: 40. Best value: 0.508945:  88%|########8 | 44/50 [16:50<01:12, 12.08s/it]
+                                                                                     
+
+Best trial: 40. Best value: 0.508945:  88%|########8 | 44/50 [16:53<01:12, 12.08s/it]
+Best trial: 40. Best value: 0.508945:  88%|########8 | 44/50 [16:53<01:12, 12.08s/it]
+Best trial: 40. Best value: 0.508945:  90%|######### | 45/50 [16:53<00:48,  9.75s/it]
+                                                                                     
+
+Best trial: 40. Best value: 0.508945:  90%|######### | 45/50 [16:53<00:48,  9.75s/it]
+Best trial: 40. Best value: 0.508945:  90%|######### | 45/50 [16:53<00:48,  9.75s/it]
+                                                                                     
+
+Best trial: 40. Best value: 0.508945:  92%|#########2| 46/50 [16:55<00:38,  9.75s/it]
+Best trial: 40. Best value: 0.508945:  92%|#########2| 46/50 [16:55<00:38,  9.75s/it]
+Best trial: 40. Best value: 0.508945:  94%|#########3| 47/50 [16:55<00:17,  5.97s/it]
+                                                                                     
+
+Best trial: 40. Best value: 0.508945:  94%|#########3| 47/50 [16:55<00:17,  5.97s/it]
+Best trial: 40. Best value: 0.508945:  94%|#########3| 47/50 [16:55<00:17,  5.97s/it]
+Best trial: 40. Best value: 0.508945:  96%|#########6| 48/50 [16:55<00:09,  4.63s/it]
+                                                                                     
+
+Best trial: 40. Best value: 0.508945:  96%|#########6| 48/50 [16:55<00:09,  4.63s/it]
+Best trial: 40. Best value: 0.508945:  96%|#########6| 48/50 [16:55<00:09,  4.63s/it]
+                                                                                     
+
+Best trial: 40. Best value: 0.508945:  98%|#########8| 49/50 [17:05<00:04,  4.63s/it]
+Best trial: 40. Best value: 0.508945:  98%|#########8| 49/50 [17:05<00:04,  4.63s/it]
+Best trial: 40. Best value: 0.508945: 100%|##########| 50/50 [17:05<00:00,  4.71s/it]
+Best trial: 40. Best value: 0.508945: 100%|##########| 50/50 [17:05<00:00, 20.50s/it]
+[I 2026-08-25 10:09:24,254] A new study created in memory with name: no-name-154fd013-6665-4658-a588-ae3143d63f3c
+[I 2026-08-25 10:02:56,250] Trial 33 finished with value: 0.5051841263262968 and parameters: {'n_estimators': 966, 'max_depth': 10, 'min_samples_leaf': 0.1396747737872176, 'lookback_seasons': 4}. Best is trial 12 with value: 0.508213913391142.
+[I 2026-08-25 10:03:11,041] Trial 34 finished with value: 0.5059949802637895 and parameters: {'n_estimators': 995, 'max_depth': 10, 'min_samples_leaf': 0.14459978973477802, 'lookback_seasons': 4}. Best is trial 12 with value: 0.508213913391142.
+[I 2026-08-25 10:06:10,985] Trial 35 finished with value: 0.5052350381373384 and parameters: {'n_estimators': 972, 'max_depth': 10, 'min_samples_leaf': 0.14586197699228398, 'lookback_seasons': 4}. Best is trial 12 with value: 0.508213913391142.
+[I 2026-08-25 10:06:17,099] Trial 36 finished with value: 0.5066613072008763 and parameters: {'n_estimators': 972, 'max_depth': 10, 'min_samples_leaf': 0.14487185943963843, 'lookback_seasons': 4}. Best is trial 12 with value: 0.508213913391142.
+[I 2026-08-25 10:07:24,613] Trial 39 finished with value: 0.5000602402944038 and parameters: {'n_estimators': 754, 'max_depth': 10, 'min_samples_leaf': 0.1558178172625899, 'lookback_seasons': 4}. Best is trial 12 with value: 0.508213913391142.
+[I 2026-08-25 10:07:28,126] Trial 40 finished with value: 0.5089454672901769 and parameters: {'n_estimators': 732, 'max_depth': 7, 'min_samples_leaf': 0.18483503864185757, 'lookback_seasons': 4}. Best is trial 40 with value: 0.5089454672901769.
+[I 2026-08-25 10:07:39,915] Trial 44 finished with value: 0.503594316261194 and parameters: {'n_estimators': 745, 'max_depth': 7, 'min_samples_leaf': 0.1197545954244088, 'lookback_seasons': 4}. Best is trial 40 with value: 0.5089454672901769.
+[I 2026-08-25 10:07:45,289] Trial 42 finished with value: 0.5061613009350747 and parameters: {'n_estimators': 807, 'max_depth': 7, 'min_samples_leaf': 0.12073861531556652, 'lookback_seasons': 4}. Best is trial 40 with value: 0.5089454672901769.
+[I 2026-08-25 10:07:45,321] Trial 43 finished with value: 0.5056026774637875 and parameters: {'n_estimators': 810, 'max_depth': 7, 'min_samples_leaf': 0.12441344387396845, 'lookback_seasons': 4}. Best is trial 40 with value: 0.5089454672901769.
+[I 2026-08-25 10:07:51,396] Trial 45 finished with value: 0.5015472669852683 and parameters: {'n_estimators': 807, 'max_depth': 9, 'min_samples_leaf': 0.11903397859574674, 'lookback_seasons': 4}. Best is trial 40 with value: 0.5089454672901769.
+[I 2026-08-25 10:07:59,028] Trial 37 finished with value: 0.5034842869305327 and parameters: {'n_estimators': 954, 'max_depth': 7, 'min_samples_leaf': 0.14797618774511698, 'lookback_seasons': 4}. Best is trial 40 with value: 0.5089454672901769.
+[I 2026-08-25 10:08:02,216] Trial 38 finished with value: 0.4997815359225976 and parameters: {'n_estimators': 995, 'max_depth': 10, 'min_samples_leaf': 0.1539608146881727, 'lookback_seasons': 4}. Best is trial 40 with value: 0.5089454672901769.
+[I 2026-08-25 10:08:02,272] Trial 46 finished with value: 0.5012701582259165 and parameters: {'n_estimators': 817, 'max_depth': 9, 'min_samples_leaf': 0.11868890381402504, 'lookback_seasons': 4}. Best is trial 40 with value: 0.5089454672901769.
+[I 2026-08-25 10:08:04,071] Trial 47 finished with value: 0.5010263389097318 and parameters: {'n_estimators': 825, 'max_depth': 9, 'min_samples_leaf': 0.1201457317224617, 'lookback_seasons': 4}. Best is trial 40 with value: 0.5089454672901769.
+[I 2026-08-25 10:08:04,327] Trial 41 finished with value: 0.5016724847542481 and parameters: {'n_estimators': 981, 'max_depth': 10, 'min_samples_leaf': 0.11552340036290053, 'lookback_seasons': 4}. Best is trial 40 with value: 0.5089454672901769.
+[I 2026-08-25 10:08:04,349] Trial 48 finished with value: 0.5019134711613635 and parameters: {'n_estimators': 808, 'max_depth': 9, 'min_samples_leaf': 0.1098529006095352, 'lookback_seasons': 4}. Best is trial 40 with value: 0.5089454672901769.
+[I 2026-08-25 10:08:13,980] Trial 49 finished with value: 0.4943638391310429 and parameters: {'n_estimators': 812, 'max_depth': 9, 'min_samples_leaf': 0.11861609752694713, 'lookback_seasons': 3}. Best is trial 40 with value: 0.5089454672901769.
+Successfully connected to the database!
+[DONE] binary_spread_label: artifacts\binary_spread_label_rf_v2_20260825_150820.pkl
+Running full analysis for binary_spread_label_rf...
+Successfully connected to the database!
+Added qid column with 336 unique season-week combinations
+QID range: 0 to 335
+
+  0%|          | 0/50 [00:00<?, ?it/s]Exception ignored in: <function Image.__del__ at 0x0000028C2F8DB380>
+Traceback (most recent call last):
+  File "C:\Users\OITCOPhamJ\AppData\Local\Programs\Python\Python312\Lib\tkinter\__init__.py", line 4119, in __del__
+    self.tk.call('image', 'delete', self.name)
+RuntimeError: main thread is not in main loop
+Exception ignored in: <function Variable.__del__ at 0x0000028C49B99260>
+Traceback (most recent call last):
+  File "C:\Users\OITCOPhamJ\AppData\Local\Programs\Python\Python312\Lib\tkinter\__init__.py", line 414, in __del__
+    if self._tk.getboolean(self._tk.call("info", "exists", self._name)):
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: main thread is not in main loop
+Exception ignored in: <function Variable.__del__ at 0x0000028C49B99260>
+Traceback (most recent call last):
+  File "C:\Users\OITCOPhamJ\AppData\Local\Programs\Python\Python312\Lib\tkinter\__init__.py", line 414, in __del__
+    if self._tk.getboolean(self._tk.call("info", "exists", self._name)):
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: main thread is not in main loop
+Exception ignored in: <function Variable.__del__ at 0x0000028C49B99260>
+Traceback (most recent call last):
+  File "C:\Users\OITCOPhamJ\AppData\Local\Programs\Python\Python312\Lib\tkinter\__init__.py", line 414, in __del__
+    if self._tk.getboolean(self._tk.call("info", "exists", self._name)):
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: main thread is not in main loop
+Exception ignored in: <function Variable.__del__ at 0x0000028C49B99260>
+Traceback (most recent call last):
+  File "C:\Users\OITCOPhamJ\AppData\Local\Programs\Python\Python312\Lib\tkinter\__init__.py", line 414, in __del__
+    if self._tk.getboolean(self._tk.call("info", "exists", self._name)):
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: main thread is not in main loop
+Exception ignored in: <function Image.__del__ at 0x0000028C2F8DB380>
+Traceback (most recent call last):
+  File "C:\Users\OITCOPhamJ\AppData\Local\Programs\Python\Python312\Lib\tkinter\__init__.py", line 4119, in __del__
+    self.tk.call('image', 'delete', self.name)
+RuntimeError: main thread is not in main loop
+Exception ignored in: <function Variable.__del__ at 0x0000028C49B99260>
+Traceback (most recent call last):
+  File "C:\Users\OITCOPhamJ\AppData\Local\Programs\Python\Python312\Lib\tkinter\__init__.py", line 414, in __del__
+    if self._tk.getboolean(self._tk.call("info", "exists", self._name)):
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: main thread is not in main loop
+Exception ignored in: <function Variable.__del__ at 0x0000028C49B99260>
+Traceback (most recent call last):
+  File "C:\Users\OITCOPhamJ\AppData\Local\Programs\Python\Python312\Lib\tkinter\__init__.py", line 414, in __del__
+    if self._tk.getboolean(self._tk.call("info", "exists", self._name)):
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: main thread is not in main loop
+Exception ignored in: <function Variable.__del__ at 0x0000028C49B99260>
+Traceback (most recent call last):
+  File "C:\Users\OITCOPhamJ\AppData\Local\Programs\Python\Python312\Lib\tkinter\__init__.py", line 414, in __del__
+    if self._tk.getboolean(self._tk.call("info", "exists", self._name)):
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: main thread is not in main loop
+Exception ignored in: <function Variable.__del__ at 0x0000028C49B99260>
+Traceback (most recent call last):
+  File "C:\Users\OITCOPhamJ\AppData\Local\Programs\Python\Python312\Lib\tkinter\__init__.py", line 414, in __del__
+    if self._tk.getboolean(self._tk.call("info", "exists", self._name)):
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: main thread is not in main loop
+
+                                      
+
+  0%|          | 0/50 [01:53<?, ?it/s]
+Best trial: 7. Best value: 0.514491:   0%|          | 0/50 [01:53<?, ?it/s]
+Best trial: 7. Best value: 0.514491:   2%|2         | 1/50 [01:53<1:32:38, 113.45s/it]
+                                                                                      
+
+Best trial: 7. Best value: 0.514491:   2%|2         | 1/50 [02:05<1:32:38, 113.45s/it]
+Best trial: 7. Best value: 0.514491:   2%|2         | 1/50 [02:05<1:32:38, 113.45s/it]
+Best trial: 7. Best value: 0.514491:   4%|4         | 2/50 [02:05<43:06, 53.89s/it]   
+                                                                                   
+
+Best trial: 7. Best value: 0.514491:   4%|4         | 2/50 [02:12<43:06, 53.89s/it]
+Best trial: 7. Best value: 0.514491:   4%|4         | 2/50 [02:12<43:06, 53.89s/it]
+Best trial: 7. Best value: 0.514491:   6%|6         | 3/50 [02:12<25:31, 32.58s/it]
+                                                                                   
+
+Best trial: 7. Best value: 0.514491:   6%|6         | 3/50 [02:16<25:31, 32.58s/it]
+Best trial: 7. Best value: 0.514491:   6%|6         | 3/50 [02:16<25:31, 32.58s/it]
+Best trial: 7. Best value: 0.514491:   8%|8         | 4/50 [02:16<16:14, 21.19s/it]
+                                                                                   
+
+Best trial: 7. Best value: 0.514491:   8%|8         | 4/50 [02:17<16:14, 21.19s/it]
+Best trial: 7. Best value: 0.514491:   8%|8         | 4/50 [02:17<16:14, 21.19s/it]
+Best trial: 7. Best value: 0.514491:  10%|#         | 5/50 [02:17<10:26, 13.93s/it]
+                                                                                   
+
+Best trial: 7. Best value: 0.514491:  10%|#         | 5/50 [02:23<10:26, 13.93s/it]
+Best trial: 7. Best value: 0.514491:  10%|#         | 5/50 [02:23<10:26, 13.93s/it]
+Best trial: 7. Best value: 0.514491:  12%|#2        | 6/50 [02:23<08:08, 11.10s/it]
+                                                                                   
+
+Best trial: 7. Best value: 0.514491:  12%|#2        | 6/50 [03:06<08:08, 11.10s/it]
+Best trial: 7. Best value: 0.514491:  12%|#2        | 6/50 [03:06<08:08, 11.10s/it]
+Best trial: 7. Best value: 0.514491:  14%|#4        | 7/50 [03:06<15:34, 21.74s/it]
+                                                                                   
+
+Best trial: 7. Best value: 0.514491:  14%|#4        | 7/50 [03:09<15:34, 21.74s/it]
+Best trial: 7. Best value: 0.514491:  14%|#4        | 7/50 [03:09<15:34, 21.74s/it]
+Best trial: 7. Best value: 0.514491:  16%|#6        | 8/50 [03:09<10:51, 15.50s/it]
+                                                                                   
+
+Best trial: 7. Best value: 0.514491:  16%|#6        | 8/50 [03:09<10:51, 15.50s/it]
+Best trial: 2. Best value: 0.515207:  16%|#6        | 8/50 [03:09<10:51, 15.50s/it]
+                                                                                   
+
+Best trial: 2. Best value: 0.515207:  18%|#8        | 9/50 [03:09<10:35, 15.50s/it]
+Best trial: 2. Best value: 0.515207:  18%|#8        | 9/50 [03:09<10:35, 15.50s/it]
+Best trial: 2. Best value: 0.515207:  20%|##        | 10/50 [03:09<05:29,  8.25s/it]
+                                                                                    
+
+Best trial: 2. Best value: 0.515207:  20%|##        | 10/50 [03:29<05:29,  8.25s/it]
+Best trial: 2. Best value: 0.515207:  20%|##        | 10/50 [03:29<05:29,  8.25s/it]
+Best trial: 2. Best value: 0.515207:  22%|##2       | 11/50 [03:29<07:15, 11.17s/it]
+                                                                                    
+
+Best trial: 2. Best value: 0.515207:  22%|##2       | 11/50 [05:10<07:15, 11.17s/it]
+Best trial: 2. Best value: 0.515207:  22%|##2       | 11/50 [05:10<07:15, 11.17s/it]
+Best trial: 2. Best value: 0.515207:  24%|##4       | 12/50 [05:10<22:10, 35.01s/it]
+                                                                                    
+
+Best trial: 2. Best value: 0.515207:  24%|##4       | 12/50 [05:34<22:10, 35.01s/it]
+Best trial: 2. Best value: 0.515207:  24%|##4       | 12/50 [05:34<22:10, 35.01s/it]
+Best trial: 2. Best value: 0.515207:  26%|##6       | 13/50 [05:34<19:49, 32.14s/it]
+                                                                                    
+
+Best trial: 2. Best value: 0.515207:  26%|##6       | 13/50 [06:00<19:49, 32.14s/it]
+Best trial: 2. Best value: 0.515207:  26%|##6       | 13/50 [06:00<19:49, 32.14s/it]
+Best trial: 2. Best value: 0.515207:  28%|##8       | 14/50 [06:00<18:15, 30.44s/it]
+                                                                                    
+
+Best trial: 2. Best value: 0.515207:  28%|##8       | 14/50 [06:27<18:15, 30.44s/it]
+Best trial: 2. Best value: 0.515207:  28%|##8       | 14/50 [06:27<18:15, 30.44s/it]
+Best trial: 2. Best value: 0.515207:  30%|###       | 15/50 [06:27<17:09, 29.41s/it]
+                                                                                    
+
+Best trial: 2. Best value: 0.515207:  30%|###       | 15/50 [06:32<17:09, 29.41s/it]
+Best trial: 17. Best value: 0.516073:  30%|###       | 15/50 [06:32<17:09, 29.41s/it]
+Best trial: 17. Best value: 0.516073:  32%|###2      | 16/50 [06:32<12:37, 22.27s/it]
+                                                                                     
+
+Best trial: 17. Best value: 0.516073:  32%|###2      | 16/50 [06:33<12:37, 22.27s/it]
+Best trial: 17. Best value: 0.516073:  32%|###2      | 16/50 [06:33<12:37, 22.27s/it]
+Best trial: 17. Best value: 0.516073:  34%|###4      | 17/50 [06:33<08:48, 16.00s/it]
+                                                                                     
+
+Best trial: 17. Best value: 0.516073:  34%|###4      | 17/50 [07:15<08:48, 16.00s/it]
+Best trial: 17. Best value: 0.516073:  34%|###4      | 17/50 [07:15<08:48, 16.00s/it]
+Best trial: 17. Best value: 0.516073:  36%|###6      | 18/50 [07:15<12:40, 23.77s/it]
+                                                                                     
+
+Best trial: 17. Best value: 0.516073:  36%|###6      | 18/50 [07:18<12:40, 23.77s/it]
+Best trial: 18. Best value: 0.517666:  36%|###6      | 18/50 [07:19<12:40, 23.77s/it]
+Best trial: 18. Best value: 0.517666:  38%|###8      | 19/50 [07:19<09:08, 17.70s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  38%|###8      | 19/50 [07:49<09:08, 17.70s/it]
+Best trial: 18. Best value: 0.517666:  38%|###8      | 19/50 [07:49<09:08, 17.70s/it]
+Best trial: 18. Best value: 0.517666:  40%|####      | 20/50 [07:49<10:43, 21.46s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  40%|####      | 20/50 [07:50<10:43, 21.46s/it]
+Best trial: 18. Best value: 0.517666:  40%|####      | 20/50 [07:50<10:43, 21.46s/it]
+Best trial: 18. Best value: 0.517666:  42%|####2     | 21/50 [07:50<07:24, 15.34s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  42%|####2     | 21/50 [07:59<07:24, 15.34s/it]
+Best trial: 18. Best value: 0.517666:  42%|####2     | 21/50 [07:59<07:24, 15.34s/it]
+Best trial: 18. Best value: 0.517666:  44%|####4     | 22/50 [07:59<06:19, 13.55s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  44%|####4     | 22/50 [08:37<06:19, 13.55s/it]
+Best trial: 18. Best value: 0.517666:  44%|####4     | 22/50 [08:37<06:19, 13.55s/it]
+Best trial: 18. Best value: 0.517666:  46%|####6     | 23/50 [08:37<09:23, 20.87s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  46%|####6     | 23/50 [09:01<09:23, 20.87s/it]
+Best trial: 18. Best value: 0.517666:  46%|####6     | 23/50 [09:01<09:23, 20.87s/it]
+Best trial: 18. Best value: 0.517666:  48%|####8     | 24/50 [09:01<09:23, 21.66s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  48%|####8     | 24/50 [09:09<09:23, 21.66s/it]
+Best trial: 18. Best value: 0.517666:  48%|####8     | 24/50 [09:09<09:23, 21.66s/it]
+Best trial: 18. Best value: 0.517666:  50%|#####     | 25/50 [09:09<07:21, 17.67s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  50%|#####     | 25/50 [09:11<07:21, 17.67s/it]
+Best trial: 18. Best value: 0.517666:  50%|#####     | 25/50 [09:12<07:21, 17.67s/it]
+Best trial: 18. Best value: 0.517666:  52%|#####2    | 26/50 [09:12<05:14, 13.10s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  52%|#####2    | 26/50 [09:49<05:14, 13.10s/it]
+Best trial: 18. Best value: 0.517666:  52%|#####2    | 26/50 [09:49<05:14, 13.10s/it]
+Best trial: 18. Best value: 0.517666:  54%|#####4    | 27/50 [09:49<07:48, 20.38s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  54%|#####4    | 27/50 [10:34<07:48, 20.38s/it]
+Best trial: 18. Best value: 0.517666:  54%|#####4    | 27/50 [10:34<07:48, 20.38s/it]
+Best trial: 18. Best value: 0.517666:  56%|#####6    | 28/50 [10:34<10:13, 27.91s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  56%|#####6    | 28/50 [10:50<10:13, 27.91s/it]
+Best trial: 18. Best value: 0.517666:  56%|#####6    | 28/50 [10:50<10:13, 27.91s/it]
+Best trial: 18. Best value: 0.517666:  58%|#####8    | 29/50 [10:50<08:28, 24.21s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  58%|#####8    | 29/50 [11:04<08:28, 24.21s/it]
+Best trial: 18. Best value: 0.517666:  58%|#####8    | 29/50 [11:04<08:28, 24.21s/it]
+Best trial: 18. Best value: 0.517666:  60%|######    | 30/50 [11:04<07:03, 21.19s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  60%|######    | 30/50 [11:09<07:03, 21.19s/it]
+Best trial: 18. Best value: 0.517666:  60%|######    | 30/50 [11:09<07:03, 21.19s/it]
+Best trial: 18. Best value: 0.517666:  62%|######2   | 31/50 [11:09<05:07, 16.20s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  62%|######2   | 31/50 [11:35<05:07, 16.20s/it]
+Best trial: 18. Best value: 0.517666:  62%|######2   | 31/50 [11:35<05:07, 16.20s/it]
+Best trial: 18. Best value: 0.517666:  64%|######4   | 32/50 [11:35<05:48, 19.37s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  64%|######4   | 32/50 [11:44<05:48, 19.37s/it]
+Best trial: 18. Best value: 0.517666:  64%|######4   | 32/50 [11:44<05:48, 19.37s/it]
+Best trial: 18. Best value: 0.517666:  66%|######6   | 33/50 [11:44<04:35, 16.20s/it]
+                                                                                     
+[I 2026-08-25 10:11:17,580] Trial 7 finished with value: 0.5144908359845279 and parameters: {'n_estimators': 226, 'max_depth': 8, 'min_samples_leaf': 0.0945587245486678, 'lookback_seasons': 4}. Best is trial 7 with value: 0.5144908359845279.
+[I 2026-08-25 10:11:29,794] Trial 13 finished with value: 0.5066517958942038 and parameters: {'n_estimators': 257, 'max_depth': 10, 'min_samples_leaf': 0.15033155668388323, 'lookback_seasons': 5}. Best is trial 7 with value: 0.5144908359845279.
+[I 2026-08-25 10:11:37,054] Trial 6 finished with value: 0.5014909705907339 and parameters: {'n_estimators': 279, 'max_depth': 3, 'min_samples_leaf': 0.1996448693014145, 'lookback_seasons': 3}. Best is trial 7 with value: 0.5144908359845279.
+[I 2026-08-25 10:11:40,803] Trial 11 finished with value: 0.5049210684726729 and parameters: {'n_estimators': 301, 'max_depth': 6, 'min_samples_leaf': 0.15548153157370234, 'lookback_seasons': 3}. Best is trial 7 with value: 0.5144908359845279.
+[I 2026-08-25 10:11:41,900] Trial 10 finished with value: 0.5029676712293452 and parameters: {'n_estimators': 304, 'max_depth': 4, 'min_samples_leaf': 0.09626331559799244, 'lookback_seasons': 3}. Best is trial 7 with value: 0.5144908359845279.
+[I 2026-08-25 10:11:47,499] Trial 12 finished with value: 0.5047287385528456 and parameters: {'n_estimators': 318, 'max_depth': 6, 'min_samples_leaf': 0.06337978506279286, 'lookback_seasons': 2}. Best is trial 7 with value: 0.5144908359845279.
+[I 2026-08-25 10:12:31,099] Trial 0 finished with value: 0.5064861157403768 and parameters: {'n_estimators': 426, 'max_depth': 7, 'min_samples_leaf': 0.12114242719812082, 'lookback_seasons': 5}. Best is trial 7 with value: 0.5144908359845279.
+[I 2026-08-25 10:12:33,286] Trial 4 finished with value: 0.5058141967562383 and parameters: {'n_estimators': 421, 'max_depth': 10, 'min_samples_leaf': 0.08292057587524435, 'lookback_seasons': 5}. Best is trial 7 with value: 0.5144908359845279.
+[I 2026-08-25 10:12:33,356] Trial 2 finished with value: 0.5152070886985474 and parameters: {'n_estimators': 419, 'max_depth': 6, 'min_samples_leaf': 0.08927114731843112, 'lookback_seasons': 4}. Best is trial 2 with value: 0.5152070886985474.
+[I 2026-08-25 10:12:33,801] Trial 3 finished with value: 0.5067020720160114 and parameters: {'n_estimators': 441, 'max_depth': 4, 'min_samples_leaf': 0.14719788109154536, 'lookback_seasons': 2}. Best is trial 2 with value: 0.5152070886985474.
+[I 2026-08-25 10:12:53,522] Trial 1 finished with value: 0.505829203266102 and parameters: {'n_estimators': 394, 'max_depth': 9, 'min_samples_leaf': 0.18418935559736913, 'lookback_seasons': 2}. Best is trial 2 with value: 0.5152070886985474.
+[I 2026-08-25 10:14:34,285] Trial 14 finished with value: 0.49539655207554284 and parameters: {'n_estimators': 405, 'max_depth': 10, 'min_samples_leaf': 0.057366848119053314, 'lookback_seasons': 5}. Best is trial 2 with value: 0.5152070886985474.
+[I 2026-08-25 10:14:58,870] Trial 22 finished with value: 0.5065635862393703 and parameters: {'n_estimators': 250, 'max_depth': 5, 'min_samples_leaf': 0.04470032484422323, 'lookback_seasons': 4}. Best is trial 2 with value: 0.5152070886985474.
+[I 2026-08-25 10:15:25,008] Trial 5 finished with value: 0.5061504916912194 and parameters: {'n_estimators': 840, 'max_depth': 6, 'min_samples_leaf': 0.18003563675180825, 'lookback_seasons': 2}. Best is trial 2 with value: 0.5152070886985474.
+[I 2026-08-25 10:15:51,888] Trial 8 finished with value: 0.4991975907181911 and parameters: {'n_estimators': 872, 'max_depth': 7, 'min_samples_leaf': 0.17821075076220988, 'lookback_seasons': 5}. Best is trial 2 with value: 0.5152070886985474.
+[I 2026-08-25 10:15:56,737] Trial 17 finished with value: 0.5160731211820563 and parameters: {'n_estimators': 548, 'max_depth': 8, 'min_samples_leaf': 0.16531323963693967, 'lookback_seasons': 4}. Best is trial 17 with value: 0.5160731211820563.
+[I 2026-08-25 10:15:57,664] Trial 9 finished with value: 0.5137730109468663 and parameters: {'n_estimators': 898, 'max_depth': 7, 'min_samples_leaf': 0.1701546952542574, 'lookback_seasons': 4}. Best is trial 17 with value: 0.5160731211820563.
+[I 2026-08-25 10:16:40,017] Trial 27 finished with value: 0.5089335252523899 and parameters: {'n_estimators': 126, 'max_depth': 8, 'min_samples_leaf': 0.023417858062773383, 'lookback_seasons': 4}. Best is trial 17 with value: 0.5160731211820563.
+[I 2026-08-25 10:16:43,172] Trial 18 finished with value: 0.5176662373632523 and parameters: {'n_estimators': 650, 'max_depth': 5, 'min_samples_leaf': 0.017955021898497348, 'lookback_seasons': 2}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:17:13,609] Trial 28 finished with value: 0.5108463710317339 and parameters: {'n_estimators': 118, 'max_depth': 8, 'min_samples_leaf': 0.0124081682911992, 'lookback_seasons': 4}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:17:14,614] Trial 19 finished with value: 0.504554700197561 and parameters: {'n_estimators': 699, 'max_depth': 9, 'min_samples_leaf': 0.12989962137808408, 'lookback_seasons': 3}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:17:23,939] Trial 16 finished with value: 0.5076830844791964 and parameters: {'n_estimators': 763, 'max_depth': 8, 'min_samples_leaf': 0.11500559799822672, 'lookback_seasons': 3}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:18:01,971] Trial 15 finished with value: 0.5085160301169721 and parameters: {'n_estimators': 894, 'max_depth': 5, 'min_samples_leaf': 0.10257608262862722, 'lookback_seasons': 2}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:18:25,484] Trial 24 finished with value: 0.5119935604603288 and parameters: {'n_estimators': 701, 'max_depth': 8, 'min_samples_leaf': 0.014367055432511072, 'lookback_seasons': 4}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:18:33,811] Trial 23 finished with value: 0.5064998105436945 and parameters: {'n_estimators': 782, 'max_depth': 8, 'min_samples_leaf': 0.02496257259880441, 'lookback_seasons': 4}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:18:36,102] Trial 21 finished with value: 0.5094445765732853 and parameters: {'n_estimators': 815, 'max_depth': 4, 'min_samples_leaf': 0.05260437349779542, 'lookback_seasons': 4}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:19:13,633] Trial 20 finished with value: 0.5019573266536567 and parameters: {'n_estimators': 897, 'max_depth': 7, 'min_samples_leaf': 0.1117295078690186, 'lookback_seasons': 5}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:19:59,077] Trial 25 finished with value: 0.5095155284596584 and parameters: {'n_estimators': 715, 'max_depth': 8, 'min_samples_leaf': 0.01487494750580251, 'lookback_seasons': 4}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:20:14,593] Trial 26 finished with value: 0.5133261055556325 and parameters: {'n_estimators': 695, 'max_depth': 8, 'min_samples_leaf': 0.014431681532753579, 'lookback_seasons': 4}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:20:28,847] Trial 29 finished with value: 0.5062256585744397 and parameters: {'n_estimators': 595, 'max_depth': 8, 'min_samples_leaf': 0.015127705016150794, 'lookback_seasons': 4}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:20:33,294] Trial 30 finished with value: 0.508318162787991 and parameters: {'n_estimators': 601, 'max_depth': 8, 'min_samples_leaf': 0.010501028526192252, 'lookback_seasons': 4}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:21:00,179] Trial 31 finished with value: 0.5067555724329378 and parameters: {'n_estimators': 608, 'max_depth': 8, 'min_samples_leaf': 0.12356426932036679, 'lookback_seasons': 4}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:21:08,951] Trial 32 finished with value: 0.5124111959590362 and parameters: {'n_estimators': 625, 'max_depth': 3, 'min_samples_leaf': 0.013903161459397156, 'lookback_seasons': 3}. Best is trial 18 with value: 0.5176662373632523.
+
+Best trial: 18. Best value: 0.517666:  66%|######6   | 33/50 [11:51<04:35, 16.20s/it]
+Best trial: 18. Best value: 0.517666:  66%|######6   | 33/50 [11:51<04:35, 16.20s/it]
+Best trial: 18. Best value: 0.517666:  68%|######8   | 34/50 [11:51<03:32, 13.26s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  68%|######8   | 34/50 [11:55<03:32, 13.26s/it]
+Best trial: 18. Best value: 0.517666:  68%|######8   | 34/50 [11:55<03:32, 13.26s/it]
+Best trial: 18. Best value: 0.517666:  70%|#######   | 35/50 [11:55<02:41, 10.74s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  70%|#######   | 35/50 [11:56<02:41, 10.74s/it]
+Best trial: 18. Best value: 0.517666:  70%|#######   | 35/50 [11:56<02:41, 10.74s/it]
+Best trial: 18. Best value: 0.517666:  72%|#######2  | 36/50 [11:56<01:46,  7.60s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  72%|#######2  | 36/50 [12:29<01:46,  7.60s/it]
+Best trial: 18. Best value: 0.517666:  72%|#######2  | 36/50 [12:29<01:46,  7.60s/it]
+Best trial: 18. Best value: 0.517666:  74%|#######4  | 37/50 [12:29<03:17, 15.17s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  74%|#######4  | 37/50 [12:32<03:17, 15.17s/it]
+Best trial: 18. Best value: 0.517666:  74%|#######4  | 37/50 [12:32<03:17, 15.17s/it]
+Best trial: 18. Best value: 0.517666:  76%|#######6  | 38/50 [12:32<02:21, 11.76s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  76%|#######6  | 38/50 [12:34<02:21, 11.76s/it]
+Best trial: 18. Best value: 0.517666:  76%|#######6  | 38/50 [12:34<02:21, 11.76s/it]
+Best trial: 18. Best value: 0.517666:  78%|#######8  | 39/50 [12:34<01:36,  8.80s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  78%|#######8  | 39/50 [12:35<01:36,  8.80s/it]
+Best trial: 18. Best value: 0.517666:  78%|#######8  | 39/50 [12:35<01:36,  8.80s/it]
+Best trial: 18. Best value: 0.517666:  80%|########  | 40/50 [12:35<01:04,  6.41s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  80%|########  | 40/50 [12:50<01:04,  6.41s/it]
+Best trial: 18. Best value: 0.517666:  80%|########  | 40/50 [12:50<01:04,  6.41s/it]
+Best trial: 18. Best value: 0.517666:  82%|########2 | 41/50 [12:50<01:21,  9.08s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  82%|########2 | 41/50 [13:02<01:21,  9.08s/it]
+Best trial: 18. Best value: 0.517666:  82%|########2 | 41/50 [13:02<01:21,  9.08s/it]
+Best trial: 18. Best value: 0.517666:  84%|########4 | 42/50 [13:02<01:18,  9.87s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  84%|########4 | 42/50 [13:12<01:18,  9.87s/it]
+Best trial: 18. Best value: 0.517666:  84%|########4 | 42/50 [13:12<01:18,  9.87s/it]
+Best trial: 18. Best value: 0.517666:  86%|########6 | 43/50 [13:12<01:08,  9.85s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  86%|########6 | 43/50 [13:12<01:08,  9.85s/it]
+Best trial: 18. Best value: 0.517666:  86%|########6 | 43/50 [13:12<01:08,  9.85s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  88%|########8 | 44/50 [13:14<00:59,  9.85s/it]
+Best trial: 18. Best value: 0.517666:  88%|########8 | 44/50 [13:14<00:59,  9.85s/it]
+Best trial: 18. Best value: 0.517666:  90%|######### | 45/50 [13:14<00:29,  5.81s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  90%|######### | 45/50 [13:17<00:29,  5.81s/it]
+Best trial: 18. Best value: 0.517666:  90%|######### | 45/50 [13:17<00:29,  5.81s/it]
+Best trial: 18. Best value: 0.517666:  92%|#########2| 46/50 [13:17<00:20,  5.19s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  92%|#########2| 46/50 [13:20<00:20,  5.19s/it]
+Best trial: 18. Best value: 0.517666:  92%|#########2| 46/50 [13:20<00:20,  5.19s/it]
+Best trial: 18. Best value: 0.517666:  94%|#########3| 47/50 [13:20<00:13,  4.56s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  94%|#########3| 47/50 [13:20<00:13,  4.56s/it]
+Best trial: 18. Best value: 0.517666:  94%|#########3| 47/50 [13:20<00:13,  4.56s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  96%|#########6| 48/50 [13:20<00:09,  4.56s/it]
+Best trial: 18. Best value: 0.517666:  96%|#########6| 48/50 [13:20<00:09,  4.56s/it]
+Best trial: 18. Best value: 0.517666:  98%|#########8| 49/50 [13:20<00:02,  2.63s/it]
+                                                                                     
+
+Best trial: 18. Best value: 0.517666:  98%|#########8| 49/50 [13:20<00:02,  2.63s/it]
+Best trial: 18. Best value: 0.517666:  98%|#########8| 49/50 [13:20<00:02,  2.63s/it]
+Best trial: 18. Best value: 0.517666: 100%|##########| 50/50 [13:20<00:00, 16.02s/it]
+[I 2026-08-25 10:24:58,770] A new study created in memory with name: no-name-5fe5b317-5e21-436d-9805-e8a27cd10d16
+[I 2026-08-25 10:21:15,298] Trial 34 finished with value: 0.5109389031096777 and parameters: {'n_estimators': 590, 'max_depth': 5, 'min_samples_leaf': 0.037022068471989744, 'lookback_seasons': 3}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:21:20,220] Trial 35 finished with value: 0.5107020511194189 and parameters: {'n_estimators': 575, 'max_depth': 5, 'min_samples_leaf': 0.032276721025788935, 'lookback_seasons': 4}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:21:20,522] Trial 33 finished with value: 0.5036675684755059 and parameters: {'n_estimators': 629, 'max_depth': 3, 'min_samples_leaf': 0.11533877908313396, 'lookback_seasons': 3}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:21:53,360] Trial 36 finished with value: 0.5106922275861064 and parameters: {'n_estimators': 611, 'max_depth': 5, 'min_samples_leaf': 0.03619904180324798, 'lookback_seasons': 4}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:21:57,112] Trial 37 finished with value: 0.5115990568828523 and parameters: {'n_estimators': 569, 'max_depth': 5, 'min_samples_leaf': 0.03641207950749349, 'lookback_seasons': 3}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:21:59,042] Trial 38 finished with value: 0.5121639475007452 and parameters: {'n_estimators': 550, 'max_depth': 5, 'min_samples_leaf': 0.07387496274257158, 'lookback_seasons': 3}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:21:59,882] Trial 39 finished with value: 0.5091753604698 and parameters: {'n_estimators': 558, 'max_depth': 5, 'min_samples_leaf': 0.07346376360456083, 'lookback_seasons': 3}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:22:15,172] Trial 40 finished with value: 0.5091553479600484 and parameters: {'n_estimators': 566, 'max_depth': 5, 'min_samples_leaf': 0.07365772694145806, 'lookback_seasons': 3}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:22:26,879] Trial 41 finished with value: 0.5094355711498748 and parameters: {'n_estimators': 552, 'max_depth': 5, 'min_samples_leaf': 0.07564670199262498, 'lookback_seasons': 3}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:22:36,688] Trial 43 finished with value: 0.5070998425818203 and parameters: {'n_estimators': 533, 'max_depth': 5, 'min_samples_leaf': 0.0780125489189697, 'lookback_seasons': 3}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:22:36,701] Trial 42 finished with value: 0.5091538046162162 and parameters: {'n_estimators': 595, 'max_depth': 5, 'min_samples_leaf': 0.07692407087660054, 'lookback_seasons': 3}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:22:38,912] Trial 44 finished with value: 0.5020041508669113 and parameters: {'n_estimators': 545, 'max_depth': 5, 'min_samples_leaf': 0.1344046871280348, 'lookback_seasons': 3}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:22:42,208] Trial 45 finished with value: 0.5074189309041456 and parameters: {'n_estimators': 509, 'max_depth': 5, 'min_samples_leaf': 0.07774533312251031, 'lookback_seasons': 3}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:22:44,987] Trial 49 finished with value: 0.5068666343847967 and parameters: {'n_estimators': 477, 'max_depth': 9, 'min_samples_leaf': 0.0803616652395158, 'lookback_seasons': 2}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:22:45,067] Trial 46 finished with value: 0.5076643910936103 and parameters: {'n_estimators': 523, 'max_depth': 5, 'min_samples_leaf': 0.076810573173727, 'lookback_seasons': 3}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:22:45,111] Trial 47 finished with value: 0.5046909999374508 and parameters: {'n_estimators': 501, 'max_depth': 9, 'min_samples_leaf': 0.07878381343431183, 'lookback_seasons': 5}. Best is trial 18 with value: 0.5176662373632523.
+[I 2026-08-25 10:22:45,194] Trial 48 finished with value: 0.5015075130267542 and parameters: {'n_estimators': 499, 'max_depth': 9, 'min_samples_leaf': 0.07484266288138013, 'lookback_seasons': 5}. Best is trial 18 with value: 0.5176662373632523.
+Successfully connected to the database!
+[DONE] binary_ou_label: artifacts\binary_ou_label_rf_v2_20260825_152251.pkl
+Running full analysis for binary_ou_label_rf...
+Successfully connected to the database!
+Added qid column with 336 unique season-week combinations
+QID range: 0 to 335
+
+  0%|          | 0/50 [00:00<?, ?it/s]
+                                      
+
+  0%|          | 0/50 [03:56<?, ?it/s]
+Best trial: 1. Best value: -13.2666:   0%|          | 0/50 [03:56<?, ?it/s]
+Best trial: 1. Best value: -13.2666:   2%|2         | 1/50 [03:56<3:12:51, 236.15s/it]
+                                                                                      
+
+Best trial: 1. Best value: -13.2666:   2%|2         | 1/50 [05:01<3:12:51, 236.15s/it]
+Best trial: 13. Best value: -13.0693:   2%|2         | 1/50 [05:01<3:12:51, 236.15s/it]
+Best trial: 13. Best value: -13.0693:   4%|4         | 2/50 [05:01<1:48:42, 135.88s/it]
+                                                                                       
+
+Best trial: 13. Best value: -13.0693:   4%|4         | 2/50 [05:53<1:48:42, 135.88s/it]
+Best trial: 13. Best value: -13.0693:   4%|4         | 2/50 [05:53<1:48:42, 135.88s/it]
+Best trial: 13. Best value: -13.0693:   6%|6         | 3/50 [05:53<1:16:23, 97.52s/it] 
+                                                                                      
+
+Best trial: 13. Best value: -13.0693:   6%|6         | 3/50 [06:13<1:16:23, 97.52s/it]
+Best trial: 13. Best value: -13.0693:   6%|6         | 3/50 [06:13<1:16:23, 97.52s/it]
+Best trial: 13. Best value: -13.0693:   8%|8         | 4/50 [06:13<51:06, 66.67s/it]  
+                                                                                    
+
+Best trial: 13. Best value: -13.0693:   8%|8         | 4/50 [06:46<51:06, 66.67s/it]
+Best trial: 13. Best value: -13.0693:   8%|8         | 4/50 [06:46<51:06, 66.67s/it]
+Best trial: 13. Best value: -13.0693:  10%|#         | 5/50 [06:46<40:58, 54.63s/it]
+                                                                                    
+
+Best trial: 13. Best value: -13.0693:  10%|#         | 5/50 [07:27<40:58, 54.63s/it]
+Best trial: 13. Best value: -13.0693:  10%|#         | 5/50 [07:27<40:58, 54.63s/it]
+Best trial: 13. Best value: -13.0693:  12%|#2        | 6/50 [07:27<36:40, 50.02s/it]
+                                                                                    
+
+Best trial: 13. Best value: -13.0693:  12%|#2        | 6/50 [07:32<36:40, 50.02s/it]
+Best trial: 13. Best value: -13.0693:  12%|#2        | 6/50 [07:32<36:40, 50.02s/it]
+Best trial: 13. Best value: -13.0693:  14%|#4        | 7/50 [07:32<25:12, 35.17s/it]
+                                                                                    
+
+Best trial: 13. Best value: -13.0693:  14%|#4        | 7/50 [08:47<25:12, 35.17s/it]
+Best trial: 13. Best value: -13.0693:  14%|#4        | 7/50 [08:47<25:12, 35.17s/it]
+Best trial: 13. Best value: -13.0693:  16%|#6        | 8/50 [08:47<33:40, 48.11s/it]
+                                                                                    
+
+Best trial: 13. Best value: -13.0693:  16%|#6        | 8/50 [09:34<33:40, 48.11s/it]
+Best trial: 13. Best value: -13.0693:  16%|#6        | 8/50 [09:34<33:40, 48.11s/it]
+Best trial: 13. Best value: -13.0693:  18%|#8        | 9/50 [09:34<32:30, 47.57s/it]
+                                                                                    
+
+Best trial: 13. Best value: -13.0693:  18%|#8        | 9/50 [09:42<32:30, 47.57s/it]
+Best trial: 13. Best value: -13.0693:  18%|#8        | 9/50 [09:42<32:30, 47.57s/it]
+Best trial: 13. Best value: -13.0693:  20%|##        | 10/50 [09:42<23:31, 35.29s/it]
+                                                                                     
+
+Best trial: 13. Best value: -13.0693:  20%|##        | 10/50 [10:38<23:31, 35.29s/it]
+Best trial: 13. Best value: -13.0693:  20%|##        | 10/50 [10:38<23:31, 35.29s/it]
+Best trial: 13. Best value: -13.0693:  22%|##2       | 11/50 [10:38<27:04, 41.65s/it]
+                                                                                     
+
+Best trial: 13. Best value: -13.0693:  22%|##2       | 11/50 [11:16<27:04, 41.65s/it]
+Best trial: 13. Best value: -13.0693:  22%|##2       | 11/50 [11:16<27:04, 41.65s/it]
+Best trial: 13. Best value: -13.0693:  24%|##4       | 12/50 [11:16<25:46, 40.70s/it]
+                                                                                     
+
+Best trial: 13. Best value: -13.0693:  24%|##4       | 12/50 [12:28<25:46, 40.70s/it]
+Best trial: 13. Best value: -13.0693:  24%|##4       | 12/50 [12:28<25:46, 40.70s/it]
+Best trial: 13. Best value: -13.0693:  26%|##6       | 13/50 [12:28<30:50, 50.02s/it]
+                                                                                     
+
+Best trial: 13. Best value: -13.0693:  26%|##6       | 13/50 [12:36<30:50, 50.02s/it]
+Best trial: 13. Best value: -13.0693:  26%|##6       | 13/50 [12:36<30:50, 50.02s/it]
+Best trial: 13. Best value: -13.0693:  28%|##8       | 14/50 [12:36<22:30, 37.50s/it]
+                                                                                     
+
+Best trial: 13. Best value: -13.0693:  28%|##8       | 14/50 [12:40<22:30, 37.50s/it]
+Best trial: 13. Best value: -13.0693:  28%|##8       | 14/50 [12:40<22:30, 37.50s/it]
+Best trial: 13. Best value: -13.0693:  30%|###       | 15/50 [12:40<15:54, 27.26s/it]
+                                                                                     
+
+Best trial: 13. Best value: -13.0693:  30%|###       | 15/50 [14:33<15:54, 27.26s/it]
+Best trial: 13. Best value: -13.0693:  30%|###       | 15/50 [14:33<15:54, 27.26s/it]
+Best trial: 13. Best value: -13.0693:  32%|###2      | 16/50 [14:33<30:04, 53.08s/it]
+                                                                                     
+
+Best trial: 13. Best value: -13.0693:  32%|###2      | 16/50 [15:15<30:04, 53.08s/it]
+Best trial: 13. Best value: -13.0693:  32%|###2      | 16/50 [15:15<30:04, 53.08s/it]
+Best trial: 13. Best value: -13.0693:  34%|###4      | 17/50 [15:15<27:28, 49.96s/it]
+                                                                                     
+
+Best trial: 13. Best value: -13.0693:  34%|###4      | 17/50 [15:16<27:28, 49.96s/it]
+Best trial: 13. Best value: -13.0693:  34%|###4      | 17/50 [15:16<27:28, 49.96s/it]
+Best trial: 13. Best value: -13.0693:  36%|###6      | 18/50 [15:16<18:47, 35.22s/it]
+                                                                                     
+
+Best trial: 13. Best value: -13.0693:  36%|###6      | 18/50 [15:27<18:47, 35.22s/it]
+Best trial: 13. Best value: -13.0693:  36%|###6      | 18/50 [15:27<18:47, 35.22s/it]
+Best trial: 13. Best value: -13.0693:  38%|###8      | 19/50 [15:27<14:25, 27.92s/it]
+                                                                                     
+
+Best trial: 13. Best value: -13.0693:  38%|###8      | 19/50 [16:22<14:25, 27.92s/it]
+Best trial: 13. Best value: -13.0693:  38%|###8      | 19/50 [16:22<14:25, 27.92s/it]
+Best trial: 13. Best value: -13.0693:  40%|####      | 20/50 [16:22<17:57, 35.93s/it]
+                                                                                     
+
+Best trial: 13. Best value: -13.0693:  40%|####      | 20/50 [16:26<17:57, 35.93s/it]
+Best trial: 26. Best value: -13.0652:  40%|####      | 20/50 [16:26<17:57, 35.93s/it]
+Best trial: 26. Best value: -13.0652:  42%|####2     | 21/50 [16:26<12:47, 26.45s/it]
+                                                                                     
+
+Best trial: 26. Best value: -13.0652:  42%|####2     | 21/50 [16:39<12:47, 26.45s/it]
+Best trial: 26. Best value: -13.0652:  42%|####2     | 21/50 [16:39<12:47, 26.45s/it]
+Best trial: 26. Best value: -13.0652:  44%|####4     | 22/50 [16:39<10:28, 22.46s/it]
+                                                                                     
+
+Best trial: 26. Best value: -13.0652:  44%|####4     | 22/50 [17:02<10:28, 22.46s/it]
+Best trial: 26. Best value: -13.0652:  44%|####4     | 22/50 [17:02<10:28, 22.46s/it]
+Best trial: 26. Best value: -13.0652:  46%|####6     | 23/50 [17:02<10:03, 22.36s/it]
+                                                                                     
+
+Best trial: 26. Best value: -13.0652:  46%|####6     | 23/50 [17:02<10:03, 22.36s/it]
+Best trial: 27. Best value: -13.0637:  46%|####6     | 23/50 [17:02<10:03, 22.36s/it]
+Best trial: 27. Best value: -13.0637:  48%|####8     | 24/50 [17:02<06:48, 15.70s/it]
+                                                                                     
+
+Best trial: 27. Best value: -13.0637:  48%|####8     | 24/50 [17:19<06:48, 15.70s/it]
+Best trial: 27. Best value: -13.0637:  48%|####8     | 24/50 [17:19<06:48, 15.70s/it]
+Best trial: 27. Best value: -13.0637:  50%|#####     | 25/50 [17:19<06:46, 16.26s/it]
+                                                                                     
+
+Best trial: 27. Best value: -13.0637:  50%|#####     | 25/50 [17:53<06:46, 16.26s/it]
+Best trial: 27. Best value: -13.0637:  50%|#####     | 25/50 [17:53<06:46, 16.26s/it]
+Best trial: 27. Best value: -13.0637:  52%|#####2    | 26/50 [17:53<08:34, 21.44s/it]
+                                                                                     
+
+Best trial: 27. Best value: -13.0637:  52%|#####2    | 26/50 [19:09<08:34, 21.44s/it]
+Best trial: 29. Best value: -13.063:  52%|#####2    | 26/50 [19:09<08:34, 21.44s/it] 
+Best trial: 29. Best value: -13.063:  54%|#####4    | 27/50 [19:09<14:28, 37.74s/it]
+                                                                                    
+
+Best trial: 29. Best value: -13.063:  54%|#####4    | 27/50 [19:46<14:28, 37.74s/it]
+Best trial: 29. Best value: -13.063:  54%|#####4    | 27/50 [19:46<14:28, 37.74s/it]
+Best trial: 29. Best value: -13.063:  56%|#####6    | 28/50 [19:46<13:47, 37.63s/it]
+                                                                                    
+
+Best trial: 29. Best value: -13.063:  56%|#####6    | 28/50 [20:25<13:47, 37.63s/it]
+Best trial: 32. Best value: -13.0614:  56%|#####6    | 28/50 [20:25<13:47, 37.63s/it]

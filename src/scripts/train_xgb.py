@@ -24,6 +24,10 @@ from src.models.nfl_model import NFLModelV2, ModelArtifacts
 from src.config import config
 from src.models import hyper_parameter_tuning
 import pickle
+# Batch script: pick the non-interactive backend before model_analysis imports pyplot,
+# otherwise its plt.show() calls spawn Tk windows that fail on teardown.
+import matplotlib
+matplotlib.use("Agg")
 from src.evaluation import model_analysis
 import numpy as np
 # List of targets to train. Adjust ordering or remove as needed.
@@ -67,15 +71,16 @@ for tgt, i_type in config.models.items():
         params['objective'] = 'reg:squarederror'
         params['eval_metric'] = 'rmse'
     
-    X_train, X_test, y_train_, y_test, feature_cols, is_class = model._select_X_y()
+    X_train, X_val, X_test, y_train_, y_val, y_test, feature_cols, is_class = model._select_X_y(val_size=0.1)
     
     dtrain = xgb.DMatrix(X_train.values, label=y_train_.values, feature_names=X_train.columns.tolist())
+    dval = xgb.DMatrix(X_val.values, label=y_val.values, feature_names=X_train.columns.tolist())
     dtest = xgb.DMatrix(X_test.values, y_test.values, feature_names=X_train.columns.tolist())
 
     # scale_pos_weight only for classification
     if i_type == "classification":
-        if y_train_.nunique() < 2 or y_test.nunique() < 2:
-            print(f"[SKIP] {tgt}: insufficient class variation in the train/test split for XGBoost training.")
+        if y_train_.nunique() < 2 or y_val.nunique() < 2 or y_test.nunique() < 2:
+            print(f"[SKIP] {tgt}: insufficient class variation in the train/val/test split for XGBoost training.")
             continue
         neg_count = np.sum(y_train_.values == 0)
         pos_count = np.sum(y_train_.values == 1)
@@ -90,7 +95,7 @@ for tgt, i_type in config.models.items():
         params=params,
         dtrain=dtrain,
         num_boost_round=n_estimators,
-        evals=[(dtest, 'validation')],
+        evals=[(dval, 'validation')],
         early_stopping_rounds=early_stopping_rounds,
         verbose_eval=1
     )
@@ -101,13 +106,17 @@ for tgt, i_type in config.models.items():
         preds = (predictions >= 0.5).astype(int)
         acc = accuracy_score(y_test.values, preds)
         p, r, f, _ = precision_recall_fscore_support(y_test.values, preds, average="weighted", zero_division=0)
-        metrics = {"accuracy": acc, "precision": p, "recall": r, "f1": f}
+        pos_rate = float(y_test.mean())
+        metrics = {"accuracy": acc, "precision": p, "recall": r, "f1": f,
+                   "baseline_accuracy": max(pos_rate, 1 - pos_rate)}
         model_type_str = 'XGBClassifier'
     else:
         preds = predictions
         mae = mean_absolute_error(y_test.values, preds)
         r2 = r2_score(y_test.values, preds)
-        metrics = {"mae": mae, "r2": r2}
+        baseline = np.full(len(y_test), y_train_.mean())
+        metrics = {"mae": mae, "r2": r2,
+                   "baseline_mae": mean_absolute_error(y_test.values, baseline)}
         model_type_str = 'XGBRegressor'
     
     # Create proper ModelArtifacts wrapper (required by predictions.py)

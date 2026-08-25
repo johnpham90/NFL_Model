@@ -137,7 +137,8 @@ class NFLHyperparameterTuner:
             'min_child_weight': trial.suggest_int('min_child_weight', 1, 10),
             'gamma': trial.suggest_float('gamma', 0, 10),
             "n_estimators":trial.suggest_int('n_estimators', 100, 5000),
-            "early_stopping_rounds":trial.suggest_int('early_stopping_rounds', 10, 1000),
+            # Patience must stay well below n_estimators, otherwise early stopping never triggers
+            "early_stopping_rounds":trial.suggest_int('early_stopping_rounds', 10, 100),
             "lookback_seasons": trial.suggest_int('lookback_seasons', 2,5)
             
         }
@@ -254,12 +255,14 @@ class NFLHyperparameterTuner:
         lookback_seasons=params.pop("lookback_seasons")
         
         # Set objective based on task type
+        # n_jobs=1: Optuna already parallelises across trials, so a threaded forest would
+        # oversubscribe cores (n_cores trials x n_cores threads).
         if task_type == 'classification':
             from sklearn.ensemble import RandomForestClassifier
-            model = RandomForestClassifier(**params, random_state=42, class_weight="balanced_subsample", n_jobs=-1)
+            model = RandomForestClassifier(**params, random_state=42, class_weight="balanced_subsample", n_jobs=1)
         else:  # regression
             from sklearn.ensemble import RandomForestRegressor
-            model = RandomForestRegressor(**params, random_state=42, n_jobs=-1)
+            model = RandomForestRegressor(**params, random_state=42, n_jobs=1)
         
         # Time series cross validation
         tscv = TimeSeriesSplit(n_splits=5)

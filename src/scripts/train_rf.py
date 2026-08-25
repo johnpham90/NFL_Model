@@ -25,6 +25,10 @@ from src.models.nfl_model import NFLModelV2, ModelArtifacts
 from src.config import config
 from src.models import hyper_parameter_tuning
 import pickle
+# Batch script: pick the non-interactive backend before model_analysis imports pyplot,
+# otherwise its plt.show() calls spawn Tk windows that fail on teardown.
+import matplotlib
+matplotlib.use("Agg")
 from src.evaluation import model_analysis
 import numpy as np
 # List of targets to train. Adjust ordering or remove as needed.
@@ -72,7 +76,9 @@ for tgt, i_type in config.models.items():
         # Calculate classification metrics
         acc = accuracy_score(y_test.values, preds)
         p, r, f, _ = precision_recall_fscore_support(y_test.values, preds, average="weighted", zero_division=0)
-        metrics = {"accuracy": acc, "precision": p, "recall": r, "f1": f}
+        pos_rate = float(y_test.mean())
+        metrics = {"accuracy": acc, "precision": p, "recall": r, "f1": f,
+                   "baseline_accuracy": max(pos_rate, 1 - pos_rate)}
         model_type_str = 'RandomForestClassifier'
     else:
         rf_model = RandomForestRegressor(**params, random_state=42, n_jobs=-1)
@@ -83,7 +89,9 @@ for tgt, i_type in config.models.items():
         # Calculate regression metrics
         mae = mean_absolute_error(y_test.values, preds)
         r2 = r2_score(y_test.values, preds)
-        metrics = {"mae": mae, "r2": r2}
+        baseline = np.full(len(y_test), y_train_.mean())
+        metrics = {"mae": mae, "r2": r2,
+                   "baseline_mae": mean_absolute_error(y_test.values, baseline)}
         model_type_str = 'RandomForestRegressor'
     
     # Create proper ModelArtifacts wrapper (required by predictions.py)

@@ -153,14 +153,23 @@ class NFLModelV2:
         # Targets
         df["spread"] = df["homescore"] - df["awayscore"]
         df["total_points"] = df["homescore"] + df["awayscore"]
-        if {"spreadfavoriteteam", "spreadteamcovered"}.issubset(df.columns):
-            df["binary_spread_label"] = (df["spreadfavoriteteam"] == df["spreadteamcovered"]).astype(int)
-        else:
-            df["binary_spread_label"] = (df["spread"] > 0).astype(int)
-        if "overunderresults" in df.columns:
-            df["binary_ou_label"] = np.where(df["overunderresults"] == "Over",1,0).astype(int)
-        # else:
-        #     df["binary_ou_label"] = (df["total_points"] > df["total_points"].median()).astype(int)
+        # ATS result is derived from the market line rather than gamesummary.spreadteamcovered,
+        # which tracks the outright winner (90% agreement) instead of the cover (73%).
+        fav_margin = np.where(
+            df["spreadfavoriteteam"].values == df["hometeamid"].values,
+            df["spread"].values,
+            -df["spread"].values,
+        )
+        line = df["market_spread"].abs().values
+        # Pushes stay NaN and are dropped per-target in build_dataset()
+        df["binary_spread_label"] = np.select(
+            [fav_margin > line, fav_margin < line], [1.0, 0.0], default=np.nan
+        )
+        df["binary_ou_label"] = np.select(
+            [df["total_points"].values > df["over_under"].values,
+             df["total_points"].values < df["over_under"].values],
+            [1.0, 0.0], default=np.nan
+        )
 
         # Per-team points (offensive points scored by this team in the game)
         df["team_points"] = np.where(
@@ -267,11 +276,14 @@ class NFLModelV2:
                  and not any(f.startswith(base + "__") for base in self._OUTCOME_COLS)]
         self.feature_columns = sorted(set(feats))
         self._sanitize_feature_columns()
+        if self.target in game_df.columns:
+            game_df = game_df[game_df[self.target].notna()]
         self._dataset = game_df.reset_index(drop=True)
         return self._dataset
 
     # ---------- Training ----------
-    def _select_X_y(self):
+    def _select_X_y(self, val_size: float = 0.0):
+        """Chronological split. val_size>0 returns an extra validation slice before test."""
         if self._dataset is None:
             raise RuntimeError("Dataset not built.")
         df = self._dataset.sort_values(["season","week"]).reset_index(drop=True)
@@ -288,10 +300,21 @@ class NFLModelV2:
         X = df[feature_cols].ffill().fillna(0)
         y = df[self.target]
         is_class = self.target in {"binary_spread_label","binary_ou_label"}
+        if is_class:
+            y = y.astype(int)
         split_idx = int(len(X) * (1 - self.test_size))
-        X_train, X_test = X.iloc[:split_idx], X.iloc[split_idx:]
-        y_train, y_test = y.iloc[:split_idx], y.iloc[split_idx:]
-        return X_train, X_test, y_train, y_test, feature_cols, is_class
+        if val_size <= 0:
+            X_train, X_test = X.iloc[:split_idx], X.iloc[split_idx:]
+            y_train, y_test = y.iloc[:split_idx], y.iloc[split_idx:]
+            return X_train, X_test, y_train, y_test, feature_cols, is_class
+        # Validation slice sits chronologically between train and test so early stopping
+        # never sees the test period.
+        val_idx = int(len(X) * (1 - self.test_size - val_size))
+        if val_idx <= 0:
+            raise ValueError(f"val_size={val_size} leaves no training rows.")
+        X_train, X_val, X_test = X.iloc[:val_idx], X.iloc[val_idx:split_idx], X.iloc[split_idx:]
+        y_train, y_val, y_test = y.iloc[:val_idx], y.iloc[val_idx:split_idx], y.iloc[split_idx:]
+        return X_train, X_val, X_test, y_train, y_val, y_test, feature_cols, is_class
 
     # ---------- Leakage Guards ----------
     def _sanitize_feature_columns(self):

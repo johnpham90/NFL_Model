@@ -4,6 +4,7 @@ import sys
 import pickle
 import pandas as pd
 import numpy as np
+import xgboost as xgb
 from scipy.stats import norm
 
 from src.models.nfl_model import NFLModelV2
@@ -13,15 +14,33 @@ from src.utils.schedule_utility import get_current_week
 
 ALL_TARGETS = ["spread", "total_points", "binary_spread_label", "binary_ou_label"]
 
-def latest_artifact(target: str, artifacts_dir: Path) -> Path:
-    files = sorted(artifacts_dir.glob(f"{target}_rf_v2_*.pkl"))
-    if not files:
-        raise FileNotFoundError(f"No artifacts found for target '{target}' in {artifacts_dir}")
-    return files[-1]
-
 def load_artifact(path: Path):
     with open(path, "rb") as f:
         return pickle.load(f)
+
+def _score(artifact) -> float:
+    """Higher is better. Accuracy for classifiers, R2 for regressors."""
+    m = artifact.metrics or {}
+    return float(m["accuracy"]) if "accuracy" in m else float(m.get("r2", float("-inf")))
+
+def best_artifact(target: str, artifacts_dir: Path) -> Path:
+    """Latest artifact from each model family, then whichever scored better on test."""
+    candidates = []
+    for family in ("rf", "xgb"):
+        files = sorted(artifacts_dir.glob(f"{target}_{family}_v2_*.pkl"))
+        if files:
+            candidates.append(files[-1])
+    if not candidates:
+        raise FileNotFoundError(f"No artifacts found for target '{target}' in {artifacts_dir}")
+    if len(candidates) == 1:
+        return candidates[0]
+    return max(candidates, key=lambda p: _score(load_artifact(p)))
+
+def _predict(artifact, X: pd.DataFrame) -> np.ndarray:
+    """xgb.train returns a Booster, which needs a DMatrix rather than a DataFrame."""
+    if isinstance(artifact.model, xgb.Booster):
+        return artifact.model.predict(xgb.DMatrix(X.values, feature_names=list(X.columns)))
+    return artifact.model.predict(X)
 
 def build_team_history(model: NFLModelV2, season: int, week: int):
     games = model.games
@@ -137,14 +156,21 @@ def predict_target(target: str,
                    margin_std: float = 13.5,
                    total_std: float = 13.5) -> pd.DataFrame:
     print(f"[DEBUG] Entered predict_target for {target}, season={season}, week={week}")
-    art_path = latest_artifact(target, artifacts_dir)
+    art_path = best_artifact(target, artifacts_dir)
     artifact = load_artifact(art_path)
+    metrics = artifact.metrics or {}
+    baseline = metrics.get("baseline_accuracy", metrics.get("baseline_mae"))
+    print(f"[{target}] using {art_path.name} ({artifact.model_type}) score={_score(artifact):.4f} baseline={baseline}")
+    if "accuracy" in metrics and "baseline_accuracy" in metrics:
+        if metrics["accuracy"] <= metrics["baseline_accuracy"]:
+            print(f"[WARN] {target}: model accuracy {metrics['accuracy']:.4f} does not beat the "
+                  f"always-majority baseline {metrics['baseline_accuracy']:.4f}")
     model = NFLModelV2(target=target)
     model.load_games(start_season=start_season)
     team_hist = build_team_history(model, season=season, week=week)
     design_X, meta = assemble_matchups(artifact, team_hist, season, week, schedule_wk)
     X = design_X[artifact.feature_columns]
-    preds = artifact.model.predict(X)
+    preds = _predict(artifact, X)
     out = meta.copy()
     out["target"] = target
     out["prediction"] = preds
@@ -158,11 +184,17 @@ def predict_target(target: str,
         if "market_total" in out:
             out["over_prob"] = over_probability(preds, out["market_total"], total_std)
     # Probabilities for classification targets
-    if target.startswith("binary") and hasattr(artifact.model, "predict_proba"):
-        probs = artifact.model.predict_proba(X)
-        if probs.shape[1] == 2:
-            out["prob_0"] = probs[:, 0]
-            out["prob_1"] = probs[:, 1]
+    if target.startswith("binary"):
+        if isinstance(artifact.model, xgb.Booster):
+            # binary:logistic already returns P(class 1)
+            out["prob_1"] = preds
+            out["prob_0"] = 1.0 - preds
+            out["prediction"] = (preds >= 0.5).astype(int)
+        elif hasattr(artifact.model, "predict_proba"):
+            probs = artifact.model.predict_proba(X)
+            if probs.shape[1] == 2:
+                out["prob_0"] = probs[:, 0]
+                out["prob_1"] = probs[:, 1]
     out_path = output_dir / f"{target}_week{week}_predictions.csv"
     out.to_csv(out_path, index=False)
     print(f"[{target}] {len(out)} games -> {out_path.name}")
